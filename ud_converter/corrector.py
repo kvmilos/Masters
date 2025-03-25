@@ -7,9 +7,7 @@ from tests.corrector_tests import test_pos, test_feats, test_feats_pos_combinati
 
 
 def correct_conll_line(n: Node):
-    """
-    Corrects a line of a CONLL file.
-    """
+    """Corrects a line of a CONLL file."""
     # If POS has extra features appended, remove them
     if ':' in n.pos:
         n.pos = n.pos.split(":")[0]
