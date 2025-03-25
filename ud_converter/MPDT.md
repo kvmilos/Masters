@@ -17,14 +17,16 @@
 
 ## 1. Zamiana z podziałem na części mowy (POS tags)
 
-### 1.0. kolejność
+lemma_based_upos -> pos_specific_upos
 
-lemma_based_upos -> pos-specific -> upos_update
+### 1.0. lemma_based_upos
 
-#### 1.0.1. lemma_based_upos
-
-- niż, niżeli, aniżeli, niźli, jakby, jakoby, niczym, niby && not subst && not part && not adv &rArr; `SCONJ` + `ConjType=Comp` + `Dep=comp`
-- jak && not subst && not conj && not adv &rArr; `SCONJ` + `Dep=comp`
+- niż, niżeli, aniżeli, niźli, jakby, jakoby, niczym, niby && !subst && !part && !adv &rArr; `SCONJ` + `ConjType=Comp`
+- jak &&  !subst &&  !conj &&  !adv &rArr; `SCONJ` + `Dep=comp`
+- temu &rArr; `ADP` + `AdpType=Post,Case=Acc`
+- plus, minus && !subst &rArr; `CCONJ` + `ConjType=Oper`
+- !subst && !ign && re_arabic &rArr; ^^^ [num](#121-num-liczebnik-główny) + `NumType=Card` ^^^
+- !subst && !ign && re_roman &rArr; ^^^ [num](#121-num-liczebnik-główny) + `NumType=Card` ^^^
 
 ### 1.1. Rzeczowniki
 
@@ -48,15 +50,14 @@ Format: `subst : number : case : gender [ : subgender ]`\
 Format: `num : number : case : gender`\
 `num : sg|du|pl : nom|gen|dat|acc|inst|loc|voc : f|n|m|p1|p2|manim1|manim2`
 
+`f(gender)` + `Case=<case>`
+
+if not set in lemma_based_upos:
 - ile, ileż, iluż &rArr; `DET` + `NumType=Card,PronType=Int`
 - tyle, tyleż &rArr; `DET` + `NumType=Card,PronType=Dem`
 - mało, niemało, mniej, najmniej, dużo, niedużo, wiele, niewiele, więcej, najwięcej, kilka, kilkanastie, kilkadziesiąt, kilkaset, parę, paręnaście, oba, parędziesiąt, nieco, sporo, trochę, ileś, ilekolwiek, pełno, dość, dosyć &rArr; `DET` + `PronType=Ind`
 - _ &rArr; `NUM` + `NumForm=Word`
 
-`f(gender)` + `Case=<case>`
-
-- `<pos>` not in `['subst', 'ign']` && `re_arabic` &rArr; `NumType=Card`
-- `<pos>` not in `['interj', 'qub', 'part', 'conj', 'ign', 'brev', 'subst', 'prep', 'xxs', 'xxx']` && `re_roman` &rArr; `NumType=Card`
 
 #### 1.2.2. numcol (liczebnik zbiorowy)
 Format: `numcol : number : case : gender`\
@@ -579,7 +580,20 @@ nie ma w danych
 
 #### 2.8.2 root - relacja między korzeniem drzewa a jego podrzędnikiem
 
+### 2.9. konwersja
 
+#### 2.9.1. preconversion
+
+- !root && `SCONJ` && jak, jakby && edge(gov(n), n) == `adjunct_compar` &rArr; n.`ConjType=Comp`
+- `AUX` && !aglt && !cond && !children(n, `conj`) && !children(n, `cc`) && edge(gov(n), n) != `aux` && !to && !by && len(children(n)) > 0 && children(n, `adjunct_locat`) && !children(n, `pd`) &rArr; `VERB`
+- `AUX` && !aglt && !cond && !children(n, `conj`) && !children(n, `cc`) && edge(gov(n), n) != `aux` && !to && !by && len(children(n)) > 0 && !children(n, `pd`) &rArr; `VERB`
+- `AUX` && !aglt && !cond && !children(n) && być && edge(gov(n), n) != `aux` && edge(gov(n), n) != `aglt` && !edge(n, children(n, `conjunct`)) &rArr; `VERB`
+- `AUX` && !aglt && !cond && !children(n) && być && edge(gov(n), n) != `aux` && edge(gov(n), n) != `aglt` && edge(gov(same_dep_branches_leaf(n)),same_dep_branches_leaf(n)) != `aux` && !children(n, `pd`) &rArr `VERB`
+- `VERB` && edge(gov(n), n) == `aux` &rArr; `AUX`
+
+#### conversion of <pos> = num
+
+- 
 
 ## 3. Pytania / problemy
 
@@ -612,6 +626,8 @@ nie ma w danych
 - pact, ppas mają degree - czemu nie dodajemy do UD?
 
 - czym są cneg, obj_factor, obj_purp? - nie ma ich w instrukcji do anotacji PDB
+
+- czym dokładnie jest xpos i czemu to ustawiamy
 
 cneg	84
 obj_factor	4

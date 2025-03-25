@@ -50,6 +50,9 @@ class Token:
         self.data['sent_id'] = columns[8]
         self.data['misc'] = {'Translit': columns[9]}
         self.sentence = None
+        self.data['upos'] = None
+        self.data['ufeats'] = {}
+        self.data['udep_label'] = None
 
     @property
     def id(self):
@@ -207,28 +210,66 @@ class Token:
         self.data['feats_raw'] = value
         self.data['feats'] = {feats_dict[feat]: feat for feat in value.split("|")}
 
-    def __str__(self):
+    @property
+    def upos(self):
         """
-        Returns the Token as a line in CONLL format (MPDT, not UD).
+        Returns the upos of the token.
         """
-        return "\t".join([
-        self.data['n_id'],
-        self.data['form'],
-        self.data['lemma'],
-        self.data['pos'],
-        self.data['pos_feats'],
-        self.data['feats_raw'],
-        self.data['gov_id'],
-        self.data['dep_label'],
-        self.data['sent_id'],
-        self.data['misc']
-    ])
+        return self.data['upos']
 
-    def ud_conll(self):
+    @upos.setter
+    def upos(self, value):
+        """
+        Sets the upos of the token.
+        """
+        self.data['upos'] = value
+
+    @property
+    def ufeats(self):
+        """
+        Returns the ufeats of the token.
+        """
+        return self.data['ufeats']
+
+    @ufeats.setter
+    def ufeats(self, value):
+        """
+        Sets the ufeats of the token.
+        """
+        self.data['ufeats'] = value
+
+    @property
+    def udep_label(self):
+        """
+        Returns the udep_label of the token.
+        """
+        return self.data['udep_label']
+
+    @udep_label.setter
+    def udep_label(self, value):
+        """
+        Sets the udep_label of the token.
+        """
+        self.data['udep_label'] = value
+
+    def __str__(self):
         """
         Returns the Token as a line in UD CONLL format.
         """
-        ...
+        # return "\t".join([
+        # self.data['n_id'],
+        # self.data['form'],
+        # self.data['lemma'],
+        # self.data['pos'],
+        # self.data['pos_feats'],
+        # self.data['feats_raw'],
+        # self.data['gov_id'],
+        # self.data['dep_label'],
+        # self.data['sent_id'],
+        # self.data['misc']
+        # ])
+        return ''
+
     @property
     def gov(self):
         """
