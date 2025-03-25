@@ -15,7 +15,16 @@
 
 ```re_roman``` finds Roman numerals
 
-## 1. Części mowy (POS tags)
+## 1. Zamiana z podziałem na części mowy (POS tags)
+
+### 1.0. kolejność
+
+lemma_based_upos -> pos-specific -> upos_update
+
+#### 1.0.1. lemma_based_upos
+
+- niż, niżeli, aniżeli, niźli, jakby, jakoby, niczym, niby && not subst && not part && not adv &rArr; `SCONJ` + `ConjType=Comp` + `Dep=comp`
+- jak && not subst && not conj && not adv &rArr; `SCONJ` + `Dep=comp`
 
 ### 1.1. Rzeczowniki
 

@@ -4,6 +4,7 @@ __pycache__/
 
 # VS Code settings
 .vscode/
+*.code-workspace
 
 # Logs, temporary/output files
 logs/

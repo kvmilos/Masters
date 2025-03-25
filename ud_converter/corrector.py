@@ -2,36 +2,36 @@
 Corrector for MPDT CONLL files.
 """
 import os
-from utils.node import Node
+from utils.classes import Token
 from tests.corrector_tests import test_pos, test_feats, test_feats_pos_combination
 
 
-def correct_conll_line(n: Node):
+def correct_conll_line(t: Token):
     """Corrects a line of a CONLL file."""
     # If POS has extra features appended, remove them
-    if ':' in n.pos:
-        n.pos = n.pos.split(":")[0]
+    if ':' in t.pos:
+        t.pos = t.pos.split(":")[0]
 
     # Print a warning if POS is not in pos_list
-    test_pos(n.pos)
+    test_pos(t.pos)
 
     # Check if pos_feats and feats have exactly the same feats
-    pos_feats_parts = n.pos_feats.split(":")
+    pos_feats_parts = t.pos_feats.split(":")
     feats_from_pos_feats = pos_feats_parts[1:] if len(pos_feats_parts) > 1 else []
-    feats_from_node = list(n.feats.values())
-    if len(feats_from_pos_feats) != len(feats_from_node):
-        # Rebuild pos_feats using the POS and the feats from the node
-        n.pos_feats = n.pos + ":" + ":".join(feats_from_node)
+    feats_from_token = list(t.feats.values())
+    if len(feats_from_pos_feats) != len(feats_from_token):
+        # Rebuild pos_feats using the POS and the feats from the token
+        t.pos_feats = t.pos + ":" + ":".join(feats_from_token)
 
     # Print warnings for any feats not in feats_dict
-    test_feats(feats_from_node)
+    test_feats(feats_from_token)
 
     # If feats is empty, check if pos_feats equals pos
-    if not n.feats and n.pos_feats != n.pos:
-        print(f"POS_FEATS {n.pos_feats} is not equal to POS {n.pos}.")
+    if not t.feats and t.pos_feats != t.pos:
+        print(f"POS_FEATS {t.pos_feats} is not equal to POS {t.pos}.")
 
     # Test if feats_pos_combination is valid
-    test_feats_pos_combination(n.pos, feats_from_node)
+    test_feats_pos_combination(t.pos, feats_from_token)
 
 def process_conll_file(file_path: str, output_dir: str):
     """Reads a CONLL file, corrects each line, and writes the corrected file to output_dir with the same file name."""
@@ -42,7 +42,7 @@ def process_conll_file(file_path: str, output_dir: str):
             if line.strip() == "":
                 corrected_lines.append("\n")
                 continue
-            n = Node(line)
+            n = Token(line)
             correct_conll_line(n)
             corrected_lines.append(str(n) + "\n")
 
@@ -54,7 +54,7 @@ def process_conll_file(file_path: str, output_dir: str):
 
 
 def main():
-    """Main function."""
+    """Main functiot."""
     input_directory = input("Enter the path to the directory containing original CONLL files: ").strip()
     output_directory = input("Enter the path to the directory for output files: ").strip()
 
