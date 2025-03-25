@@ -1,6 +1,20 @@
-*.aux
+# Virtual environment / Python cache
+.venv/
+__pycache__/
+
+# VS Code settings
+.vscode/
+
+# Logs, temporary/output files
+logs/
 *.log
 *.out
+
+# Not-repository data
+data/
+
+# LaTeX files
+*.aux
 *.fdb_latexmk
 *.fls
 *.synctex.gz
