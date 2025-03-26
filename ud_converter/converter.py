@@ -11,7 +11,7 @@ import sys
 
 from utils.io import read_conll, write_ud_conll, load_meta
 from utils.logger import setup_logging
-from morphosyntax.conversion import convert_to_upos
+from morphosyntax.morphosyntax import convert_to_upos
 
 logger = setup_logging()
 

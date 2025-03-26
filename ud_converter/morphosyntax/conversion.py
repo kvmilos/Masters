@@ -1,10 +1,9 @@
 """
-Module responsible for the POS to UPOS conversion.
+Module responsible for the POS-specific conversion to UPOS.
 """
 
 import logging
 from utils.classes import Token
-from morphosyntax.preconversion import lemma_based_upos
 from morphosyntax.pos_categories.noun import subst
 from morphosyntax.pos_categories.adjective import adj, adja, adjb
 from morphosyntax.pos_categories.adverb import adv
@@ -13,13 +12,6 @@ from morphosyntax.pos_categories.pronoun import ppron12, ppron3, siebie
 from morphosyntax.pos_categories.other import brev, frag, interj, part, prep, conj, comp, interp, xxx, dig, romandig, ign, sym, incert
 
 logger = logging.getLogger('ud_converter.morphosyntax.conversion')
-
-def convert_to_upos(t: Token):
-    """
-    Converts the token to UPOS.
-    """
-    lemma_based_upos(t)
-    pos_specific_upos(t)
 
 def pos_specific_upos(t: Token):
     """
