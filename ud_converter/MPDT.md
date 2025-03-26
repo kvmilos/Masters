@@ -22,11 +22,12 @@ lemma_based_upos -> pos_specific_upos
 ### 1.0. lemma_based_upos
 
 - niż, niżeli, aniżeli, niźli, jakby, jakoby, niczym, niby && !subst && !part && !adv &rArr; `SCONJ` + `ConjType=Comp`
-- jak &&  !subst &&  !conj &&  !adv &rArr; `SCONJ` + `Dep=comp`
+- jak &&  !subst &&  !conj &&  !adv &rArr; `SCONJ` + xpos = comp ????
 - temu &rArr; `ADP` + `AdpType=Post,Case=Acc`
 - plus, minus && !subst &rArr; `CCONJ` + `ConjType=Oper`
 - !subst && !ign && re_arabic &rArr; ^^^ [num](#121-num-liczebnik-główny) + `NumType=Card` ^^^
 - !subst && !ign && re_roman &rArr; ^^^ [num](#121-num-liczebnik-główny) + `NumType=Card` ^^^
+- first letter upper &rArr; 
 
 ### 1.1. Rzeczowniki
 
@@ -63,7 +64,7 @@ if not set in lemma_based_upos:
 Format: `numcol : number : case : gender`\
 `numcol : sg|du|pl : nom|gen|dat|acc|inst|loc|voc : f|n|m|p1|p2|manim1|manim2`
 
-^^^ [num](#121-num-liczebnik-główny) + `f(gender)` ^^^
+^^^ [num](#121-num-liczebnik-główny) ^^^
 
 #### 1.2.3. adjnum (liczebnik przymiotnikowy)
 Format: `adjnum : number : case : gender : degree`\
@@ -151,13 +152,15 @@ Format: `ppron3 : number : case : gender : person [ : accentability ] [ : post-p
 Format: `siebie : case`\
 `siebie : nom|gen|dat|acc|inst|loc|voc`
 
+`PRON` + `PronType=Prs,Case=<case>,Reflex=Yes`
+
 ### 1.6. Przyimki
 
 #### 1.6.1. prep (przyimek)
 Format: `prep : case [ : vocalicity ]`\
 `prep : nom|gen|dat|acc|inst|loc|voc [ : nwok|wok ]`
 
-`ADP` + `Case=<case>` (PYTANIE) + `AdpType=Prep`
+`ADP` + `Case=<case>` + `AdpType=Prep`
 - `wok` &rArr; `Variant=Long`
 - _ &rArr; `Variant=Short`
 
@@ -597,21 +600,23 @@ nie ma w danych
 
 ## 3. Pytania / problemy
 
-- Czy ppron3 powinno być i neut i zneut, czy tylko zneut (błąd w pisowni?) i czy to neut/zneut powinno mieć variant=short, czy tylko nwok?
+- Czy ppron3 powinno być i neut i zneut, czy tylko zneut (błąd w pisowni?)
+
+- ppron3 - co z neut(zneut) - obsługujemy tylko perf/imperf? 
+
+- obecnie ppron12 bez accentability idzie do Variant=Short razem z nakc, a ppron3 z neut,zneut idzie do Variant=Short razem z nakc, nie jestem tego pewien?
 
 - czy można usunąć col ncol z 'manim' i 'n' (bo i tak nigdy nie zachodzą?)
 
-- powiązane z col/ncol - w funkcji gender_number nie  jest już używane subst/numcol (bo nigdy nie wchodzimy do warunku == 'col')
+- powiązane z col/ncol - w funkcji gender_number nie  jest już używane subst/numcol (bo nigdy nie wchodzimy do warunku == 'col') - więc nigdy nie ustawiamy NumType=Sets
 
 - czym dokładnie jest p1 i p2
 
 - incert, sym - jak dokładnie je traktować? - nie ma ich w instrukcji KorBa
 
-- co z adj(?) jej / jego? bo mój, twój itp. zamieniamy na  DET, a jej/jego chwilowo nie (zostaje jako ADJ)
+- co z adj(?) jej / jego? bo mój, twój itp. zamieniamy na  DET, a jej/jego chwilowo nie (zostaje jako ADJ?)
 
-- co z plurale tantum oznaczonym poprzez pl w subgender - chyba na razie nie ma obsługi?
-
-- ppron12/3 - co z neut(zneut) - obsługujemy tylko perf/imperf?
+- co z plurale tantum oznaczonym poprzez pl w subgender - chyba na razie nie ma obsługi
 
 - czemu w funkcji prep ustawiamy Case na misc a nie ufeats
 
@@ -619,15 +624,17 @@ nie ma w danych
 
 - to samo dla plusq i wokalizacji
 
-- przy bedzie wcześniej było Tense=Fut, ale w nowym kodzie jest zamiast tego Voice=Act (wygląda na błędne użycie impt zamiast bedzie ale może to celowo?)
+- przy 'bedzie' wcześniej było Tense=Fut, ale w nowym kodzie jest zamiast tego Voice=Act (wygląda na błędne użycie impt zamiast 'bedzie' ale może to celowo?)
 
 - pact, ppas, ppraet są ustawiane na VERB a chwile potem zmieniane na ADJ
 
-- pact, ppas mają degree - czemu nie dodajemy do UD?
+- pact, ppas mają degree - czemu nie dodajemy do UD? (zawsze pos)
 
 - czym są cneg, obj_factor, obj_purp? - nie ma ich w instrukcji do anotacji PDB
 
 - czym dokładnie jest xpos i czemu to ustawiamy
+
+- czemu w frag są wypisane konkretne przypadki i dane do X a potem i tak wszystko jest jako X
 
 cneg	84
 obj_factor	4

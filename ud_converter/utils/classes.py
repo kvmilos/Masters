@@ -1,6 +1,7 @@
 """
 Module for the Sentence and Token classes.
 """
+from collections import defaultdict
 from utils.feats_dict import feats_dict
 
 class Sentence:
@@ -25,6 +26,16 @@ class Sentence:
             if token.gov_id == "0":
                 return token
         return None
+
+    @property
+    def text(self):
+        """Returns the text of the sentence."""
+        return " ".join([token.form for token in self.tokens])
+
+    def __str__(self):
+        """Returns the sentence as its tokens joined by newline."""
+        return "\n".join(str(token) for token in self.tokens)
+
 
 class Token:
     """
@@ -51,230 +62,176 @@ class Token:
         self.data['misc'] = {'Translit': columns[9]}
         self.sentence = None
         self.data['upos'] = None
-        self.data['ufeats'] = {}
+        self.data['ufeats'] = defaultdict(str)
         self.data['udep_label'] = None
 
     @property
     def id(self):
-        """
-        Returns the id of the token.
-        """
+        """Returns the id of the token."""
         return self.data['id']
 
     @id.setter
     def id(self, value):
-        """
-        Sets the id of the token.
-        """
+        """Sets the id of the token."""
         self.data['id'] = value
 
     @property
     def form(self):
-        """
-        Returns the form of the token.
-        """
+        """Returns the form of the token."""
         return self.data['form']
 
     @form.setter
     def form(self, value):
-        """
-        Sets the form of the token.
-        """
+        """Sets the form of the token."""
         self.data['form'] = value
 
     @property
     def lemma(self):
-        """
-        Returns the lemma of the token.
-        """
+        """Returns the lemma of the token."""
         return self.data['lemma']
 
     @lemma.setter
     def lemma(self, value):
-        """
-        Sets the lemma of the token.
-        """
+        """Sets the lemma of the token."""
         self.data['lemma'] = value
 
     @property
     def pos(self):
-        """
-        Returns the pos of the token.
-        """
+        """Returns the pos of the token."""
         return self.data['pos']
 
     @pos.setter
     def pos(self, value):
-        """
-        Sets the pos of the token.
-        """
+        """Sets the pos of the token."""
         self.data['pos'] = value
 
     @property
     def pos_feats(self):
-        """
-        Returns the token's pos with its features.
-        """
+        """Returns the token's pos with its features."""
         return self.data['pos_feats']
 
     @pos_feats.setter
     def pos_feats(self, value):
-        """
-        Sets the token's pos with its features.
-        """
+        """Sets the token's pos with its features."""
         self.data['pos_feats'] = value
 
     @property
     def feats(self):
-        """
-        Returns a dictionary of feats for the token.
-        """
+        """Returns a dictionary of feats for the token."""
         return self.data['feats']
 
     @feats.setter
     def feats(self, value):
-        """
-        Sets the dictionary of feats for the token.
-        """
+        """Sets the dictionary of feats for the token."""
         self.data['feats'] = value
         self.data['feats_raw'] = "|".join(value.values())
 
     @property
     def gov_id(self):
-        """
-        Returns the id of the governor of the token.
-        """
+        """Returns the id of the governor of the token."""
         return self.data['gov_id']
 
     @gov_id.setter
     def gov_id(self, value):
-        """
-        Sets the id of the governor of the token.
-        """
+        """Sets the id of the governor of the token."""
         self.data['gov_id'] = value
 
     @property
     def dep_label(self):
-        """
-        Returns the dependency label of the token.
-        """
+        """Returns the dependency label of the token."""
         return self.data['dep_label']
 
     @dep_label.setter
     def dep_label(self, value):
-        """
-        Sets the dependency label of the token.
-        """
+        """Sets the dependency label of the token."""
         self.data['dep_label'] = value
 
     @property
     def sent_id(self):
-        """
-        Returns the id of the sentence of the token.
-        """
+        """Returns the id of the sentence of the token."""
         return self.data['sent_id']
 
     @sent_id.setter
     def sent_id(self, value):
-        """
-        Sets the id of the sentence of the token.
-        """
+        """Sets the id of the sentence of the token."""
         self.data['sent_id'] = value
 
     @property
     def misc(self):
-        """
-        Returns the misc of the token.
-        """
+        """Returns the misc of the token."""
         return self.data['misc']
 
     @misc.setter
     def misc(self, value):
-        """
-        Sets the misc of the token.
-        """
+        """Sets the misc of the token."""
         self.data['misc'] = value
 
     @property
     def feats_raw(self):
-        """
-        Returns the raw feats of the token.
-        """
+        """Returns the raw feats of the token."""
         return self.data['feats_raw']
 
     @feats_raw.setter
     def feats_raw(self, value):
-        """
-        Sets the raw feats of the token.
-        """
+        """Sets the raw feats of the token."""
         self.data['feats_raw'] = value
         self.data['feats'] = {feats_dict[feat]: feat for feat in value.split("|")}
 
     @property
     def upos(self):
-        """
-        Returns the upos of the token.
-        """
+        """Returns the upos of the token."""
         return self.data['upos']
 
     @upos.setter
     def upos(self, value):
-        """
-        Sets the upos of the token.
-        """
+        """Sets the upos of the token."""
         self.data['upos'] = value
 
     @property
     def ufeats(self):
-        """
-        Returns the ufeats of the token.
-        """
+        """Returns the ufeats of the token."""
         return self.data['ufeats']
 
     @ufeats.setter
     def ufeats(self, value):
-        """
-        Sets the ufeats of the token.
-        """
-        self.data['ufeats'] = value
+        """Updates the ufeats of the token."""
+        self.data['ufeats'].update(value)
 
     @property
     def udep_label(self):
-        """
-        Returns the udep_label of the token.
-        """
+        """Returns the udep_label of the token."""
         return self.data['udep_label']
 
     @udep_label.setter
     def udep_label(self, value):
-        """
-        Sets the udep_label of the token.
-        """
+        """Sets the udep_label of the token."""
         self.data['udep_label'] = value
 
     def __str__(self):
         """
-        Returns the Token as a line in UD CONLL format.
+        Returns the Token as a line in UD CONLL-U format.
+        Columns: ID, FORM, LEMMA, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS, MISC.
+        For FEATS, if no features are present, outputs '_'. DEPS is set to '_'.
         """
-        # return "\t".join([
-        # self.data['n_id'],
-        # self.data['form'],
-        # self.data['lemma'],
-        # self.data['pos'],
-        # self.data['pos_feats'],
-        # self.data['feats_raw'],
-        # self.data['gov_id'],
-        # self.data['dep_label'],
-        # self.data['sent_id'],
-        # self.data['misc']
-        # ])
-        return ''
+        feats_str = "|".join(self.data['feats'].values()) if self.data['feats'] else "_"
+        # W UD CONLL-U MISC: przyjmujemy, że zapisujemy wartość pola 'Translit'
+        misc_str = self.data['misc'].get("Translit", "_") if isinstance(self.data['misc'], dict) else str(self.data['misc'])
+        return "\t".join([
+            self.data['id'],
+            self.data['form'],
+            self.data['lemma'],
+            self.data['upos'] if self.data['upos'] else self.data['pos'],
+            self.data['pos_feats'],
+            feats_str,
+            self.data['gov_id'],
+            self.data['dep_label'],
+            "_",
+            misc_str
+        ])
 
     @property
     def gov(self):
-        """
-        Returns the governor Token, or None if it's the root or something is missing.
-        """
+        """Returns the governor Token, or None if it's the root or something is missing."""
         if self.sentence is None:
             return None
         if self.gov_id == "0":
@@ -293,3 +250,17 @@ class Token:
             n for n in self.sentence.tokens
             if n.gov_id == self.id
         ]
+
+    @property
+    def prev(self):
+        """Returns the previous token in the sentence."""
+        if self.sentence is None:
+            return None
+        return self.sentence.dict_by_id.get(self.id - 1, None)
+
+    @property
+    def next(self):
+        """Returns the next token in the sentence."""
+        if self.sentence is None:
+            return None
+        return self.sentence.dict_by_id.get(self.id + 1, None)

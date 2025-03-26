@@ -46,3 +46,14 @@ feats_dict = {
     'pun': 'fullstoppedness',
     'npun': 'fullstoppedness'
 }
+
+FEATS_UPDATE = {
+    'nom': 'Nom', 'gen': 'Gen', 'dat': 'Dat', 'acc': 'Acc', 'loc': 'Loc', 'inst': 'Ins', 'voc': 'Voc',
+    'sg': 'Sing', 'pl': 'Plur', 'du': 'Dual',
+    'pos': 'Pos', 'com': 'Cmp', 'sup': 'Sup',
+    'perf': 'Perf', 'imperf': 'Imp', 'biasp': 'XXX',
+    'pri': '1', 'sec': '2', 'ter': '3',
+    'aff': 'Pos', 'neg': 'Neg',
+    'praep': 'Pre', 'npraep': 'Npr',
+    'akc': 'Long', 'nakc': 'Short'
+}
