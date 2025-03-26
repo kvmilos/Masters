@@ -56,7 +56,7 @@ def number(t: Token, roman: bool = False):
     elif t.upos == '' and t.pos in ['dig', 'romandig', 'xxx']:
         t.upos = 'X'
     else:
-        logger.warning("Unrecognised part of speech >>%s<< of the numeral >>%s<< in >>%s<<", t.pos, t.lemma, t.sentence.text)
+        logger.warning('Unrecognised part of speech >>%s<< of the numeral >>%s<< in >>%s<<', t.pos, t.lemma, t.sentence.text)
 
     if roman is True:
         t.ufeats = {'NumForm': 'Roman'}

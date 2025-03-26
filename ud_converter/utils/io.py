@@ -64,5 +64,5 @@ def load_meta(meta_path: str) -> dict:
         with open(meta_path, 'r', encoding='utf-8') as f:
             return json.load(f)
     except Exception as e:
-        logger.warning("Could not load metadata from %s: %s", meta_path, e, exc_info=True)
+        logger.warning('Could not load metadata from %s: %s', meta_path, e, exc_info=True)
         return {}

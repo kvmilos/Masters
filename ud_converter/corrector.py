@@ -28,16 +28,16 @@ def correct_conll_line(t: Token):
 
     # If feats is empty, check if pos_feats equals pos
     if not t.feats and t.pos_feats != t.pos:
-        print(f"POS_FEATS {t.pos_feats} is not equal to POS {t.pos}.")
+        print(f'POS_FEATS {t.pos_feats} is not equal to POS {t.pos}.')
 
     # Test if feats_pos_combination is valid
     test_feats_pos_combination(t.pos, feats_from_token)
 
 def process_conll_file(file_path: str, output_dir: str):
     """Reads a CONLL file, corrects each line, and writes the corrected file to output_dir with the same file name."""
-    print(f"Processing file: {file_path}")
+    print(f'Processing file: {file_path}')
     corrected_lines = []
-    with open(file_path, "r", encoding="utf-8") as infile:
+    with open(file_path, 'r', encoding='utf-8') as infile:
         for line in infile:
             if line.strip() == "":
                 corrected_lines.append("\n")
@@ -50,20 +50,20 @@ def process_conll_file(file_path: str, output_dir: str):
     output_path = os.path.join(output_dir, file_name)
     with open(output_path, "w", encoding="utf-8") as outfile:
         outfile.writelines(corrected_lines)
-    print(f"Corrected file saved as: {output_path}")
+    print(f'Corrected file saved as: {output_path}')
 
 
 def main():
     """Main functiot."""
-    input_directory = input("Enter the path to the directory containing original CONLL files: ").strip()
-    output_directory = input("Enter the path to the directory for output files: ").strip()
+    input_directory = input('Enter the path to the directory containing original CONLL files: ').strip()
+    output_directory = input('Enter the path to the directory for output files: ').strip()
 
     if not os.path.isdir(input_directory):
-        print("Input directory does not exist.")
+        print('Input directory does not exist.')
         return
 
     if not os.path.isdir(output_directory):
-        print("Output directory does not exist.")
+        print('Output directory does not exist.')
         return
 
     for file in os.listdir(input_directory):

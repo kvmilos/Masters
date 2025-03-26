@@ -10,7 +10,7 @@ def test_pos(pos: str):
     Tests if a POS is in pos_list.
     """
     if pos not in pos_list:
-        print(f"POS {pos} is not in the list of possible POSs.")
+        print(f'POS {pos} is not in the list of possible POSs.')
 
 
 def test_feats(feats: list[str]):
@@ -19,7 +19,7 @@ def test_feats(feats: list[str]):
     """
     for feat in feats:
         if feat not in feats_dict:
-            print(f"FEAT {feat} is not in the list of possible feats.")
+            print(f'FEAT {feat} is not in the list of possible feats.')
 
 
 def test_feats_pos_combination(pos: str, feats: list[str]):
@@ -28,4 +28,4 @@ def test_feats_pos_combination(pos: str, feats: list[str]):
     """
     for feat in feats:
         if feats_dict[feat] not in feats_of_pos[pos]:
-            print(f"FEAT {feat} is not in the list of possible feats for POS {pos}.")
+            print(f'FEAT {feat} is not in the list of possible feats for POS {pos}.')

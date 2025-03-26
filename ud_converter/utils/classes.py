@@ -19,11 +19,11 @@ class Sentence:
 
     def get_root(self):
         """
-        Returns the Token whose gov_id == "0" (i.e. the root).
+        Returns the Token whose gov_id == '0' (i.e. the root).
         If for some reason there's no root, returns None.
         """
         for token in self.tokens:
-            if token.gov_id == "0":
+            if token.gov_id == '0':
                 return token
         return None
 
@@ -214,7 +214,6 @@ class Token:
         For FEATS, if no features are present, outputs '_'. DEPS is set to '_'.
         """
         feats_str = "|".join(self.data['feats'].values()) if self.data['feats'] else "_"
-        # W UD CONLL-U MISC: przyjmujemy, że zapisujemy wartość pola 'Translit'
         misc_str = self.data['misc'].get("Translit", "_") if isinstance(self.data['misc'], dict) else str(self.data['misc'])
         return "\t".join([
             self.data['id'],
