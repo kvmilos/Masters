@@ -3,6 +3,7 @@ Module for the Sentence and Token classes.
 """
 from collections import defaultdict
 from utils.feats_dict import feats_dict
+from utils.multiword_dict import MULTIWORD_EXPRESSIONS as MWE
 
 class Sentence:
     """
@@ -47,7 +48,7 @@ class Token:
         self.data = {}
         self.data['id'] = columns[0]
         self.data['form'] = columns[1]
-        self.data['lemma'] = columns[2]
+        self.data['lemma'] = MWE.get(columns[2], columns[2])
         self.data['pos'] = columns[3]
         self.data['pos_feats'] = columns[4]
         self.data['feats_raw'] = columns[5]
