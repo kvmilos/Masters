@@ -54,7 +54,7 @@ def process_conll_file(file_path: str, output_dir: str):
 
 
 def main():
-    """Main functiot."""
+    """Main function."""
     input_directory = input('Enter the path to the directory containing original CONLL files: ').strip()
     output_directory = input('Enter the path to the directory for output files: ').strip()
 

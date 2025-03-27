@@ -5,7 +5,7 @@ Main module of ud_converter.morphosyntax package, responsible for the conversion
 from utils.classes import Token
 from morphosyntax.preconversion import lemma_based_upos as preconversion
 from morphosyntax.conversion import pos_specific_upos as conversion
-from morphosyntax.pos_categories.postconversion import post_conversion as postconversion
+from morphosyntax.postconversion import post_conversion as postconversion
 
 def convert_to_upos(t: Token):
     """
