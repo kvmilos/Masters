@@ -48,7 +48,8 @@ def main():
         logger.info('Performing full dependency conversion.')
 
     for sentence in sentences:
-        convert_to_upos(sentence)
+        for token in sentence.tokens:
+            convert_to_upos(token)
 
     logger.info('Writing output to %s', output_file)
     write_ud_conll(sentences, output_file, meta_data)

@@ -43,17 +43,12 @@ def write_ud_conll(sentences, outfile_path, meta=None):
     """
     with open(outfile_path, 'w', encoding='utf-8') as out:
         for idx, sentence in enumerate(sentences, start=1):
-            if meta and str(idx) in meta:
-                sent_meta = meta[str(idx)]
-                if 'sent_id' in sent_meta:
-                    out.write(f"# sent_id = {sent_meta['sent_id']}\n")
-                if 'text' in sent_meta:
-                    out.write(f"# text = {sent_meta['text']}\n")
-            else:
-                out.write(f"# sent_id = {idx}\n")
-                out.write(f"# text = {sentence.text}\n")
+            # if exists, set metadata, if not None, set empty dict
+            sent_meta = meta[str(idx)] if meta else None
+            sentence.meta = sent_meta
+            sentence.write_meta(out)
             out.write(str(sentence))
-            out.write("\n")
+            out.write("\n\n")
 
 
 def load_meta(meta_path: str) -> dict:

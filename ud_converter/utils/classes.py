@@ -14,6 +14,7 @@ class Sentence:
     def __init__(self, tokens):
         self.tokens = tokens
         self.dict_by_id = {token.id: token for token in tokens}
+        self.data = {}
 
         for token in tokens:
             token.sentence = self
@@ -32,6 +33,24 @@ class Sentence:
     def text(self):
         """Returns the text of the sentence."""
         return " ".join([token.form for token in self.tokens])
+
+    @property
+    def meta(self):
+        """Returns the metadata of the sentence."""
+        return self.data['meta']
+
+    def write_meta(self, out):
+        """Writes the metadata of the sentence."""
+        for key, value in self.meta.items():
+            out.write(f"# {key} = {value}\n")
+
+    @meta.setter
+    def meta(self, value):
+        """Sets the metadata of the sentence."""
+        if 'meta' not in self.data:
+            self.data['meta'] = {}
+        for key, value in value.items():
+            self.data['meta'][key] = value
 
     def __str__(self):
         """Returns the sentence as its tokens joined by newline."""
@@ -214,8 +233,8 @@ class Token:
         Columns: ID, FORM, LEMMA, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS, MISC.
         For FEATS, if no features are present, outputs '_'. DEPS is set to '_'.
         """
-        feats_str = "|".join(self.data['feats'].values()) if self.data['feats'] else "_"
-        misc_str = self.data['misc'].get("Translit", "_") if isinstance(self.data['misc'], dict) else str(self.data['misc'])
+        feats_str = self.data['feats_raw'] if not self.data['upos'] else "|".join([f"{key}={value}" for key, value in self.data['ufeats'].items()])
+        misc_str = "|".join([f"{key}={value}" for key, value in self.data['misc'].items()])
         return "\t".join([
             self.data['id'],
             self.data['form'],
@@ -256,11 +275,11 @@ class Token:
         """Returns the previous token in the sentence."""
         if self.sentence is None:
             return None
-        return self.sentence.dict_by_id.get(self.id - 1, None)
+        return self.sentence.dict_by_id.get(int(self.id) - 1, None)
 
     @property
     def next(self):
         """Returns the next token in the sentence."""
         if self.sentence is None:
             return None
-        return self.sentence.dict_by_id.get(self.id + 1, None)
+        return self.sentence.dict_by_id.get(int(self.id) + 1, None)

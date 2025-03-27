@@ -13,7 +13,7 @@ def update_gender_number(t: Token):
     Updates the gender and number of the token.
     :param token: current token
     """
-    gender = t.pos_feats.get('gender', None)
+    gender = t.feats.get('gender', None)
     number = t.feats['number']
     if gender == 'manim1':
         t.ufeats = {'Gender': 'Masc', 'Animacy': 'Hum', 'Number': FU[number]}

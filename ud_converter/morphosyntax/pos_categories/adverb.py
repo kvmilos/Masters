@@ -9,7 +9,7 @@ from utils.feats_dict import FEATS_UPDATE as FU
 def adv(t: Token):
     """Converts an adv."""
     t.upos = 'ADV'
-    if t.feats['degree']:
+    if 'degree' in t.feats:
         t.ufeats = {'Degree': FU[t.feats['degree']]}
     if t.lemma in ['kiedy', 'gdzie']:
         if t.prev and t.prev.lemma == 'rzadko':

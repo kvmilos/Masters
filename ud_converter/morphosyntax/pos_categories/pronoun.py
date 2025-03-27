@@ -17,10 +17,11 @@ def ppron12(t: Token):
     """Converts a ppron12."""
     ppron(t)
     t.ufeats = {'Number': FU[t.feats['number']]}
-    if t.feats['accentability'] == 'akc':
-        t.ufeats = {'Variant': 'Long'}
-    else:
-        t.ufeats = {'Variant': 'Short'}
+    if 'accentability' in t.feats:
+        if t.feats['accentability'] == 'akc':
+            t.ufeats = {'Variant': 'Long'}
+        else:
+            t.ufeats = {'Variant': 'Short'}
 
 
 def ppron3(t: Token):
