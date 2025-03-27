@@ -43,13 +43,19 @@ def main():
     logger.info('Read %d sentences', len(sentences))
 
     if tags_only:
-        logger.info('Performing tags-only conversion.')
+        logger.info('Performing tags-feats-only conversion.')
+        for sentence in sentences:
+            for token in sentence.tokens:
+                convert_to_upos(token)
     else:
         logger.info('Performing full dependency conversion.')
-
-    for sentence in sentences:
-        for token in sentence.tokens:
-            convert_to_upos(token)
+        logger.info('Converting tags and feats.')
+        for sentence in sentences:
+            for token in sentence.tokens:
+                convert_to_upos(token)
+        logger.info('Converting dependencies.')
+        # NOT IMPLEMENTED YET
+        logger.warning('Dependency conversion is not implemented yet')
 
     logger.info('Writing output to %s', output_file)
     write_ud_conll(sentences, output_file, meta_data)
