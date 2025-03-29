@@ -600,33 +600,21 @@ nie ma w danych
 
 ## 3. Pytania / problemy
 
-- Czy ppron3 powinno być i neut i zneut, czy tylko zneut (błąd w pisowni?) - do dr Wieczorek
-
 - obecnie ppron12 bez accentability idzie do Variant=Short razem z nakc, a ppron3 z neut,zneut idzie do Variant=Short razem z nakc, nie jestem tego pewien - sprawdzic
 
 - NumType=Sets poczytać
-
-- zapytac o p1 p2 czy manim1 pt czy manim2 pt
 
 - jej / jego
 
 - czemu w funkcji prep ustawiamy Case na misc a nie ufeats - tak zostawiam
 
-- w pliku Instrukcja korzystania z wyszukiwarki do Elektronicznego Korpusu Tekstów Polskich z XVII i XVIII wieku imiesłow przeszły ppraet ma stopień, a w danych nie ma, czy plik ma błąd? - zgłosić 
-
-- to samo dla plusq i wokalizacji - zgłosić
-
 - przy 'bedzie' wcześniej było Tense=Fut, ale w nowym kodzie jest zamiast tego Voice=Act (wygląda na błędne użycie impt zamiast 'bedzie' ale może to celowo?)
-tu jest ok - dodaje sie tense tam gdzie ma byc
-
-- pact, ppas mają degree - czemu nie dodajemy do UD? (zawsze pos) - zapytać dr Wieczorek
+- tu jest ok - dodaje sie tense tam gdzie ma byc
 
 - czym są cneg, obj_factor, obj_purp? - nie ma ich w instrukcji do anotacji PDB
 - cneg to negacja do fraz ktore sa nieczasownikowe
 
 - xpos = comp do korektora
-
-- czemu w frag są wypisane konkretne przypadki i dane do X a potem i tak wszystko jest jako X - można usunąć
 
 constituent negation	84 
 obj_factor	4

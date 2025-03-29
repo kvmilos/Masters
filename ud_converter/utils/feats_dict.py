@@ -15,10 +15,10 @@ feats_dict = {
     'voc': 'case',
     'f': 'gender',
     'n': 'gender',
-    'n2': 'gender',
+    'n2': 'gender', # do wyjaśnienia
     'm': 'gender',
-    'p1': 'gender',
-    'p2': 'gender',
+    'p1': 'gender', # do wyjaśnienia
+    'p2': 'gender', # do wyjaśnienia
     'manim1': 'gender',
     'manim2': 'gender',
     'pri': 'person',

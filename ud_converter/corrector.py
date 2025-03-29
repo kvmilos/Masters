@@ -20,7 +20,7 @@ def correct_conll_line(t: Token):
     feats_from_pos_feats = pos_feats_parts[1:] if len(pos_feats_parts) > 1 else []
     feats_from_token = list(t.feats.values())
     if len(feats_from_pos_feats) != len(feats_from_token):
-        # Rebuild pos_feats using the POS and the feats from the token
+        # If not, rebuild pos_feats using the POS and the feats from the token
         t.pos_feats = t.pos + ":" + ":".join(feats_from_token)
 
     # Print warnings for any feats not in feats_dict

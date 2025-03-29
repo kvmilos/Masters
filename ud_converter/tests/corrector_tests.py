@@ -8,7 +8,7 @@ def test_pos(pos: str):
     """
     Tests if a POS is in pos_list.
     """
-    if pos not in feats_dict:
+    if pos not in feats_of_pos:
         print(f'POS {pos} is not in the list of possible POSs.')
 
 

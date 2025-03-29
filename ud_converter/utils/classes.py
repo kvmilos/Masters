@@ -64,26 +64,27 @@ class Token:
     """
     def __init__(self, line):
         columns = line.split("\t")
+        self.sentence = None
         self.data = {}
         self.data['id'] = columns[0]
         self.data['form'] = columns[1]
         self.data['lemma'] = MWE.get(columns[2], columns[2])
         self.data['pos'] = columns[3]
+        self.data['upos'] = None
         self.data['pos_feats'] = columns[4]
         self.data['feats_raw'] = columns[5]
         if self.data['feats_raw'] != "_":
             self.data['feats'] = {feats_dict[feat]: feat for feat in self.data['feats_raw'].split("|")}
         else:
             self.data['feats'] = {}
+        self.data['ufeats'] = defaultdict(str)
         self.data['gov_id'] = columns[6]
         self.data['gov'] = None
         self.data['dep_label'] = columns[7]
-        self.data['sent_id'] = columns[8]
-        self.data['misc'] = {'Translit': columns[9]}
-        self.sentence = None
-        self.data['upos'] = None
-        self.data['ufeats'] = defaultdict(str)
         self.data['udep_label'] = None
+        self.data['sent_id'] = columns[8]
+        self.data['misc'] = columns[9]
+        self.data['umisc'] = {'Translit': columns[9]}
 
     @property
     def id(self):
@@ -187,6 +188,16 @@ class Token:
         self.data['misc'] = value
 
     @property
+    def umisc(self):
+        """Returns the UD misc of the token."""
+        return self.data['umisc']
+
+    @umisc.setter
+    def umisc(self, value):
+        """Updates the UD misc of the token."""
+        self.data['umisc'].update(value)
+
+    @property
     def feats_raw(self):
         """Returns the raw feats of the token."""
         return self.data['feats_raw']
@@ -233,18 +244,20 @@ class Token:
         Columns: ID, FORM, LEMMA, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS, MISC.
         For FEATS, if no features are present, outputs '_'. DEPS is set to '_'.
         """
+        upos_str = self.data['upos'] if self.data['upos'] else self.data['pos']
         feats_str = self.data['feats_raw'] if not self.data['upos'] else "|".join([f"{key}={value}" for key, value in self.data['ufeats'].items()])
-        misc_str = "|".join([f"{key}={value}" for key, value in self.data['misc'].items()])
+        misc_str = self.data['misc'] if len(self.data['umisc']) <= 1 else "|".join([f"{key}={value}" for key, value in self.data['umisc'].items()])
+
         return "\t".join([
             self.data['id'],
             self.data['form'],
             self.data['lemma'],
-            self.data['upos'] if self.data['upos'] else self.data['pos'],
+            upos_str,
             self.data['pos_feats'],
             feats_str,
             self.data['gov_id'],
             self.data['dep_label'],
-            "_",
+            self.data['sent_id'],
             misc_str
         ])
 
