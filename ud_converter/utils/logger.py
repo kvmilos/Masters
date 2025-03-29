@@ -19,9 +19,9 @@ def setup_logging(log_level=logging.INFO):
     log_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'logs')
     os.makedirs(log_dir, exist_ok=True)
 
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    debug_log_file = os.path.join(log_dir, f'ud_converter_debug_{timestamp}.log')
-    info_log_file = os.path.join(log_dir, f'ud_converter_info_{timestamp}.log')
+    timestamp = datetime.now().strftime('%y%m%d_%H%M%S')
+    debug_log_file = os.path.join(log_dir, f'UD_{timestamp}-DEBUG.log')
+    info_log_file = os.path.join(log_dir, f'UD_{timestamp}-INFO.log')
 
     root_logger = logging.getLogger('ud_converter')
     root_logger.setLevel(logging.DEBUG)
