@@ -48,6 +48,6 @@ feats_of_pos = {
     'romandig': [],
     'ignndm': [],
     'ign': [],
-    'sym': [], # ???
-    'incert': [] # ???
+    'sym': [],
+    'incert': []
 }

@@ -1,7 +1,6 @@
 """
 Tests for corrector.py.
 """
-from utils.pos_list import pos_list
 from utils.feats_dict import feats_dict
 from utils.possible_feats_based_on_pos import feats_of_pos
 
@@ -9,7 +8,7 @@ def test_pos(pos: str):
     """
     Tests if a POS is in pos_list.
     """
-    if pos not in pos_list:
+    if pos not in feats_dict:
         print(f'POS {pos} is not in the list of possible POSs.')
 
 
