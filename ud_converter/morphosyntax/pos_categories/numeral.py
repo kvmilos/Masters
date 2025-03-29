@@ -9,7 +9,6 @@ from morphosyntax.pos_categories.adjective import adj
 from morphosyntax.pos_categories.adverb import adv
 
 
-
 def numeral(t: Token):
     """Converts a num or numcol."""
     gn(t)

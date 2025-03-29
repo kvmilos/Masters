@@ -70,4 +70,3 @@ def pos_specific_upos(t: Token):
     else:
         logger.warning('Unrecognised part of speech >>%s<< of the token >>%s<< in >>%s<<', t.pos, t.form, t.sentence.text)
     logger.debug('Converted %s to %s', t.form, t.upos)
-    

@@ -10,11 +10,11 @@ Module for other POS-specific conversion, including:
 - unknown
 - symbols
 and other.
-
 """
 
 from utils.classes import Token
 from utils.feats_dict import FEATS_UPDATE as FU
+
 
 def conj(t: Token):
     """Converts a conj."""
