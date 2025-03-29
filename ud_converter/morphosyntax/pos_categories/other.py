@@ -165,16 +165,9 @@ def brev(t: Token):
 def frag(t: Token):
     """Converts a frag."""
     t.upos = 'X'
-    if t.lemma in ['dala', 'niemiara', 'naprzeciwka', 'ciemku', 'mimo', 'oścież', 'dwójnasób', 'wespół',
+    if t.lemma not in ['dala', 'niemiara', 'naprzeciwka', 'ciemku', 'mimo', 'oścież', 'dwójnasób', 'wespół',
                    'oślep', 'trochu', 'młodu', 'cna', 'bezcen', 'dzieju', 'łupnia', 'mać', 'schwał',
                    'wskroś', 'wznak', 'zacz', 'przemian', 'zamian', '1a.']:
-        pass
-    # elif t.lemma in ['bin', 'don', 'de', 'di', 'Di', 'ben', 'von', 'propos', 'priori', 'van', 'a', 'the', 'vista',
-    #                  'da', 'bon', 'of', 'nota', 'bene', 'der', 'die', 'das', 'la', 'del', 'los', 'las', 'El',
-    #                  'San', 'The', 'Tel', 'New', 'Don', 'Las', 'Los', 'La', 'Le', 'Mc', 'Van', 'Der',
-    #                  'Sri', 'ibn']:
-    #     t.ufeats = {'Foreign': 'Yes'}
-    else:
         t.ufeats = {'Foreign': 'Yes'}
 
 

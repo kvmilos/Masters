@@ -285,7 +285,7 @@ Format: `ppasb : number : case : gender : aspect : negation : degree`\
 Format: `ppraet : number : case : gender : aspect : negation`\
 `ppraet : sg|du|pl : nom|gen|dat|acc|inst|loc|voc : f|n|m|p1|p2|manim1|manim2 : perf|imperf|biasp : aff|neg`
 
-^^^ [praet](#11012-ppas-imiesłów-przymiotnikowy-bierny) ^^^
+^^^ [ppas](#11012-ppas-imiesłów-przymiotnikowy-bierny) ^^^
 
 #### 1.10.15. fut (czasownik być jako wykładnik czasu przyszłego)
 Format: `fut : number : person : aspect`\

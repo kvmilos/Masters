@@ -45,18 +45,19 @@ def lemma_based_upos(t: Token):
 
 def number(t: Token, roman: bool = False):
     """Converts a number."""
-    if t.upos == '' and t.pos == 'adj':
-        t.upos = 'ADJ'
-        pos_specific_upos(t)
-        t.ufeats = {'NumType': 'Ord'}
-    elif t.upos == '' and t.pos == 'num':
-        t.upos = 'NUM'
-        pos_specific_upos(t)
-        t.ufeats = {'NumType': 'Card'}
-    elif t.upos == '' and t.pos in ['dig', 'romandig', 'xxx']:
-        t.upos = 'X'
-    else:
-        logger.warning('Unrecognised part of speech >>%s<< of the numeral >>%s<< in >>%s<<', t.pos, t.lemma, t.sentence.text)
+    if t.upos == '':
+        if t.pos == 'adj':
+            pos_specific_upos(t)
+            t.upos = 'ADJ'
+            t.ufeats = {'NumType': 'Ord'}
+        elif t.pos == 'num':
+            pos_specific_upos(t)
+            t.upos = 'NUM'
+            t.ufeats = {'NumType': 'Card'}
+        elif t.pos in ['dig', 'romandig', 'xxx']:
+            t.upos = 'X'
+        else:
+            logger.warning('Unrecognised part of speech >>%s<< of the numeral >>%s<< in >>%s<<', t.pos, t.lemma, t.sentence.text)
 
     if roman is True:
         t.ufeats = {'NumForm': 'Roman'}

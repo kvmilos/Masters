@@ -56,6 +56,9 @@ class Sentence:
         """Returns the sentence as its tokens joined by newline."""
         return "\n".join(str(token) for token in self.tokens)
 
+    def __iter__(self):
+        return iter(self.tokens)
+
 
 class Token:
     """
@@ -70,13 +73,12 @@ class Token:
         self.data['form'] = columns[1]
         self.data['lemma'] = MWE.get(columns[2], columns[2])
         self.data['pos'] = columns[3]
-        self.data['upos'] = None
+        self.data['upos'] = ''
         self.data['pos_feats'] = columns[4]
         self.data['feats_raw'] = columns[5]
+        self.data['feats'] = defaultdict(str)
         if self.data['feats_raw'] != "_":
             self.data['feats'] = {feats_dict[feat]: feat for feat in self.data['feats_raw'].split("|")}
-        else:
-            self.data['feats'] = {}
         self.data['ufeats'] = defaultdict(str)
         self.data['gov_id'] = columns[6]
         self.data['gov'] = None

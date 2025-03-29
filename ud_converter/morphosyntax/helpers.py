@@ -25,13 +25,9 @@ def update_gender_number(t: Token):
         t.ufeats = {'Gender': 'Fem', 'Number': FU[number]}
     elif gender == 'n':
         t.ufeats = {'Gender': 'Neut', 'Number': FU[number]}
-    elif gender == 'f':
-        t.ufeats = {'Gender': 'Fem', 'Number': FU[number]}
-    elif gender == 'n':
-        t.ufeats = {'Gender': 'Neut', 'Number': FU[number]}
     elif gender == 'p1':
         t.ufeats = {'Gender': 'Masc', 'Animacy': 'Hum', 'Number': 'Ptan'}
     elif gender == 'p2':
         t.ufeats = {'Gender': 'Neut', 'Number': 'Ptan'}
     else:
-        logger.warning('Unknown gender: %s', gender)
+        logger.warning('Unknown gender: %s in token %s with pos %s', gender, t.form, t.pos)
