@@ -600,42 +600,34 @@ nie ma w danych
 
 ## 3. Pytania / problemy
 
-- Czy ppron3 powinno być i neut i zneut, czy tylko zneut (błąd w pisowni?)
+- Czy ppron3 powinno być i neut i zneut, czy tylko zneut (błąd w pisowni?) - do dr Wieczorek
 
-- ppron3 - co z neut(zneut) - obsługujemy tylko perf/imperf? 
+- obecnie ppron12 bez accentability idzie do Variant=Short razem z nakc, a ppron3 z neut,zneut idzie do Variant=Short razem z nakc, nie jestem tego pewien - sprawdzic
 
-- obecnie ppron12 bez accentability idzie do Variant=Short razem z nakc, a ppron3 z neut,zneut idzie do Variant=Short razem z nakc, nie jestem tego pewien?
+- NumType=Sets poczytać
 
-- czy można usunąć col ncol z 'manim' i 'n' (bo i tak nigdy nie zachodzą?)
+- zapytac o p1 p2 czy manim1 pt czy manim2 pt
 
-- powiązane z col/ncol - w funkcji gender_number nie  jest już używane subst/numcol (bo nigdy nie wchodzimy do warunku == 'col') - więc nigdy nie ustawiamy NumType=Sets
+- jej / jego
 
-- czym dokładnie jest p1 i p2
+- czemu w funkcji prep ustawiamy Case na misc a nie ufeats - tak zostawiam
 
-- incert, sym - jak dokładnie je traktować? - nie ma ich w instrukcji KorBa
+- w pliku Instrukcja korzystania z wyszukiwarki do Elektronicznego Korpusu Tekstów Polskich z XVII i XVIII wieku imiesłow przeszły ppraet ma stopień, a w danych nie ma, czy plik ma błąd? - zgłosić 
 
-- co z adj(?) jej / jego? bo mój, twój itp. zamieniamy na  DET, a jej/jego chwilowo nie (zostaje jako ADJ?)
-
-- co z plurale tantum oznaczonym poprzez pl w subgender - chyba na razie nie ma obsługi
-
-- czemu w funkcji prep ustawiamy Case na misc a nie ufeats
-
-- w pliku Instrukcja korzystania z wyszukiwarki do Elektronicznego Korpusu Tekstów Polskich z XVII i XVIII wieku imiesłow przeszły ppraet ma stopień, a w danych nie ma, czy plik ma błąd?
-
-- to samo dla plusq i wokalizacji
+- to samo dla plusq i wokalizacji - zgłosić
 
 - przy 'bedzie' wcześniej było Tense=Fut, ale w nowym kodzie jest zamiast tego Voice=Act (wygląda na błędne użycie impt zamiast 'bedzie' ale może to celowo?)
+tu jest ok - dodaje sie tense tam gdzie ma byc
 
-- pact, ppas, ppraet są ustawiane na VERB a chwile potem zmieniane na ADJ
-
-- pact, ppas mają degree - czemu nie dodajemy do UD? (zawsze pos)
+- pact, ppas mają degree - czemu nie dodajemy do UD? (zawsze pos) - zapytać dr Wieczorek
 
 - czym są cneg, obj_factor, obj_purp? - nie ma ich w instrukcji do anotacji PDB
+- cneg to negacja do fraz ktore sa nieczasownikowe
 
-- czym dokładnie jest xpos i czemu to ustawiamy
+- xpos = comp do korektora
 
-- czemu w frag są wypisane konkretne przypadki i dane do X a potem i tak wszystko jest jako X
+- czemu w frag są wypisane konkretne przypadki i dane do X a potem i tak wszystko jest jako X - można usunąć
 
-cneg	84
+constituent negation	84 
 obj_factor	4
 obj_purp	6
