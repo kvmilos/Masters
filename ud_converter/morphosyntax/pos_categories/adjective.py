@@ -11,7 +11,7 @@ def determiner(t: Token) -> None:
     """Converts a determiner."""
     t.upos = 'DET'
     gn(t)
-    t.ufeats = {'Case': FU[t.feats['case']], 'Degree': FU[t.feats['degree']]}
+    t.ufeats = {'Case': FU[t.feats['case']]}
 
 
 def adjective(t: Token) -> None:
@@ -76,5 +76,8 @@ def adj(t: Token) -> None:
                 t.ufeats = {'Number[psor]': 'Plur', 'Person': '1'}
             elif t.lemma == 'wasz':
                 t.ufeats = {'Number[psor]': 'Plur', 'Person': '2'}
+        elif t.lemma in ['ten', 'tamten', 'ów', 'taki', 'takiż', 'tenże']:
+            determiner(t)
+            t.ufeats = {'PronType': 'Dem'}
         else:
             adjective(t)

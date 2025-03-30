@@ -15,7 +15,7 @@ class Sentence:
     def __init__(self, tokens: List['Token']) -> None:
         self.tokens: List['Token'] = tokens
         self.dict_by_id: Dict[str, 'Token'] = {token.id: token for token in tokens}
-        self.meta = defaultdict(str)
+        self.metadata = defaultdict(str)
 
         for token in tokens:
             token.sentence = self
@@ -38,11 +38,12 @@ class Sentence:
     @property
     def meta(self) -> Dict[str, str]:
         """Returns the metadata of the sentence."""
-        return self.meta
+        return self.metadata
+
     @meta.setter
     def meta(self, value: Dict[str, str]) -> None:
         """Sets the metadata of the sentence."""
-        self.meta.update(value)
+        self.metadata.update(value)
 
     def write_meta(self, out) -> None:
         """Writes the metadata of the sentence."""
@@ -72,7 +73,7 @@ class Token:
         self.data['pos'] = columns[3]
         self.data['upos'] = ''
         self.data['pos_feats'] = columns[4]
-        self.data['feats_raw'] = columns[5]
+        self.data['feats_raw'] = columns[5] if columns[5]  != '' else '_'
         self.data['feats'] = defaultdict(str)
         if self.data['feats_raw'] != "_":
             self.data['feats'] = {feats_dict[feat]: feat for feat in self.data['feats_raw'].split("|")}
@@ -244,9 +245,16 @@ class Token:
         Columns: ID, FORM, LEMMA, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS, MISC.
         For FEATS, if no features are present, outputs '_'. DEPS is set to '_'.
         """
-        upos_str = self.data['upos'] if self.data['upos'] else self.data['pos']
-        feats_str = self.data['feats_raw'] if not self.data['upos'] else "|".join([f"{key}={value}" for key, value in self.data['ufeats'].items()])
-        misc_str = self.data['misc'] if not self.data['upos'] else "|".join([f"{key}={value}" for key, value in self.data['umisc'].items()])
+        if self.data['upos'] == '':
+            upos_str = self.data['pos']
+            feats_str = self.data['feats_raw']
+            sent_str = self.data['sent_id']
+            misc_str = self.data['misc']
+        else:
+            upos_str = self.data['upos']
+            feats_str = '|'.join([f'{k}={v}' for k, v in sorted(self.data['ufeats'].items())]) if self.data['ufeats'] else '_'
+            sent_str = '_'
+            misc_str = '|'.join([f'{k}={v}' for k, v in sorted(self.data['umisc'].items())]) if self.data['umisc'] else '_'
 
         return "\t".join([
             self.data['id'],
@@ -257,7 +265,7 @@ class Token:
             feats_str,
             self.data['gov_id'],
             self.data['dep_label'],
-            self.data['sent_id'],
+            sent_str,
             misc_str
         ])
 

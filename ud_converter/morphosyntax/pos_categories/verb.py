@@ -36,7 +36,7 @@ def impt(t: Token) -> None:
         t.upos = 'AUX'
     else:
         t.upos = 'VERB'
-    t.ufeats = {'Aspect': FU[t.feats['aspect']], 'VerbForm': 'Fin', 'Person': FU[t.feats['person']], 'Mood': 'Imp', 'Voice': 'Act'}
+    t.ufeats = {'Aspect': FU[t.feats['aspect']], 'VerbForm': 'Fin', 'Person': FU[t.feats['person']], 'Mood': 'Imp', 'Voice': 'Act', 'Number': FU[t.feats['number']]}
 
 def imps(t: Token) -> None:
     """Converts an imps."""
@@ -55,7 +55,7 @@ def ger(t: Token) -> None:
     """Converts a ger."""
     t.upos = 'NOUN'
     gn(t)
-    t.ufeats = {'Case': FU[t.feats['case']], 'Aspect': FU[t.feats['aspect']], 'Polarity': 'Neg' if t.feats['negation'] == 'neg' else 'Aff', 'VerbForm': 'Vnoun'}
+    t.ufeats = {'Case': FU[t.feats['case']], 'Aspect': FU[t.feats['aspect']], 'Polarity': 'Neg' if t.feats['negation'] == 'neg' else 'Pos', 'VerbForm': 'Vnoun'}
 
 def pcon(t: Token) -> None:
     """Converts a pcon."""
@@ -78,7 +78,7 @@ def pact(t: Token) -> None:
     t.upos = 'ADJ'
     gn(t)
     t.ufeats = {'Case': FU[t.feats['case']], 'Aspect': FU[t.feats['aspect']],
-                'Polarity': 'Neg' if t.feats['negation'] == 'neg' else 'Aff', 'VerbForm': 'Part', 'Voice': 'Act'}
+                'Polarity': 'Neg' if t.feats['negation'] == 'neg' else 'Pos', 'VerbForm': 'Part', 'Voice': 'Act'}
 
 def pactb(t: Token) -> None:
     """Converts a pactb."""
@@ -90,7 +90,7 @@ def ppas(t: Token) -> None:
     t.upos = 'ADJ'
     gn(t)
     t.ufeats = {'Case': FU[t.feats['case']], 'Aspect': FU[t.feats['aspect']],
-                'Polarity': 'Neg' if t.feats['negation'] == 'neg' else 'Aff', 'VerbForm': 'Part', 'Voice': 'Pass'}
+                'Polarity': 'Neg' if t.feats['negation'] == 'neg' else 'Pos', 'VerbForm': 'Part', 'Voice': 'Pass'}
 
 def ppasb(t: Token) -> None:
     """Converts a ppasb."""
