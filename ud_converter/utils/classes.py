@@ -86,7 +86,8 @@ class Token:
         self.data['udep_label'] = None
         self.data['sent_id'] = columns[8]
         self.data['misc'] = columns[9]
-        self.data['umisc'] = {'Translit': columns[9]}
+        self.data['umisc'] = defaultdict(str)
+        self.data['umisc']['Translit'] = columns[9]
 
     @property
     def id(self):
@@ -248,7 +249,7 @@ class Token:
         """
         upos_str = self.data['upos'] if self.data['upos'] else self.data['pos']
         feats_str = self.data['feats_raw'] if not self.data['upos'] else "|".join([f"{key}={value}" for key, value in self.data['ufeats'].items()])
-        misc_str = self.data['misc'] if len(self.data['umisc']) <= 1 else "|".join([f"{key}={value}" for key, value in self.data['umisc'].items()])
+        misc_str = self.data['misc'] if not self.data['upos'] else "|".join([f"{key}={value}" for key, value in self.data['umisc'].items()])
 
         return "\t".join([
             self.data['id'],

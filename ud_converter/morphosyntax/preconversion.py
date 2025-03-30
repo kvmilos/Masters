@@ -34,7 +34,7 @@ def lemma_based_upos(t: Token):
     elif t.pos not in ['subst', 'ign'] and re_arabic.match(t.lemma):
         number(t)
         logger.debug("Converted %s to %s", t.form, t.upos)
-    elif t.pos not in ['subst', 'ign'] and re_romam.match(t.lemma):
+    elif t.pos not in ['subst', 'ign', 'brev'] and re_romam.match(t.lemma):
         number(t, roman=True)
         logger.debug("Converted %s to %s", t.form, t.upos)
     elif t.form[0].isupper():

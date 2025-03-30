@@ -63,7 +63,8 @@ def part(t: Token):
 def prep(t: Token):
     """Converts a prep."""
     t.upos = 'ADP'
-    t.ufeats = {'AdpType': 'Prep', 'Case': FU[t.feats['case']]}
+    t.ufeats = {'AdpType': 'Prep'}
+    t.umisc['Case'] = FU[t.feats['case']]
     if 'vocalicity' in t.feats:
         if t.feats['vocalicity'] == 'wok':
             t.ufeats = {'Variant': 'Long'}
