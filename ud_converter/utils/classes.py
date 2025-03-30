@@ -2,6 +2,7 @@
 Module for the Sentence and Token classes.
 """
 from collections import defaultdict
+from typing import Dict, List, DefaultDict
 from utils.feats_dict import feats_dict
 from utils.multiword_dict import MULTIWORD_EXPRESSIONS as MWE
 
@@ -11,10 +12,10 @@ class Sentence:
     It provides a get_root method returning the Node whose gov_id == "0".
     """
 
-    def __init__(self, tokens):
-        self.tokens = tokens
-        self.dict_by_id = {token.id: token for token in tokens}
-        self.data = {}
+    def __init__(self, tokens: List['Token']) -> None:
+        self.tokens: List['Token'] = tokens
+        self.dict_by_id: Dict[str, 'Token'] = {token.id: token for token in tokens}
+        self.meta: DefaultDict[str, str] = defaultdict(str)
 
         for token in tokens:
             token.sentence = self
@@ -30,29 +31,25 @@ class Sentence:
         return None
 
     @property
-    def text(self):
+    def text(self) -> str:
         """Returns the text of the sentence."""
         return " ".join([token.form for token in self.tokens])
 
     @property
-    def meta(self):
+    def meta(self) -> Dict[str, str]:
         """Returns the metadata of the sentence."""
-        return self.data['meta']
+        return self.meta
+    @meta.setter
+    def meta(self, value: Dict[str, str]) -> None:
+        """Sets the metadata of the sentence."""
+        self.meta.update(value)
 
-    def write_meta(self, out):
+    def write_meta(self, out) -> None:
         """Writes the metadata of the sentence."""
         for key, value in self.meta.items():
             out.write(f"# {key} = {value}\n")
 
-    @meta.setter
-    def meta(self, value):
-        """Sets the metadata of the sentence."""
-        if 'meta' not in self.data:
-            self.data['meta'] = {}
-        for key, value in value.items():
-            self.data['meta'][key] = value
-
-    def __str__(self):
+    def __str__(self) -> str:
         """Returns the sentence as its tokens joined by newline."""
         return "\n".join(str(token) for token in self.tokens)
 
@@ -65,8 +62,8 @@ class Token:
     A token has its properties:
     id, form, lemma, pos, pos_feats, feats, gov_id, dep_label, sent_id, misc
     """
-    def __init__(self, line):
-        columns = line.split("\t")
+    def __init__(self, line: str) -> None:
+        columns: List[str] = line.split("\t")
         self.sentence = None
         self.data = {}
         self.data['id'] = columns[0]
@@ -90,144 +87,144 @@ class Token:
         self.data['umisc']['Translit'] = columns[9]
 
     @property
-    def id(self):
+    def id(self) -> str:
         """Returns the id of the token."""
         return self.data['id']
 
     @id.setter
-    def id(self, value):
+    def id(self, value: str) -> None:
         """Sets the id of the token."""
         self.data['id'] = value
 
     @property
-    def form(self):
+    def form(self) -> str:
         """Returns the form of the token."""
         return self.data['form']
 
     @form.setter
-    def form(self, value):
+    def form(self, value: str) -> None:
         """Sets the form of the token."""
         self.data['form'] = value
 
     @property
-    def lemma(self):
+    def lemma(self) -> str:
         """Returns the lemma of the token."""
         return self.data['lemma']
 
     @lemma.setter
-    def lemma(self, value):
+    def lemma(self, value: str) -> None:
         """Sets the lemma of the token."""
         self.data['lemma'] = value
 
     @property
-    def pos(self):
+    def pos(self) -> str:
         """Returns the pos of the token."""
         return self.data['pos']
 
     @pos.setter
-    def pos(self, value):
+    def pos(self, value: str) -> None:
         """Sets the pos of the token."""
         self.data['pos'] = value
 
     @property
-    def pos_feats(self):
+    def pos_feats(self) -> str:
         """Returns the token's pos with its features."""
         return self.data['pos_feats']
 
     @pos_feats.setter
-    def pos_feats(self, value):
+    def pos_feats(self, value: str) -> None:
         """Sets the token's pos with its features."""
         self.data['pos_feats'] = value
 
     @property
-    def feats(self):
+    def feats(self) -> DefaultDict[str, str]:
         """Returns a dictionary of feats for the token."""
         return self.data['feats']
 
     @feats.setter
-    def feats(self, value):
+    def feats(self, value: Dict[str, str]) -> None:
         """Sets the dictionary of feats for the token."""
         self.data['feats'] = value
         self.data['feats_raw'] = "|".join(value.values())
 
     @property
-    def gov_id(self):
+    def gov_id(self) -> str:
         """Returns the id of the governor of the token."""
         return self.data['gov_id']
 
     @gov_id.setter
-    def gov_id(self, value):
+    def gov_id(self, value: str) -> None:
         """Sets the id of the governor of the token."""
         self.data['gov_id'] = value
 
     @property
-    def dep_label(self):
+    def dep_label(self) -> str:
         """Returns the dependency label of the token."""
         return self.data['dep_label']
 
     @dep_label.setter
-    def dep_label(self, value):
+    def dep_label(self, value: str) -> None:
         """Sets the dependency label of the token."""
         self.data['dep_label'] = value
 
     @property
-    def sent_id(self):
+    def sent_id(self) -> str:
         """Returns the id of the sentence of the token."""
         return self.data['sent_id']
 
     @sent_id.setter
-    def sent_id(self, value):
+    def sent_id(self, value: str) -> None:
         """Sets the id of the sentence of the token."""
         self.data['sent_id'] = value
 
     @property
-    def misc(self):
+    def misc(self) -> str:
         """Returns the misc of the token."""
         return self.data['misc']
 
     @misc.setter
-    def misc(self, value):
+    def misc(self, value: str) -> None:
         """Sets the misc of the token."""
         self.data['misc'] = value
 
     @property
-    def umisc(self):
+    def umisc(self) -> DefaultDict[str, str]:
         """Returns the UD misc of the token."""
         return self.data['umisc']
 
     @umisc.setter
-    def umisc(self, value):
+    def umisc(self, value: Dict[str, str]) -> None:
         """Updates the UD misc of the token."""
         self.data['umisc'].update(value)
 
     @property
-    def feats_raw(self):
+    def feats_raw(self) -> str:
         """Returns the raw feats of the token."""
         return self.data['feats_raw']
 
     @feats_raw.setter
-    def feats_raw(self, value):
+    def feats_raw(self, value: str) -> None:
         """Sets the raw feats of the token."""
         self.data['feats_raw'] = value
         self.data['feats'] = {feats_dict[feat]: feat for feat in value.split("|")}
 
     @property
-    def upos(self):
+    def upos(self) -> str:
         """Returns the upos of the token."""
         return self.data['upos']
 
     @upos.setter
-    def upos(self, value):
+    def upos(self, value: str) -> None:
         """Sets the upos of the token."""
         self.data['upos'] = value
 
     @property
-    def ufeats(self):
+    def ufeats(self) -> DefaultDict[str, str]:
         """Returns the ufeats of the token."""
         return self.data['ufeats']
 
     @ufeats.setter
-    def ufeats(self, value):
+    def ufeats(self, value: Dict[str, str]) -> None:
         """Updates the ufeats of the token."""
         self.data['ufeats'].update(value)
 
@@ -237,11 +234,11 @@ class Token:
         return self.data['udep_label']
 
     @udep_label.setter
-    def udep_label(self, value):
+    def udep_label(self, value: Dict[str, str]) -> None:
         """Sets the udep_label of the token."""
         self.data['udep_label'] = value
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Returns the Token as a line in UD CONLL-U format.
         Columns: ID, FORM, LEMMA, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS, MISC.
@@ -274,7 +271,7 @@ class Token:
         return self.sentence.dict_by_id.get(self.gov_id)
 
     @property
-    def children(self):
+    def children(self) -> List['Token']:
         """
         Returns a list of tokens for which this token is the governor.
         If there are no children, returns an empty list.
@@ -291,11 +288,11 @@ class Token:
         """Returns the previous token in the sentence."""
         if self.sentence is None:
             return None
-        return self.sentence.dict_by_id.get(int(self.id) - 1, None)
+        return self.sentence.dict_by_id.get(str(int(self.id) - 1), None)
 
     @property
     def next(self):
         """Returns the next token in the sentence."""
         if self.sentence is None:
             return None
-        return self.sentence.dict_by_id.get(int(self.id) + 1, None)
+        return self.sentence.dict_by_id.get(str(int(self.id) + 1), None)

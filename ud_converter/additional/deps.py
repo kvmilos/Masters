@@ -3,10 +3,11 @@ A script to collect unique MPDT dependencies from all CoNLL files in a specified
 """
 import os
 import glob
+from typing import Dict
 
-def collect_mpdt_tags(folder_path):
+def collect_mpdt_tags(folder_path: str) -> Dict[str, int]:
     """Collect unique MPDT dependencies from all CoNLL files in the specified folder."""
-    dep_counts = {}
+    dep_counts: Dict[str, int] = {}
     # Find all .conll files in the specified folder (non-recursive)
     files = glob.glob(os.path.join(folder_path, "*.conll"))
     for file_path in files:
@@ -26,7 +27,7 @@ def collect_mpdt_tags(folder_path):
                     dep_counts[dep] = dep_counts.get(dep, 0) + 1
     return dep_counts
 
-def main():
+def main() -> None:
     """Main function to execute the script."""
     folder = input("Specify the path to the folder with CoNLL files: ").strip()
     if not os.path.isdir(folder):

@@ -6,7 +6,7 @@ from utils.classes import Token
 from utils.feats_dict import FEATS_UPDATE as FU
 
 
-def adv(t: Token):
+def adv(t: Token) -> None:
     """Converts an adv."""
     t.upos = 'ADV'
     if 'degree' in t.feats:

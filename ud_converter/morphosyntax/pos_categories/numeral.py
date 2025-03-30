@@ -9,7 +9,7 @@ from morphosyntax.pos_categories.adjective import adj
 from morphosyntax.pos_categories.adverb import adv
 
 
-def numeral(t: Token):
+def numeral(t: Token) -> None:
     """Converts a num or numcol."""
     gn(t)
     t.ufeats = {'Case': FU[t.feats['case']]}
@@ -28,13 +28,13 @@ def numeral(t: Token):
             t.ufeats = {'NumForm': 'Word'}
 
 
-def adjnum(t: Token):
+def adjnum(t: Token) -> None:
     """Converts an adjnum."""
     adj(t)
     t.ufeats = {'NumType': 'Ord'}
 
 
-def advnum(t: Token):
+def advnum(t: Token) -> None:
     """Converts an advnum."""
     adv(t)
     t.ufeats = {'NumType': 'Ord'}

@@ -8,7 +8,7 @@ import logging
 import os
 from datetime import datetime
 
-def setup_logging(log_level=logging.INFO):
+def setup_logging(log_level: int = logging.INFO) -> logging.Logger:
     """
     Set up logging configuration for the project.
     

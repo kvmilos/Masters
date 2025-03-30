@@ -16,7 +16,7 @@ from morphosyntax.morphosyntax import convert_to_upos
 logger = setup_logging()
 
 
-def main():
+def main() -> None:
     """
     Main function for the converter.
     """
@@ -36,7 +36,7 @@ def main():
         elif arg.endswith('.json'):
             meta_file = arg
 
-    meta_data = load_meta(meta_file) if meta_file else None
+    meta_data = load_meta(meta_file) if meta_file else {}
 
     logger.info('Reading input file %s', input_file)
     sentences = read_conll(input_file)

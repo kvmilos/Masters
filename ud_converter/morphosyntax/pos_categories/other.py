@@ -16,22 +16,22 @@ from utils.classes import Token
 from utils.feats_dict import FEATS_UPDATE as FU
 
 
-def conj(t: Token):
+def conj(t: Token) -> None:
     """Converts a conj."""
     t.upos = 'CCONJ'
 
 
-def comp(t: Token):
+def comp(t: Token) -> None:
     """Converts a comp."""
     t.upos = 'SCONJ'
 
 
-def interj(t: Token):
+def interj(t: Token) -> None:
     """Converts an interj."""
     t.upos = 'INTJ'
 
 
-def part(t: Token):
+def part(t: Token) -> None:
     """Converts a part."""
     if not t.upos:
         if t.lemma == 'się':
@@ -60,7 +60,7 @@ def part(t: Token):
             t.upos = 'PART'
 
 
-def prep(t: Token):
+def prep(t: Token) -> None:
     """Converts a prep."""
     t.upos = 'ADP'
     t.ufeats = {'AdpType': 'Prep'}
@@ -72,7 +72,7 @@ def prep(t: Token):
             t.ufeats = {'Variant': 'Short'}
 
 
-def brev(t: Token):
+def brev(t: Token) -> None:
     """Converts a brev."""
     t.ufeats = {'Abbr': 'Yes'}
     if t.lemma in ['rok', 'stopień_Celsjusza', 'stopień_Fahrenheita', 'milimetr', 'milimetr_kwadratowy',
@@ -163,7 +163,7 @@ def brev(t: Token):
         t.upos = 'ADV'
 
 
-def frag(t: Token):
+def frag(t: Token) -> None:
     """Converts a frag."""
     t.upos = 'X'
     if t.lemma not in ['dala', 'niemiara', 'naprzeciwka', 'ciemku', 'mimo', 'oścież', 'dwójnasób', 'wespół',
@@ -172,7 +172,7 @@ def frag(t: Token):
         t.ufeats = {'Foreign': 'Yes'}
 
 
-def interp(t: Token):
+def interp(t: Token) -> None:
     """Converts an interp."""
     t.upos = 'PUNCT'
     if t.lemma in ['[', '(', '⟨', '{']:
@@ -209,35 +209,35 @@ def interp(t: Token):
         t.ufeats = {'PunctType': 'Blsh'}
 
 
-def xxx(t: Token):
+def xxx(t: Token) -> None:
     """Converts a xxx."""
     t.upos = 'X'
     t.ufeats = {'Foreign': 'Yes'}
 
 
-def dig(t: Token):
+def dig(t: Token) -> None:
     """Converts a dig."""
     t.upos = 'X'
     t.ufeats = {'NumForm': 'Digit'}
 
 
-def romandig(t: Token):
+def romandig(t: Token) -> None:
     """Converts a romandig."""
     t.upos = 'X'
     t.ufeats = {'NumForm': 'Roman'}
 
 
-def ign(t: Token):
+def ign(t: Token) -> None:
     """Converts an ign."""
     t.upos = 'X'
     t.ufeats = {'Foreign': 'Yes'}
 
 
-def sym(t: Token):
+def sym(t: Token) -> None:
     """Converts a sym."""
     t.upos = 'SYM'
 
 
-def incert(t: Token):
+def incert(t: Token) -> None:
     """Converts an incert."""
     t.upos = 'X'

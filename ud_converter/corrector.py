@@ -6,7 +6,7 @@ from utils.classes import Token
 from tests.corrector_tests import test_pos, test_feats, test_feats_pos_combination
 
 
-def correct_conll_line(t: Token):
+def correct_conll_line(t: Token) -> None:
     """Corrects a line of a CONLL file."""
     # If POS has extra features appended, remove them
     if ':' in t.pos:
@@ -33,7 +33,7 @@ def correct_conll_line(t: Token):
     # Test if feats_pos_combination is valid
     test_feats_pos_combination(t.pos, feats_from_token)
 
-def process_conll_file(file_path: str, output_dir: str):
+def process_conll_file(file_path: str, output_dir: str) -> None:
     """Reads a CONLL file, corrects each line, and writes the corrected file to output_dir with the same file name."""
     print(f'Processing file: {file_path}')
     corrected_lines = []
@@ -53,7 +53,7 @@ def process_conll_file(file_path: str, output_dir: str):
     print(f'Corrected file saved as: {output_path}')
 
 
-def main():
+def main() -> None:
     """Main function."""
     input_directory = input('Enter the path to the directory containing original CONLL files: ').strip()
     output_directory = input('Enter the path to the directory for output files: ').strip()

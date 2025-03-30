@@ -1,10 +1,11 @@
 """
 Tests for corrector.py.
 """
+from typing import List
 from utils.feats_dict import feats_dict
 from utils.possible_feats_based_on_pos import feats_of_pos
 
-def test_pos(pos: str):
+def test_pos(pos: str) -> None:
     """
     Tests if a POS is in pos_list.
     """
@@ -12,7 +13,7 @@ def test_pos(pos: str):
         print(f'POS {pos} is not in the list of possible POSs.')
 
 
-def test_feats(feats: list[str]):
+def test_feats(feats: List[str]) -> None:
     """
     Tests if all the feats are in feats_dict.
     """
@@ -21,7 +22,7 @@ def test_feats(feats: list[str]):
             print(f'FEAT {feat} is not in the list of possible feats.')
 
 
-def test_feats_pos_combination(pos: str, feats: list[str]):
+def test_feats_pos_combination(pos: str, feats: List[str]) -> None:
     """
     Tests if all the feats are in the list of possible feats for a given POS.
     """

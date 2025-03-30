@@ -19,7 +19,7 @@ Module for the post tag conversion.
 #     """
 #     t.misc.pop('SpaceAfter', None)
 
-def post_conversion():
+def post_conversion() -> None:
     """
     Adds a SpaceAfter=Yes to the MISC field.
     """

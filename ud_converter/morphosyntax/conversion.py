@@ -9,12 +9,12 @@ from morphosyntax.pos_categories.adjective import adj, adja, adjb
 from morphosyntax.pos_categories.adverb import adv
 from morphosyntax.pos_categories.numeral import numeral, adjnum, advnum
 from morphosyntax.pos_categories.pronoun import ppron12, ppron3, siebie
-from morphosyntax.pos_categories.verb import fin, bedzie, praet, impt, imps, inf, ger, pcon, pant, pact, pactb, ppas, ppasb, ppraet, fut, plusq, aglt, agltaor, winien, pred
+from morphosyntax.pos_categories.verb import fin, bedzie, praet, impt, imps, inf, ger, pcon, pant, pact, pactb, ppas, ppasb, ppraet, fut, plusq, aglt, winien, pred
 from morphosyntax.pos_categories.other import brev, frag, interj, part, prep, conj, comp,interp, xxx, dig, romandig, ign, sym, incert
 
 logger = logging.getLogger('ud_converter.morphosyntax.conversion')
 
-def pos_specific_upos(t: Token):
+def pos_specific_upos(t: Token) -> None:
     """
     Applies the conversion based on the POS.
     """
@@ -67,10 +67,8 @@ def pos_specific_upos(t: Token):
             fut(t)
         elif t.pos == 'plusq':
             plusq(t)
-        elif t.pos == 'aglt':
+        elif t.pos in ['aglt', 'agltaor']:
             aglt(t)
-        elif t.pos == 'agltaor':
-            agltaor(t)
         elif t.pos == 'winien':
             winien(t)
         elif t.pos == 'pred':
@@ -110,5 +108,5 @@ def pos_specific_upos(t: Token):
         elif t.pos == 'incert':
             incert(t)
         else:
-            logger.warning('Unrecognised part of speech >>%s<< of the token >>%s<< in >>%s<<', t.pos, t.form, t.sentence.text)
+            logger.warning('Unrecognised part of speech >>%s<< of the token >>%s<< in >>%s<<', t.pos, t.form, t.sentence.text if t.sentence else 'unknown')
         logger.debug('Converted %s to %s', t.form, t.upos)

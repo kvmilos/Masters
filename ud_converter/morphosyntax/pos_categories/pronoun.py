@@ -7,13 +7,13 @@ from utils.feats_dict import FEATS_UPDATE as FU
 from morphosyntax.helpers import update_gender_number as gn
 
 
-def ppron(t: Token):
+def ppron(t: Token) -> None:
     """Helper function for converting a personal pronoun."""
     t.upos = 'PRON'
     t.ufeats = {'PronType': 'Prs', 'Case': FU[t.feats['case']], 'Person': FU[t.feats['person']]}
 
 
-def ppron12(t: Token):
+def ppron12(t: Token) -> None:
     """Converts a ppron12."""
     ppron(t)
     t.ufeats = {'Number': FU[t.feats['number']]}
@@ -24,7 +24,7 @@ def ppron12(t: Token):
             t.ufeats = {'Variant': 'Short'}
 
 
-def ppron3(t: Token):
+def ppron3(t: Token) -> None:
     """Converts a ppron3."""
     ppron(t)
     gn(t)
@@ -35,7 +35,7 @@ def ppron3(t: Token):
         t.ufeats = {'Variant': 'Short'}
 
 
-def siebie(t: Token):
+def siebie(t: Token) -> None:
     """Converts a siebie."""
     t.upos = 'PRON'
     t.ufeats = {'PronType': 'Prs', 'Reflex': 'Yes', 'Case': FU[t.feats['case']]}

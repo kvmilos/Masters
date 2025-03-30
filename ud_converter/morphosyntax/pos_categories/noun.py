@@ -7,7 +7,7 @@ from utils.feats_dict import FEATS_UPDATE as FU
 from morphosyntax.helpers import update_gender_number as gn
 
 
-def subst(t: Token):
+def subst(t: Token) -> None:
     """Converts a subst."""
     gn(t)
     t.ufeats = {'Case': FU[t.feats['case']]}

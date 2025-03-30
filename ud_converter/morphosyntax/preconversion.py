@@ -11,7 +11,7 @@ re_arabic = re.compile(r'^\d+([\.,]\d+)*$')
 
 logger = logging.getLogger('ud_converter.morphosyntax.preconversion')
 
-def lemma_based_upos(t: Token):
+def lemma_based_upos(t: Token) -> None:
     """
     Applies the lemma-based conversion.
     """
@@ -43,7 +43,7 @@ def lemma_based_upos(t: Token):
             t.upos = 'PROPN'
             logger.debug("Converted %s to %s", t.form, t.upos)
 
-def number(t: Token, roman: bool = False):
+def number(t: Token, roman: bool = False) -> None:
     """Converts a number."""
     if t.upos == '':
         if t.pos == 'adj':
@@ -57,7 +57,7 @@ def number(t: Token, roman: bool = False):
         elif t.pos in ['dig', 'romandig', 'xxx']:
             t.upos = 'X'
         else:
-            logger.warning('Unrecognised part of speech >>%s<< of the numeral >>%s<< in >>%s<<', t.pos, t.lemma, t.sentence.text)
+            logger.warning('Unrecognised part of speech >>%s<< of the numeral >>%s<< in >>%s<<', t.pos, t.lemma, t.sentence.text if t.sentence else 'unknown')
 
     if roman is True:
         t.ufeats = {'NumForm': 'Roman'}

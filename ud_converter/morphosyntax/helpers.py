@@ -8,7 +8,7 @@ from utils.feats_dict import FEATS_UPDATE as FU
 
 logger = logging.getLogger('ud_converter.morphosyntax.helpers')
 
-def update_gender_number(t: Token):
+def update_gender_number(t: Token) -> None:
     """
     Updates the gender and number of the token.
     :param token: current token

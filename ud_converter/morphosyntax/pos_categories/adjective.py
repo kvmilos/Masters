@@ -7,33 +7,33 @@ from utils.feats_dict import FEATS_UPDATE as FU
 from morphosyntax.helpers import update_gender_number as gn
 
 
-def determiner(t: Token):
+def determiner(t: Token) -> None:
     """Converts a determiner."""
     t.upos = 'DET'
     gn(t)
     t.ufeats = {'Case': FU[t.feats['case']], 'Degree': FU[t.feats['degree']]}
 
 
-def adjective(t: Token):
+def adjective(t: Token) -> None:
     """Helper function for converting an adjective."""
     t.upos = 'ADJ'
     gn(t)
     t.ufeats = {'Case': FU[t.feats['case']], 'Degree': FU[t.feats['degree']]}
 
 
-def adja(t: Token):
+def adja(t: Token) -> None:
     """Converts an adja."""
     t.upos = 'ADJ'
     t.ufeats = {'Hyph': 'Yes'}
 
 
-def adjb(t: Token):
+def adjb(t: Token) -> None:
     """Converts an adjb."""
     adjective(t)
     t.ufeats = {'Variant': 'Short'}
 
 
-def adj(t: Token):
+def adj(t: Token) -> None:
     """Converts an adj."""
     if not t.upos:
         if t.lemma in ['jaki', 'który']:
