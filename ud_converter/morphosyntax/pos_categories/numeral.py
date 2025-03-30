@@ -22,7 +22,7 @@ def numeral(t: Token) -> None:
             t.ufeats = {'NumType': 'Card', 'PronType': 'Dem'}
         elif t.lemma in ['mało', 'niemało', 'mniej', 'najmniej', 'dużo', 'niedużo', 'wiele', 'niewiele', 'więcej', 'najwięcej', 'kilka', 'kilkanaście', 'kilkadziesiąt', 'kilkaset', 'parę', 'paręnaście', 'oba', 'parędziesiąt', 'nieco', 'sporo', 'trochę', 'ileś', 'ilekolwiek', 'pełno', 'dość', 'dosyć']:
             t.upos = 'DET'
-            t.ufeats = {'NumType': 'Card', 'PronType': 'Ind'}
+            t.ufeats = {'PronType': 'Ind'}
         else:
             t.upos = 'NUM'
             t.ufeats = {'NumForm': 'Word'}

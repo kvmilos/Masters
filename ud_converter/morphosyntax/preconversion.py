@@ -34,10 +34,10 @@ def lemma_based_upos(t: Token) -> None:
     elif t.pos not in ['subst', 'ign'] and re_arabic.match(t.lemma):
         number(t)
         logger.debug("Converted %s to %s", t.form, t.upos)
-    elif t.pos not in ['subst', 'ign', 'brev'] and re_romam.match(t.lemma):
+    elif t.pos not in ['interj', 'qub', 'part', 'conj', 'ign', 'brev', 'subst', 'prep', 'xxs', 'xxx'] and re_romam.match(t.lemma):
         number(t, roman=True)
         logger.debug("Converted %s to %s", t.form, t.upos)
-    elif t.form[0].isupper():
+    elif t.lemma[0].isupper():
         pos_specific_upos(t)
         if t.pos in ['subst', 'depr']:
             t.upos = 'PROPN'

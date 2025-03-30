@@ -99,12 +99,10 @@ def ppasb(t: Token) -> None:
 
 def ppraet(t: Token) -> None:
     """Converts a ppraet."""
-    if t.lemma in ['być', 'bywać']:
-        t.upos = 'AUX'
-    else:
-        t.upos = 'VERB'
+    t.upos = 'ADJ'
     gn(t)
-    t.ufeats = {'Aspect': FU[t.feats['aspect']], 'VerbForm': 'Fin', 'Tense': 'Past', 'Voice': 'Act', 'Mood': 'Ind'}
+    t.ufeats = {'Case': FU[t.feats['case']], 'Aspect': FU[t.feats['aspect']],
+                'Polarity': 'Neg' if t.feats['negation'] == 'neg' else 'Pos', 'VerbForm': 'Part', 'Voice': 'Pass'}
 
 def fut(t: Token) -> None:
     """Converts a fut."""

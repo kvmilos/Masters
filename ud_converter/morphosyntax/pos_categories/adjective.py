@@ -29,7 +29,7 @@ def adja(t: Token) -> None:
 
 def adjb(t: Token) -> None:
     """Converts an adjb."""
-    adjective(t)
+    adj(t)
     t.ufeats = {'Variant': 'Short'}
 
 
@@ -76,8 +76,5 @@ def adj(t: Token) -> None:
                 t.ufeats = {'Number[psor]': 'Plur', 'Person': '1'}
             elif t.lemma == 'wasz':
                 t.ufeats = {'Number[psor]': 'Plur', 'Person': '2'}
-        elif t.lemma in ['ten', 'tamten', 'ów', 'taki', 'takiż', 'tenże']:
-            determiner(t)
-            t.ufeats = {'PronType': 'Dem'}
         else:
             adjective(t)

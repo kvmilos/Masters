@@ -21,8 +21,6 @@ def adv(t: Token) -> None:
     elif t.lemma == 'jak':
         if not t.next or 'degree' in t.next.feats and t.next.feats['degree'] != 'sup':
             t.ufeats = {'PronType': 'Int,Rel'}
-        else:
-            t.ufeats = {'PronType': 'Int'}
     elif t.lemma == 'ile':
         if not t.prev or t.prev.lemma != 'o':
             t.ufeats = {'PronType': 'Int,Rel'}
