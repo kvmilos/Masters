@@ -44,13 +44,15 @@ def main() -> None:
 
     if tags_only:
         logger.info('Performing tags-feats-only conversion.')
-        for sentence in sentences:
-            convert_to_upos(sentence)
+        for i, sentence in enumerate(sentences):
+            meta = meta_data.get(str(i + 1), {})
+            convert_to_upos(sentence, meta)
     else:
         logger.info('Performing full dependency conversion.')
         logger.info('Converting tags and feats.')
         for sentence in sentences:
-            convert_to_upos(sentence)
+            meta = meta_data.get(str(i + 1), {})
+            convert_to_upos(sentence, meta)
         logger.info('Converting dependencies.')
         # NOT IMPLEMENTED YET
         logger.warning('Dependency conversion is not implemented yet')

@@ -1,26 +1,124 @@
 """
 Module for the post tag conversion.
 """
-
-# from utils.classes import Token
-
-
-# def _add_space_after(t: Token):
-#     """
-#     Adds a SpaceAfter=Yes to the MISC field if
-#     """
-#     if
-#     t.misc['SpaceAfter'] = 'Yes'
+from typing import Dict
+from utils.classes import Sentence, Token
 
 
-# def _remove_space_after(t: Token):
-#     """
-#     Removes a SpaceAfter=Yes from the MISC field.
-#     """
-#     t.misc.pop('SpaceAfter', None)
-
-def post_conversion() -> None:
+def post_conversion(s: Sentence, meta: Dict[str, str]) -> None:
     """
-    Adds a SpaceAfter=Yes to the MISC field.
+    Handles the post tag conversion.
     """
-    # _add_space_after(t)
+    text = meta.get("text")
+    add_mwe(s, text)
+    add_no_space_misc(s, text)
+
+
+def add_mwe(s: Sentence, text: str) -> None:
+    """
+    Adds multiword tokens (MWEs) to the sentence.
+    The new multiword token is inserted at the beginning of the group.
+    """
+    if not text:
+        return
+
+    new_tokens = []
+    tokens = s.tokens
+    pointer = 0
+    i = 0
+    while i < len(tokens):
+        current_token = tokens[i]
+        pos = text.find(current_token.form, pointer)
+        if pos == -1:
+            new_tokens.append(current_token)
+            i += 1
+            continue
+        pointer = pos + len(current_token.form)
+        group = [current_token]
+        while i + 1 < len(tokens) and pointer < len(text):
+            next_char = text[pointer]
+            if next_char == ' ':
+                break
+            elif current_token.upos == 'PUNCT' or tokens[i + 1].upos not in ['AUX', 'PART'] and (tokens[i + 1].upos != 'PRON' or 'Variant' not in tokens[i + 1].ufeats or tokens[i + 1].ufeats['Variant'] != 'Short'):
+                break
+            i += 1
+            next_token = tokens[i]
+            group.append(next_token)
+            pointer += len(next_token.form)
+        if len(group) > 1:
+            first = group[0]
+            last = group[-1]
+            mwe_token = Token('mwe')
+            mwe_token.id = f'{first.id}-{last.id}'
+            mwe_token.form = ''.join(t.form for t in group)
+            mwe_token.umisc = {'Translit': ''.join([t.form for t in group])}
+            new_tokens.append(mwe_token)
+            new_tokens.extend(group)
+        else:
+            new_tokens.append(current_token)
+        i += 1
+    s.tokens = new_tokens
+    s.dict_by_id = {token.id: token for token in new_tokens}
+
+
+def add_no_space_misc(s: Sentence, text: str) -> None:
+    """
+    Adds SpaceAfter=No to UD misc for tokens that are not followed by a space.
+    """
+    if not text:
+        return
+
+    excluded_ids = set()
+    for token in s.tokens:
+        if '-' in token.id:
+            try:
+                start_str, end_str = token.id.split('-')
+                start = int(start_str)
+                end = int(end_str)
+                for num in range(start, end + 1):
+                    excluded_ids.add(str(num))
+            except Exception:
+                pass
+
+    new_tokens = [token for token in s.tokens if token.id not in excluded_ids]
+
+    pointer = 0
+    for i, token in enumerate(new_tokens):
+        if '-' in token.id:
+            continue
+
+        token_form = token.form
+        pos = text.find(token_form, pointer)
+        if pos == -1:
+            continue
+        pointer = pos + len(token_form)
+        if i == len(new_tokens) - 1:
+            token.umisc.pop('SpaceAfter', None)
+            continue
+        if pointer >= len(text) or text[pointer] != " ":
+            token.umisc['SpaceAfter'] = 'No'
+        else:
+            token.umisc.pop('SpaceAfter', None)
+            pointer += 1
+
+    # multiword_range = (0, 0)
+
+    # pointer = 0
+    # for i, token in enumerate(s.tokens):
+    #     if '-' in token.id:
+    #         start_str, end_str = token.id.split('-')
+    #         start = int(start_str)
+    #         end = int(end_str)
+    #         multiword_range = (start, end)
+    #     elif int(token.id) >= multiword_range[0] and int(token.id) <= multiword_range[1]:
+    #         continue
+    #     pos = text.find(token.form, pointer)
+    #     if pos == -1:
+    #         continue
+    #     pointer = pos + len(token.form)
+    #     if i == len(s.tokens) - 1:
+    #         continue
+    #     if pointer >= len(text) or text[pointer] != " ":
+    #         token.umisc['SpaceAfter'] = 'No'
+    #     else:
+    #         pointer += 1

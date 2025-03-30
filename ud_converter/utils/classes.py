@@ -33,7 +33,9 @@ class Sentence:
     @property
     def text(self) -> str:
         """Returns the text of the sentence."""
-        return " ".join([token.form for token in self.tokens])
+        if 'text' in self.metadata:
+            return self.metadata['text']
+        return " ".join(token.form for token in self.tokens)
 
     @property
     def meta(self) -> Dict[str, str]:
@@ -64,29 +66,48 @@ class Token:
     id, form, lemma, pos, pos_feats, feats, gov_id, dep_label, sent_id, misc
     """
     def __init__(self, line: str) -> None:
-        columns: List[str] = line.split("\t")
-        self.sentence = None
-        self.data = {}
-        self.data['id'] = columns[0]
-        self.data['form'] = columns[1]
-        self.data['lemma'] = MWE.get(columns[2], columns[2])
-        self.data['pos'] = columns[3]
-        self.data['upos'] = ''
-        self.data['pos_feats'] = columns[4]
-        self.data['feats_raw'] = columns[5] if columns[5]  != '' else '_'
-        self.data['feats'] = defaultdict(str)
-        if self.data['feats_raw'] != "_":
-            self.data['feats'] = {feats_dict[feat]: feat for feat in self.data['feats_raw'].split("|")}
-        self.data['ufeats'] = defaultdict(str)
-        self.data['gov_id'] = columns[6]
-        self.data['gov'] = None
-        self.data['dep_label'] = columns[7]
-        self.data['udep_label'] = None
-        self.data['sent_id'] = columns[8]
-        self.data['misc'] = columns[9]
-        self.data['umisc'] = defaultdict(str)
-        self.data['umisc']['Translit'] = columns[9]
-
+        if line != 'mwe':
+            columns: List[str] = line.split("\t")
+            self.sentence = None
+            self.data = {}
+            self.data['id'] = columns[0]
+            self.data['form'] = columns[1]
+            self.data['lemma'] = MWE.get(columns[2], columns[2])
+            self.data['pos'] = columns[3]
+            self.data['upos'] = ''
+            self.data['pos_feats'] = columns[4]
+            self.data['feats_raw'] = columns[5] if columns[5]  != '' else '_'
+            self.data['feats'] = defaultdict(str)
+            if self.data['feats_raw'] != "_":
+                self.data['feats'] = {feats_dict[feat]: feat for feat in self.data['feats_raw'].split("|")}
+            self.data['ufeats'] = defaultdict(str)
+            self.data['gov_id'] = columns[6]
+            self.data['gov'] = None
+            self.data['dep_label'] = columns[7]
+            self.data['udep_label'] = ''
+            self.data['sent_id'] = columns[8]
+            self.data['misc'] = columns[9]
+            self.data['umisc'] = defaultdict(str)
+            self.data['umisc']['Translit'] = columns[9]
+        else:
+            self.sentence = None
+            self.data = {}
+            self.data['id'] = '_'
+            self.data['form'] = '_'
+            self.data['lemma'] = '_'
+            self.data['pos'] = '_'
+            self.data['upos'] = '_'
+            self.data['pos_feats'] = '_'
+            self.data['feats_raw'] = '_'
+            self.data['feats'] = defaultdict(str)
+            self.data['ufeats'] = defaultdict(str)
+            self.data['gov_id'] = '_'
+            self.data['gov'] = None
+            self.data['dep_label'] = '_'
+            self.data['udep_label'] = '_'
+            self.data['sent_id'] = '_'
+            self.data['misc'] = '_'
+            self.data['umisc'] = defaultdict(str)
     @property
     def id(self) -> str:
         """Returns the id of the token."""
