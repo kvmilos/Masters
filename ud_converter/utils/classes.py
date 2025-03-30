@@ -2,7 +2,7 @@
 Module for the Sentence and Token classes.
 """
 from collections import defaultdict
-from typing import Dict, List, DefaultDict
+from typing import Dict, List
 from utils.feats_dict import feats_dict
 from utils.multiword_dict import MULTIWORD_EXPRESSIONS as MWE
 
@@ -15,7 +15,7 @@ class Sentence:
     def __init__(self, tokens: List['Token']) -> None:
         self.tokens: List['Token'] = tokens
         self.dict_by_id: Dict[str, 'Token'] = {token.id: token for token in tokens}
-        self.meta: DefaultDict[str, str] = defaultdict(str)
+        self.meta = defaultdict(str)
 
         for token in tokens:
             token.sentence = self
@@ -137,7 +137,7 @@ class Token:
         self.data['pos_feats'] = value
 
     @property
-    def feats(self) -> DefaultDict[str, str]:
+    def feats(self):
         """Returns a dictionary of feats for the token."""
         return self.data['feats']
 
@@ -188,7 +188,7 @@ class Token:
         self.data['misc'] = value
 
     @property
-    def umisc(self) -> DefaultDict[str, str]:
+    def umisc(self):
         """Returns the UD misc of the token."""
         return self.data['umisc']
 
@@ -219,7 +219,7 @@ class Token:
         self.data['upos'] = value
 
     @property
-    def ufeats(self) -> DefaultDict[str, str]:
+    def ufeats(self):
         """Returns the ufeats of the token."""
         return self.data['ufeats']
 
