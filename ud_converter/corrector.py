@@ -1,57 +1,85 @@
 """
-Corrector for MPDT CONLL files.
+Corrector for MPDT CoNLL files.
+
+This script corrects MPDT CoNLL file(s). It can be run with a single file
+or a directory containing multiple files. If the "--test" argument is provided,
+the script will run additional tests (using assertions) on the corrected lines.
+
+Usage:
+    python corrector.py <input_file_or_directory_path> <output_directory_path> [--test]
+
+Example:
+    python corrector.py data/MPDT_2000.conll data/corrected/
+    python corrector.py data/original/ data/corrected/
+    python corrector.py data/MPDT_2000.conll data/corrected/ --test
 """
+
 import os
-from utils.classes import Token
-from tests.corrector_tests import test_pos, test_feats, test_feats_pos_combination
+import sys
+import re
 
 
 def correct_gender_and_neut(line: str) -> str:
-    """Applies corrections to the gender and accentability of the token."""
-    line = line.split('\t')
-    if 'zneut' in line[4] or 'zneut' in line[5]:
-        line[4] = line[4].replace('zneut', 'neut')
-        line[5] = line[5].replace('zneut', 'neut')
+    """
+    Applies corrections to the gender and accentability fields of the line.
+    
+    It replaces occurrences of 'zneut' with 'neut' and fixes n2 to n, and if ':m' appears in the POS features
+    while '|n' is present in FEATS, it changes ':m' to ':n'.
+    """
+    fields = line.split('\t')
+    if 'zneut' in fields[4] or 'zneut' in fields[5]:
+        fields[4] = fields[4].replace('zneut', 'neut')
+        fields[5] = fields[5].replace('zneut', 'neut')
 
-    if ':n2' in line[4] or '|n2' in line[5]:
-        line[4] = line[4].replace(':n2', ':n')
-        line[5] = line[5].replace('|n2', '|n')
+    fields[4] = re.sub(r'\bn2\b', 'n', fields[4])
+    fields[5] = re.sub(r'\bn2\b', 'n', fields[5])
 
-    if ':m' in line[4] and '|n' in line[5]:
-        line[4] = line[4].replace(':m', ':n')
+    if (':m:' in fields[4] or ':m\t' in fields[4]) and ('|n|' in fields[5] or '|n\t' in fields[5]):
+        fields[4] = fields[4].replace(':m:', ':n:')
+        fields[4] = fields[4].replace(':m\t', ':n\t')
 
-    return '\t'.join(line)
+    return '\t'.join(fields)
 
 
-def correct_conll_line(t: Token) -> None:
-    """Corrects a line of a CONLL file."""
-    # If POS has extra features appended, remove them
-    if ':' in t.pos:
-        t.pos = t.pos.split(":")[0]
+def correct_conll_line_fields(line: str) -> str:
+    """
+    Corrects a single CONLL line by adjusting the POS and feature columns.
+    
+    The fields are assumed to be:
+      0: ID, 1: FORM, 2: LEMMA, 3: POS, 4: POS_FEATS, 5: FEATS, etc.
+    
+    Corrections applied:
+      - The correct_gender_and_neut function is applied.
+      - The POS field (column 3) is trimmed to remove any extra appended features (using the first element).
+      - The POS_FEATS field (column 4) is split by colon; the features (everything after the first element)
+        are compared with the features obtained from the FEATS field (column 6, split by "|").
+      - If their lengths differ, the POS_FEATS field is rebuilt as POS + ":" + ":".join(feats_from_token).
+    """
+    line = correct_gender_and_neut(line)
 
-    # Print a warning if POS is not in pos_list
-    test_pos(t.pos)
+    fields = line.split('\t')
+    # Adjust POS (field 3)
+    if ':' in fields[3]:
+        fields[3] = fields[3].split(":")[0]
 
-    # Check if pos_feats and feats have exactly the same feats
-    pos_feats_parts = t.pos_feats.split(":")
+    # Extract features from POS_FEATS (field 4)
+    pos_feats_parts = fields[4].split(":")
     feats_from_pos_feats = pos_feats_parts[1:] if len(pos_feats_parts) > 1 else []
-    feats_from_token = list(t.feats.values())
+
+    # Extract features from FEATS (field 5); if "_" then no features.
+    feats_from_token = [] if fields[5] == "_" else fields[5].split("|")
+
     if len(feats_from_pos_feats) != len(feats_from_token):
-        # If not, rebuild pos_feats using the POS and the feats from the token
-        t.pos_feats = t.pos + ":" + ":".join(feats_from_token)
+        fields[4] = fields[3] + (":" + ":".join(feats_from_token) if feats_from_token else "")
 
-    # Print warnings for any feats not in feats_dict
-    test_feats(feats_from_token)
+    return '\t'.join(fields)
 
-    # If feats is empty, check if pos_feats equals pos
-    if not t.feats and t.pos_feats != t.pos:
-        print(f'POS_FEATS {t.pos_feats} is not equal to POS {t.pos}.')
 
-    # Test if feats_pos_combination is valid
-    test_feats_pos_combination(t.pos, feats_from_token)
-
-def process_conll_file(file_path: str, output_dir: str) -> None:
-    """Reads a CONLL file, corrects each line, and writes the corrected file to output_dir with the same file name."""
+def process_conll_file(file_path: str, output_dir: str, test: bool = False) -> None:
+    """
+    Reads a CONLL file from file_path, applies corrections to each non-empty line,
+    and writes the corrected file to output_dir with the same filename.
+    """
     print(f'Processing file: {file_path}')
     corrected_lines = []
     with open(file_path, 'r', encoding='utf-8') as infile:
@@ -59,10 +87,15 @@ def process_conll_file(file_path: str, output_dir: str) -> None:
             if line.strip() == "":
                 corrected_lines.append("\n")
                 continue
-            line = correct_gender_and_neut(line)
-            n = Token(line)
-            correct_conll_line(n)
-            corrected_lines.append(str(n) + "\n")
+            # Correct the line
+            corrected_lines.append(correct_conll_line_fields(line))
+
+    # If testing is enabled, run assertions on the corrected lines.
+    if test:
+        from tests.corrector_tests import test_pos, test_feats, test_feats_pos_combination
+        test_pos(corrected_lines)
+        test_feats(corrected_lines)
+        test_feats_pos_combination(corrected_lines)
 
     file_name = os.path.basename(file_path)
     output_path = os.path.join(output_dir, file_name)
@@ -70,25 +103,29 @@ def process_conll_file(file_path: str, output_dir: str) -> None:
         outfile.writelines(corrected_lines)
     print(f'Corrected file saved as: {output_path}')
 
-
 def main() -> None:
     """Main function."""
-    input_directory = input('Enter the path to the directory containing original CONLL files: ').strip()
-    output_directory = input('Enter the path to the directory for output files: ').strip()
-
-    if not os.path.isdir(input_directory):
-        print('Input directory does not exist.')
+    if len(sys.argv) not in {3, 4}:
+        print('Usage: python corrector.py <input_file_or_directory_path> <output_directory_path> [--test]')
         return
 
-    if not os.path.isdir(output_directory):
-        print('Output directory does not exist.')
+    input_path = sys.argv[1]
+    output_path = sys.argv[2]
+    test = len(sys.argv) == 4 and sys.argv[3] == '--test'
+
+    if not os.path.exists(input_path):
+        print(f'Input path {input_path} does not exist.')
         return
 
-    for file in os.listdir(input_directory):
-        if file.endswith(".conll"):
-            file_path = os.path.join(input_directory, file)
-            process_conll_file(file_path, output_directory)
+    os.makedirs(output_path, exist_ok=True)
 
+    if os.path.isdir(input_path):
+        for file in os.listdir(input_path):
+            if file.endswith(".conll"):
+                file_path = os.path.join(input_path, file)
+                process_conll_file(file_path, output_path, test)
+    else:
+        process_conll_file(input_path, output_path, test)
 
 if __name__ == "__main__":
     main()
