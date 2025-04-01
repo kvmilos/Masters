@@ -6,15 +6,21 @@ from utils.classes import Token
 from tests.corrector_tests import test_pos, test_feats, test_feats_pos_combination
 
 
-def correct_gender(t: Token) -> None:
-    """Corrects the gender of the token."""
-    if 'gender' in t.feats and t.feats['gender'] == 'n2':
-        t.feats = {'gender': 'n'}
+def correct_gender_and_neut(line: str) -> str:
+    """Applies corrections to the gender and accentability of the token."""
+    line = line.split('\t')
+    if 'zneut' in line[4] or 'zneut' in line[5]:
+        line[4] = line[4].replace('zneut', 'neut')
+        line[5] = line[5].replace('zneut', 'neut')
 
-    if len(t.pos_feats.split(':')) > 2 and t.pos_feats.split(':')[-2] == 'm' and t.feats['gender'] == 'n' or \
-        len(t.pos_feats.split(':')) > 1 and t.pos_feats.split(':')[-1] == 'n2' and t.feats['gender'] == 'n':
-        t.pos_feats = t.pos_feats.replace(':n2', ':n')
-        t.pos_feats = t.pos_feats.replace(':m', ':n')
+    if ':n2' in line[4] or '|n2' in line[5]:
+        line[4] = line[4].replace(':n2', ':n')
+        line[5] = line[5].replace('|n2', '|n')
+
+    if ':m' in line[4] and '|n' in line[5]:
+        line[4] = line[4].replace(':m', ':n')
+
+    return '\t'.join(line)
 
 
 def correct_conll_line(t: Token) -> None:
@@ -41,9 +47,6 @@ def correct_conll_line(t: Token) -> None:
     if not t.feats and t.pos_feats != t.pos:
         print(f'POS_FEATS {t.pos_feats} is not equal to POS {t.pos}.')
 
-    # Correct gender
-    correct_gender(t)
-
     # Test if feats_pos_combination is valid
     test_feats_pos_combination(t.pos, feats_from_token)
 
@@ -56,8 +59,7 @@ def process_conll_file(file_path: str, output_dir: str) -> None:
             if line.strip() == "":
                 corrected_lines.append("\n")
                 continue
-            if 'zneut' in line.split('\t')[4] or 'zneut' in line.split('\t')[5]:
-                line = line.replace('zneut', 'neut')
+            line = correct_gender_and_neut(line)
             n = Token(line)
             correct_conll_line(n)
             corrected_lines.append(str(n) + "\n")

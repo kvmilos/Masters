@@ -15,7 +15,6 @@ feats_dict = {
     'voc': 'case',
     'f': 'gender',
     'n': 'gender',
-    'n2': 'gender', # do wyjaśnienia
     'm': 'gender',
     'p1': 'gender', # do wyjaśnienia
     'p2': 'gender', # do wyjaśnienia
