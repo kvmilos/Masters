@@ -3,8 +3,7 @@ Module for the Sentence and Token classes.
 """
 from collections import defaultdict
 from typing import Dict, List
-from utils.feats_dict import feats_dict
-from utils.multiword_dict import MULTIWORD_EXPRESSIONS as MWE
+from utils.constants import feats_dict, MULTIWORD_EXPRESSIONS as MWE
 
 class Sentence:
     """
