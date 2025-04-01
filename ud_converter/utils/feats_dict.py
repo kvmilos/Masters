@@ -30,7 +30,6 @@ feats_dict = {
     'pt': 'subgender',
     'akc': 'accentability',
     'nakc': 'accentability',
-    'zneut': 'accentability',
     'neut': 'accentability',
     'praep': 'post-prepositionality',
     'npraep': 'post-prepositionality',

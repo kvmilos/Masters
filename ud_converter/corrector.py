@@ -56,6 +56,8 @@ def process_conll_file(file_path: str, output_dir: str) -> None:
             if line.strip() == "":
                 corrected_lines.append("\n")
                 continue
+            if 'zneut' in line.split('\t')[4] or 'zneut' in line.split('\t')[5]:
+                line = line.replace('zneut', 'neut')
             n = Token(line)
             correct_conll_line(n)
             corrected_lines.append(str(n) + "\n")
