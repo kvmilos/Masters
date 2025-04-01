@@ -6,6 +6,17 @@ from utils.classes import Token
 from tests.corrector_tests import test_pos, test_feats, test_feats_pos_combination
 
 
+def correct_gender(t: Token) -> None:
+    """Corrects the gender of the token."""
+    if 'gender' in t.feats and t.feats['gender'] == 'n2':
+        t.feats = {'gender': 'n'}
+
+    if len(t.pos_feats.split(':')) > 2 and t.pos_feats.split(':')[-2] == 'm' and t.feats['gender'] == 'n' or \
+        len(t.pos_feats.split(':')) > 1 and t.pos_feats.split(':')[-1] == 'n2' and t.feats['gender'] == 'n':
+        t.pos_feats = t.pos_feats.replace(':n2', ':n')
+        t.pos_feats = t.pos_feats.replace(':m', ':n')
+
+
 def correct_conll_line(t: Token) -> None:
     """Corrects a line of a CONLL file."""
     # If POS has extra features appended, remove them
@@ -29,6 +40,9 @@ def correct_conll_line(t: Token) -> None:
     # If feats is empty, check if pos_feats equals pos
     if not t.feats and t.pos_feats != t.pos:
         print(f'POS_FEATS {t.pos_feats} is not equal to POS {t.pos}.')
+
+    # Correct gender
+    correct_gender(t)
 
     # Test if feats_pos_combination is valid
     test_feats_pos_combination(t.pos, feats_from_token)

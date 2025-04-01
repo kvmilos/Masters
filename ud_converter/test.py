@@ -78,6 +78,6 @@ token_lines = [
 tokens = [Token(line) for line in token_lines]
 sentence = Sentence(tokens)
 sentence.meta = meta
-post_conversion(sentence)
+post_conversion(sentence, meta)
 for t in sentence.tokens:
     print(str(t))
