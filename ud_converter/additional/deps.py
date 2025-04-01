@@ -47,7 +47,7 @@ def main() -> None:
     output_file = "mpdt_deps_original.txt"
     with open(output_file, "w", encoding="utf-8") as f:
         for dep, count in sorted_deps:
-            f.write(f"{dep}\t{count}\n")
+            f.write(f"{dep:<35}{count}\n")
     print(f"\nUnique dependencies along with their counts have been saved to the file: {output_file}")
 
 if __name__ == "__main__":

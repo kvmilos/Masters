@@ -11,7 +11,7 @@ Usage:
 Example:
     python corrector.py data/MPDT_2000.conll data/corrected/
     python corrector.py data/original/ data/corrected/
-    python corrector.py data/MPDT_2000.conll data/corrected/ --test
+    python corrector.py data/MPDT_2000.conll data/corrected/ --test (for that, you need to have tests/corrector_tests.py)
 """
 
 import os

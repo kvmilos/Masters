@@ -47,7 +47,7 @@ def main() -> None:
     output_file = "mpdt_tags_corrected.txt"
     with open(output_file, "w", encoding="utf-8") as f:
         for tag, count in sorted_tags:
-            f.write(f"{tag}\t{count}\n")
+            f.write(f"{tag:<35}{count}\n")
     print(f"\nUnique tags along with their counts have been saved to the file: {output_file}")
 
 if __name__ == "__main__":
