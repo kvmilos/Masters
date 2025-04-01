@@ -9,7 +9,7 @@ def collect_mpdt_tags(folder_path: str) -> Dict[str, int]:
     """Collect unique MPDT dependencies from all CoNLL files in the specified folder."""
     dep_counts: Dict[str, int] = {}
     # Find all .conll files in the specified folder (non-recursive)
-    files = glob.glob(os.path.join(folder_path, "*.conll"))
+    files = glob.glob(os.path.join(folder_path, "*.conll")) if os.path.isdir(folder_path) else [folder_path]
     for file_path in files:
         with open(file_path, "r", encoding="utf-8") as f:
             for line in f:
@@ -29,12 +29,15 @@ def collect_mpdt_tags(folder_path: str) -> Dict[str, int]:
 
 def main() -> None:
     """Main function to execute the script."""
-    folder = input("Specify the path to the folder with CoNLL files: ").strip()
-    if not os.path.isdir(folder):
+    folder = input("Specify the path to the folder with CoNLL files or a single CoNLL file: ").strip()
+    if not os.path.isdir(folder) and not os.path.isfile(folder):
         print("The specified path is not a folder or does not exist.")
         return
 
-    print("Processing files from folder:", folder)
+    if os.path.isfile(folder):
+        print("Processing file:", folder)
+    else:
+        print("Processing files from folder:", folder)
     dep_counts = collect_mpdt_tags(folder)
     sorted_deps = sorted(dep_counts.items(), key=lambda x: x[0])
     print(f"\nFound {len(sorted_deps)} unique dependencies:")
