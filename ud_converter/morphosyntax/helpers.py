@@ -4,7 +4,7 @@ Module for helpers specific to the morphosyntax module.
 
 import logging
 from utils.classes import Token
-from utils.feats_dict import FEATS_UPDATE as FU
+from utils.constants import FEATS_UPDATE as FU
 
 logger = logging.getLogger('ud_converter.morphosyntax.helpers')
 

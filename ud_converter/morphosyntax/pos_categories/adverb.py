@@ -3,7 +3,7 @@ Module for adverb POS-specific conversion.
 """
 
 from utils.classes import Token
-from utils.feats_dict import FEATS_UPDATE as FU
+from utils.constants import FEATS_UPDATE as FU
 
 
 def adv(t: Token) -> None:

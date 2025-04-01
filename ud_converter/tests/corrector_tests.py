@@ -2,8 +2,7 @@
 Tests for corrector.py.
 """
 from typing import List
-from utils.feats_dict import feats_dict
-from utils.possible_feats_based_on_pos import feats_of_pos
+from utils.constants import feats_dict, feats_of_pos
 
 def test_pos(pos: str) -> None:
     """

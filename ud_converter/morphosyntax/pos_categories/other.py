@@ -13,7 +13,7 @@ and other.
 """
 
 from utils.classes import Token
-from utils.feats_dict import FEATS_UPDATE as FU
+from utils.constants import FEATS_UPDATE as FU
 
 
 def conj(t: Token) -> None:
