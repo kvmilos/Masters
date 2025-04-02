@@ -1,7 +1,6 @@
 """
 Module for numerals POS-specific conversion.
 """
-
 from utils.classes import Token
 from utils.constants import FEATS_UPDATE as FU
 from morphosyntax.helpers import update_gender_number as gn

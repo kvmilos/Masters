@@ -3,10 +3,10 @@ Logging configuration for the UD Converter.
 
 This module provides logging configuration for the entire project.
 """
-
 import logging
 import os
 from datetime import datetime
+
 
 def setup_logging(log_level: int = logging.INFO) -> logging.Logger:
     """

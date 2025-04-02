@@ -7,9 +7,9 @@ and they assert that:
   - The features listed in the POS_FEATS column (column 5, after the first element)
     (via feats_dict mapping) are allowed for that POS.
 """
-
 from typing import List
 from utils.constants import feats_dict, feats_of_pos
+
 
 def test_pos(lines: List[str]) -> None:
     """

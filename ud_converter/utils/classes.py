@@ -5,6 +5,7 @@ from collections import defaultdict
 from typing import Dict, List
 from utils.constants import feats_dict, MULTIWORD_EXPRESSIONS as MWE
 
+
 class Sentence:
     """
     A Sentence holds a list of Node objects.

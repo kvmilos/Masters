@@ -8,6 +8,7 @@ from utils.classes import Sentence, Token
 
 logger = logging.getLogger('ud_converter.io')
 
+
 def read_conll(filepath: str) -> List[Sentence]:
     """
     Reads a .conll file and returns a list of Sentence objects.

@@ -11,7 +11,6 @@ Module for other POS-specific conversion, including:
 - symbols
 and other.
 """
-
 from utils.classes import Token
 from utils.constants import FEATS_UPDATE as FU
 

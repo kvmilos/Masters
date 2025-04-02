@@ -595,6 +595,7 @@ nie ma w danych
 - `VERB` && edge(gov(n), n) == `aux` &rArr; `AUX`
 
 #### conversion of <pos> = num
+- children(n, `comp`) 
 
 - 
 
@@ -605,8 +606,6 @@ nie ma w danych
 - NumType=Sets poczytać
 
 - jej / jego
-
-- czemu w funkcji prep ustawiamy Case na misc a nie ufeats - tak zostawiam
 
 - przy 'bedzie' wcześniej było Tense=Fut, ale w nowym kodzie jest zamiast tego Voice=Act (wygląda na błędne użycie impt zamiast 'bedzie' ale może to celowo?)
 - tu jest ok - dodaje sie tense tam gdzie ma byc

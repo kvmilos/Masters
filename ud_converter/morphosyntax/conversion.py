@@ -1,7 +1,6 @@
 """
 Module responsible for the POS-specific conversion to UPOS.
 """
-
 import logging
 from utils.classes import Token
 from morphosyntax.pos_categories.noun import subst
@@ -13,6 +12,7 @@ from morphosyntax.pos_categories.verb import fin, bedzie, praet, impt, imps, inf
 from morphosyntax.pos_categories.other import brev, frag, interj, part, prep, conj, comp,interp, xxx, dig, romandig, ign, sym, incert
 
 logger = logging.getLogger('ud_converter.morphosyntax.conversion')
+
 
 def pos_specific_upos(t: Token) -> None:
     """

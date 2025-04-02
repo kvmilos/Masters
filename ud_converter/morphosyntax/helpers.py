@@ -1,12 +1,12 @@
 """
 Module for helpers specific to the morphosyntax module.
 """
-
 import logging
 from utils.classes import Token
 from utils.constants import FEATS_UPDATE as FU
 
 logger = logging.getLogger('ud_converter.morphosyntax.helpers')
+
 
 def update_gender_number(t: Token) -> None:
     """

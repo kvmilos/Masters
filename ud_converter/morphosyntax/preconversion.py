@@ -11,6 +11,7 @@ re_arabic = re.compile(r'^\d+([\.,]\d+)*$')
 
 logger = logging.getLogger('ud_converter.morphosyntax.preconversion')
 
+
 def lemma_based_upos(t: Token) -> None:
     """
     Applies the lemma-based conversion.

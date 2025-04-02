@@ -6,7 +6,6 @@ Usage:
 --tags-only: if present, only performs POS -> UPOS conversion.
 Full dependency conversion is not implemented.
 """
-
 import sys
 
 from utils.io import read_conll, write_ud_conll, load_meta

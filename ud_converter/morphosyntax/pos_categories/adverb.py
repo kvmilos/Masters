@@ -1,7 +1,6 @@
 """
 Module for adverb POS-specific conversion.
 """
-
 from utils.classes import Token
 from utils.constants import FEATS_UPDATE as FU
 
