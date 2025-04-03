@@ -3,7 +3,7 @@ Module for the conversion of numeral phrases to UD.
 """
 import logging
 from utils.classes import Sentence, Token
-from dependency.helpers import convert_label as cl
+from dependency.labels import convert_label as cl
 
 logger = logging.getLogger('ud_converter.dependency.structures.numeral')
 

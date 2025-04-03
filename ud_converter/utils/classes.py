@@ -365,6 +365,16 @@ class Token:
         ]
 
     @property
+    def children_with_ud_label(self, label: str) -> List['Token']:
+        """Returns a list of children of the token with the given dependency label in UD format."""
+        if self.sentence is None:
+            return []
+        return [
+            n for n in self.children
+            if n.udep_label == label
+        ]
+
+    @property
     def children_with_lemma(self, lemma: str) -> List['Token']:
         """Returns a list of children of the token with the given lemma."""
         if self.sentence is None:

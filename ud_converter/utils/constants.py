@@ -35,8 +35,8 @@ feats_dict = {
     'f': 'gender',
     'n': 'gender',
     'm': 'gender',
-    'p1': 'gender',  # do wyjaśnienia
-    'p2': 'gender',  # do wyjaśnienia
+    'p1': 'gender', # obsługa p1 do usunięcia
+    'p2': 'gender', # obsługa p2 do usunięcia
     'manim1': 'gender',
     'manim2': 'gender',
     'pri': 'person',
@@ -45,7 +45,7 @@ feats_dict = {
     'pos': 'degree',
     'com': 'degree',
     'sup': 'degree',
-    'pt': 'subgender',
+    'pt': 'subgender', # obsługa pt do dodania
     'akc': 'accentability',
     'nakc': 'accentability',
     'neut': 'accentability',
@@ -190,9 +190,9 @@ feats_of_pos = {
     'pactb': ['number', 'case', 'gender', 'degree', 'aspect', 'negation'],
     'ppas': ['number', 'case', 'gender', 'degree', 'aspect', 'negation'],
     'ppasb': ['number', 'case', 'gender', 'degree', 'aspect', 'negation'],
-    'ppraet': ['number', 'case', 'gender', 'degree', 'aspect', 'negation'], #degree???
+    'ppraet': ['number', 'case', 'gender', 'degree', 'aspect', 'negation'], # obsługa degree w ppraet do dodania
     'fut': ['number', 'person', 'aspect'],
-    'plusq': ['number', 'gender', 'aspect', 'vocalicity'], #vocalicity???
+    'plusq': ['number', 'gender', 'aspect'],
     'aglt': ['number', 'person', 'aspect', 'vocalicity'],
     'agltaor': ['number', 'person', 'aspect', 'vocalicity'],
     'winien': ['number', 'gender', 'aspect'],
@@ -208,3 +208,15 @@ feats_of_pos = {
     'sym': [],
     'incert': []
 }
+
+# List of particles
+PARTICLES = ['a', 'aby', 'akurat', 'ale', 'ani', 'azaliż', 'aż', 'ba', 'blisko', 'bodaj', 'bodajże', 'byle', 'chociaż', 'choć',
+            'choćby', 'chociażby', 'chyba', 'coraz', 'czyli', 'dopiero', 'doprawdy', 'dość', 'dosyć', 'gdzieś', 'głównie', 'i',
+            'jak', 'jakby', 'jakoby', 'jednak', 'jednakowoż', 'jednakże', 'jedynie', 'jeszcze', 'już', 'może', 'nadto', 'najwidoczniej',
+            'najwyraźniej', 'najwyżej', 'naprawdę', 'nawet', 'niby', 'nie', 'niejako', 'niemal', 'niemalże', 'niespełna', 'niestety',
+            'niemniej', 'oczywiście', 'około', 'ot', 'oto', 'otóż', 'pewnie', 'podobnież', 'podobno', 'ponad', 'ponadto',
+            'poniekąd', 'ponoć', 'prawie', 'przecie', 'przecież', 'przeszło', 'przynajmniej', 'raczej', 'raptem', 'również',
+            'skądinąd', 'szczególnie', 'tak', 'także', 'to', 'toż', 'trochę', 'tylko', 'też', 'tuż', 'widać', 'widocznie',
+            'więc', 'właśnie', 'wprawdzie', 'wprost', 'wręcz', 'wreszcie', 'wszak', 'wszakże', 'wszelako', 'z', 'za', 'zaledwie',
+            'zapewne', 'zaraz', 'zarazem', 'zaś', 'zbyt', 'zgoła', 'znacznie', 'znowu', 'znowuż', 'znów', 'zresztą', 'zwłaszcza',
+            'że', 'szczególnie', 'istotnie', 'praktycznie']
