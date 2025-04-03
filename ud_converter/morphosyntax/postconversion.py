@@ -100,25 +100,3 @@ def add_no_space_misc(s: Sentence, text: str) -> None:
         else:
             token.umisc.pop('SpaceAfter', None)
             pointer += 1
-
-    # multiword_range = (0, 0)
-
-    # pointer = 0
-    # for i, token in enumerate(s.tokens):
-    #     if '-' in token.id:
-    #         start_str, end_str = token.id.split('-')
-    #         start = int(start_str)
-    #         end = int(end_str)
-    #         multiword_range = (start, end)
-    #     elif int(token.id) >= multiword_range[0] and int(token.id) <= multiword_range[1]:
-    #         continue
-    #     pos = text.find(token.form, pointer)
-    #     if pos == -1:
-    #         continue
-    #     pointer = pos + len(token.form)
-    #     if i == len(s.tokens) - 1:
-    #         continue
-    #     if pointer >= len(text) or text[pointer] != " ":
-    #         token.umisc['SpaceAfter'] = 'No'
-    #     else:
-    #         pointer += 1

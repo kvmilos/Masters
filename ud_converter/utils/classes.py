@@ -82,7 +82,9 @@ class Token:
                 self.data['feats'] = {feats_dict[feat]: feat for feat in self.data['feats_raw'].split("|")}
             self.data['ufeats'] = defaultdict(str)
             self.data['gov_id'] = columns[6]
+            self.data['ugov_id'] = None
             self.data['gov'] = None
+            self.data['ugov'] = None
             self.data['dep_label'] = columns[7]
             self.data['udep_label'] = ''
             self.data['sent_id'] = columns[8]
@@ -102,7 +104,9 @@ class Token:
             self.data['feats'] = defaultdict(str)
             self.data['ufeats'] = defaultdict(str)
             self.data['gov_id'] = '_'
+            self.data['ugov_id'] = None
             self.data['gov'] = None
+            self.data['ugov'] = None
             self.data['dep_label'] = '_'
             self.data['udep_label'] = '_'
             self.data['sent_id'] = '_'
@@ -178,6 +182,16 @@ class Token:
     def gov_id(self, value: str) -> None:
         """Sets the id of the governor of the token."""
         self.data['gov_id'] = value
+
+    @property
+    def ugov_id(self) -> str:
+        """Returns the id of the governor of the token."""
+        return self.data['ugov_id']
+
+    @ugov_id.setter
+    def ugov_id(self, value: str) -> None:
+        """Sets the id of the governor of the token."""
+        self.data['ugov_id'] = value
 
     @property
     def dep_label(self) -> str:
@@ -300,6 +314,20 @@ class Token:
         return self.sentence.dict_by_id.get(self.gov_id)
 
     @property
+    def ugov(self):
+        """Returns the governor Token, or None if it's the root or something is missing."""
+        if self.sentence is None:
+            return None
+        if self.ugov_id == "0":
+            return None
+        return self.sentence.dict_by_id.get(self.ugov_id)
+
+    @ugov.setter
+    def ugov(self, value: 'Token') -> None:
+        """Sets the governor Token."""
+        self.ugov_id = value.id
+
+    @property
     def children(self) -> List['Token']:
         """
         Returns a list of tokens for which this token is the governor.
@@ -325,3 +353,57 @@ class Token:
         if self.sentence is None:
             return None
         return self.sentence.dict_by_id.get(str(int(self.id) + 1), None)
+
+    @property
+    def children_with_label(self, label: str) -> List['Token']:
+        """Returns a list of children of the token with the given dependency label."""
+        if self.sentence is None:
+            return []
+        return [
+            n for n in self.children
+            if n.dep_label == label
+        ]
+
+    @property
+    def children_with_lemma(self, lemma: str) -> List['Token']:
+        """Returns a list of children of the token with the given lemma."""
+        if self.sentence is None:
+            return []
+        return [
+            n for n in self.children
+            if n.lemma == lemma
+        ]
+
+    @property
+    def rec_gov_via_label(self, label: str) -> 'Token':
+        """
+        Returns the governor of the token if the dependency label is == label, and gov's gov is != label. 
+        If there is no such governor, returns None.
+        If the governor's governor is == label, returns the governor's governor, etc.
+        """
+        if self.sentence is None:
+            return None
+        if self.dep_label == label:
+            if self.gov.dep_label != label:
+                return self.gov
+            else:
+                return self.gov.rec_gov_via_label(label)
+        return None
+
+    @property
+    def rec_child_with_label_via_label(self, target_label: str, label: str) -> 'Token':
+        """
+        Returns the child of the token with the given dependency label.
+        If there is no such child, goes through the children's children with the given label and looks for the target label.
+        If a child is found, return it.
+        If no child is found, returns None.
+        """
+        if self.sentence is None:
+            return None
+        if self.dep_label == label:
+            for child in self.children:
+                if child.dep_label == target_label:
+                    return child
+                else:
+                    return child.rec_child_with_label_via_label(target_label, label)
+        return None
