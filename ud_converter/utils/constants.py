@@ -11,13 +11,16 @@ This module collects various constant dictionaries used across the project:
    Provides updated (UD) values for token features.
    For example, 'nom' → 'Nom', 'sg' → 'Sing', etc.
 
-3. MULTIWORD_EXPRESSIONS:
+3. feats_of_pos:
+   Maps POS tags to a list of possible feature categories.
+   For example, 'subst' → ['number', 'case', 'gender', 'subgender'].
+
+4. MULTIWORD_EXPRESSIONS:
    Contains variants of multiword expressions mapped to a normalized form.
    This is used to standardize multiword expressions across the corpus.
 
-4. feats_of_pos:
-   Maps POS tags to a list of possible feature categories.
-   For example, 'subst' → ['number', 'case', 'gender', 'subgender'].
+5. PARTICLES:
+   Contains a list of particles.
 """
 
 # Dictionary mapping token feature abbreviations to their corresponding categories.
@@ -74,6 +77,57 @@ FEATS_UPDATE = {
     'aff': 'Pos', 'neg': 'Neg',
     'praep': 'Pre', 'npraep': 'Npr',
     'akc': 'Long', 'nakc': 'Short'
+}
+
+# Dictionary for possible features based on POS.
+feats_of_pos = {
+    'subst': ['number', 'case', 'gender', 'subgender'],
+    'num': ['number', 'case', 'gender'],
+    'numcol': ['number', 'case', 'gender'],
+    'adjnum': ['number', 'case', 'gender', 'degree'],
+    'advnum': ['degree'],
+    'adj': ['number', 'case', 'gender', 'degree'],
+    'adja': [],
+    'adjb': ['number', 'case', 'gender', 'degree'],
+    'adv': ['degree'],
+    'ppron12': ['number', 'case', 'gender', 'person', 'accentability'],
+    'ppron3': ['number', 'case', 'gender', 'person', 'accentability', "post-prepositionality"],
+    'siebie': ['case'],
+    'prep': ['case', 'vocalicity'],
+    'conj': [],
+    'comp': [],
+    'part': ['vocalicity'],
+    'interj': [],
+    'fin': ['number', 'person', 'aspect'],
+    'bedzie': ['number', 'person', 'aspect'],
+    'praet': ['number', 'gender', 'aspect', 'agglutination'],
+    'impt': ['number', 'person', 'aspect'],
+    'imps': ['aspect'],
+    'inf': ['aspect'],
+    'ger': ['number', 'case', 'gender', 'aspect', 'negation'],
+    'pcon': ['aspect'],
+    'pant': ['aspect'],
+    'pact': ['number', 'case', 'gender', 'degree', 'aspect', 'negation'],
+    'pactb': ['number', 'case', 'gender', 'degree', 'aspect', 'negation'],
+    'ppas': ['number', 'case', 'gender', 'degree', 'aspect', 'negation'],
+    'ppasb': ['number', 'case', 'gender', 'degree', 'aspect', 'negation'],
+    'ppraet': ['number', 'case', 'gender', 'degree', 'aspect', 'negation'], # obsługa degree w ppraet do dodania
+    'fut': ['number', 'person', 'aspect'],
+    'plusq': ['number', 'gender', 'aspect'],
+    'aglt': ['number', 'person', 'aspect', 'vocalicity'],
+    'agltaor': ['number', 'person', 'aspect', 'vocalicity'],
+    'winien': ['number', 'gender', 'aspect'],
+    'pred': [],
+    'brev': ['fullstoppedness'],
+    'frag': [],
+    'interp': [],
+    'xxx': [],
+    'dig': [],
+    'romandig': [],
+    'ignndm': [],
+    'ign': [],
+    'sym': [],
+    'incert': []
 }
 
 # Dictionary for normalizing multiword expressions.
@@ -156,57 +210,6 @@ MULTIWORD_EXPRESSIONS = {
     'przed_naszą_erą': 'przed_naszą_erą',
     'przed naszą_erą': 'przed_naszą_erą',
     'przed naszą_erą': 'przed_naszą_erą'
-}
-
-# Dictionary for possible features based on POS.
-feats_of_pos = {
-    'subst': ['number', 'case', 'gender', 'subgender'],
-    'num': ['number', 'case', 'gender'],
-    'numcol': ['number', 'case', 'gender'],
-    'adjnum': ['number', 'case', 'gender', 'degree'],
-    'advnum': ['degree'],
-    'adj': ['number', 'case', 'gender', 'degree'],
-    'adja': [],
-    'adjb': ['number', 'case', 'gender', 'degree'],
-    'adv': ['degree'],
-    'ppron12': ['number', 'case', 'gender', 'person', 'accentability'],
-    'ppron3': ['number', 'case', 'gender', 'person', 'accentability', "post-prepositionality"],
-    'siebie': ['case'],
-    'prep': ['case', 'vocalicity'],
-    'conj': [],
-    'comp': [],
-    'part': ['vocalicity'],
-    'interj': [],
-    'fin': ['number', 'person', 'aspect'],
-    'bedzie': ['number', 'person', 'aspect'],
-    'praet': ['number', 'gender', 'aspect', 'agglutination'],
-    'impt': ['number', 'person', 'aspect'],
-    'imps': ['aspect'],
-    'inf': ['aspect'],
-    'ger': ['number', 'case', 'gender', 'aspect', 'negation'],
-    'pcon': ['aspect'],
-    'pant': ['aspect'],
-    'pact': ['number', 'case', 'gender', 'degree', 'aspect', 'negation'],
-    'pactb': ['number', 'case', 'gender', 'degree', 'aspect', 'negation'],
-    'ppas': ['number', 'case', 'gender', 'degree', 'aspect', 'negation'],
-    'ppasb': ['number', 'case', 'gender', 'degree', 'aspect', 'negation'],
-    'ppraet': ['number', 'case', 'gender', 'degree', 'aspect', 'negation'], # obsługa degree w ppraet do dodania
-    'fut': ['number', 'person', 'aspect'],
-    'plusq': ['number', 'gender', 'aspect'],
-    'aglt': ['number', 'person', 'aspect', 'vocalicity'],
-    'agltaor': ['number', 'person', 'aspect', 'vocalicity'],
-    'winien': ['number', 'gender', 'aspect'],
-    'pred': [],
-    'brev': ['fullstoppedness'],
-    'frag': [],
-    'interp': [],
-    'xxx': [],
-    'dig': [],
-    'romandig': [],
-    'ignndm': [],
-    'ign': [],
-    'sym': [],
-    'incert': []
 }
 
 # List of particles
