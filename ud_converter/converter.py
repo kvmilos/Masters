@@ -1,10 +1,15 @@
 """
 Main module for converting dependency trees from CoNLL-X to UD CONLL-U.
+
+This module provides the primary entry point for the MPDT to UD conversion tool.
+It handles command-line arguments, coordinates the conversion pipeline,
+and manages I/O operations.
+
 Usage:
     python converter.py input_file.conll output_file.conllu [meta_file.json] [--tags-only]
 
 --tags-only: if present, only performs POS -> UPOS conversion.
-Full dependency conversion is not implemented.
+Full dependency conversion is not implemented yet.
 """
 import sys
 
@@ -18,6 +23,10 @@ logger = setup_logging()
 def main() -> None:
     """
     Main function for the converter.
+    
+    Processes command-line arguments, reads input files, performs the conversion,
+    and writes the results to the specified output file. Supports both full
+    conversion and tags-only mode.
     """
     if len(sys.argv) < 3:
         print(f'Usage: python {sys.argv[0]} input_file.conll output_file.conllu [meta_file.json] [--tags-only]')
@@ -49,7 +58,7 @@ def main() -> None:
     else:
         logger.info('Performing full dependency conversion.')
         logger.info('Converting tags and feats.')
-        for sentence in sentences:
+        for i, sentence in enumerate(sentences):
             meta = meta_data.get(str(i + 1), {})
             convert_to_upos(sentence, meta)
         logger.info('Converting dependencies.')

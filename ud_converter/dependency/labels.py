@@ -1,5 +1,9 @@
 """
-Module for labels conversion.
+Module for dependency label conversion from MPDT to Universal Dependencies format.
+
+This module implements the mapping of dependency labels from the Middle Polish
+Dependency Treebank format to Universal Dependencies format, considering the
+specific syntactic context of each token to determine the appropriate UD label.
 """
 import logging
 from utils.classes import Token
@@ -9,7 +13,15 @@ logger = logging.getLogger('ud_converter.dependency.labels')
 
 def convert_label(t: Token) -> str:
     """
-    Converts the dependency label to the UD format and returns it.
+    Converts a dependency label from MPDT format to Universal Dependencies format.
+    
+    This function applies a series of rules to determine the appropriate UD 
+    dependency label based on the token's part of speech, lemma, syntactic context,
+    and original dependency label in the MPDT format.
+    
+    :param Token t: The token for which to convert the dependency label
+    :return: The converted Universal Dependencies dependency label
+    :rtype: str
     """
     if t.udep_label != '_':
         return t.udep_label
@@ -240,7 +252,18 @@ def convert_label(t: Token) -> str:
 
 
 def verb_complement(t: Token, cleft: bool = False) -> str:
-    """Helper function for converting verb complements' labels."""
+    """
+    Helper function for converting verb complement dependencies to UD labels.
+    
+    This function determines the correct Universal Dependencies label for verb
+    complements based on their syntactic context, including handling cleft 
+    constructions, infinitives, and various types of clauses.
+    
+    :param Token t: The token for which to determine the UD dependency label
+    :param bool cleft: Boolean flag indicating whether the token is part of a cleft construction
+    :return: The appropriate Universal Dependencies dependency label
+    :rtype: str
+    """
     if cleft:
         if t.upos == 'VERB':
             aux = t.children_with_label('aux')
@@ -305,7 +328,18 @@ def verb_complement(t: Token, cleft: bool = False) -> str:
 
 
 def modifier(t: Token) -> str:
-    """Helper function for converting modifier labels."""
+    """
+    Helper function for converting modifier dependencies to UD labels.
+    
+    This function determines the appropriate Universal Dependencies label for
+    modifiers based on their part of speech, the part of speech of their governor,
+    and other syntactic properties. It handles various types of adjectival, 
+    nominal, and adverbial modifiers.
+    
+    :param Token t: The token for which to determine the UD dependency label
+    :return: The appropriate Universal Dependencies dependency label
+    :rtype: str
+    """
     mark = t.children_with_ud_label('mark')
     case = t.children_with_ud_label('case')
 
@@ -481,7 +515,17 @@ def modifier(t: Token) -> str:
 
 
 def adverbial(t: Token) -> str:
-    """Helper function for converting adverbial labels."""
+    """
+    Helper function for converting adverbial dependencies to UD labels.
+    
+    This function determines the correct Universal Dependencies label for
+    adverbial modifiers, distinguishing between adverbial clauses and simple
+    adverbial modifiers based on syntactic context.
+    
+    :param Token t: The token for which to determine the UD dependency label
+    :return: The appropriate Universal Dependencies dependency label
+    :rtype: str
+    """
     mark = t.children_with_ud_label('mark')
 
     if t.upos == 'VERB':

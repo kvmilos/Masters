@@ -1,5 +1,10 @@
 """
-Module responsible for the POS-specific conversion to UPOS.
+Module responsible for the POS-specific conversion to UPOS tags.
+
+This module contains the main conversion function that delegates the conversion
+process to appropriate handlers based on the token's original part of speech (POS).
+Each POS category has its own specific conversion function imported from the
+pos_categories subpackage.
 """
 import logging
 from utils.classes import Token
@@ -16,7 +21,13 @@ logger = logging.getLogger('ud_converter.morphosyntax.conversion')
 
 def pos_specific_upos(t: Token) -> None:
     """
-    Applies the conversion based on the POS.
+    Applies the conversion to UPOS based on the token's part of speech (POS).
+    
+    This function acts as a dispatcher that routes each token to the appropriate
+    conversion function based on its original POS tag. It handles all POS categories
+    defined in the MPDT tagset.
+    
+    :param Token t: The token to be converted
     """
     if t.upos == '':
         if t.pos == 'subst':

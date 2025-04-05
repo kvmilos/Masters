@@ -1,5 +1,9 @@
 """
-Module for helpers specific to the morphosyntax module.
+Module for helper functions supporting morphosyntactic conversion.
+
+This module provides utility functions specifically for the morphosyntax module,
+particularly for handling gender, number, and other morphological features during
+the conversion from MPDT to Universal Dependencies format.
 """
 import logging
 from utils.classes import Token
@@ -10,8 +14,15 @@ logger = logging.getLogger('ud_converter.morphosyntax.helpers')
 
 def update_gender_number(t: Token) -> None:
     """
-    Updates the gender and number of the token.
-    :param token: current token
+    Updates the gender and number features of a token to UD format.
+    
+    This function maps Middle Polish gender and number features to their Universal
+    Dependencies equivalents. It handles special cases such as:
+    - Masculine animate vs inanimate distinctions
+    - Pluralia tantum nouns
+    - Gender-specific number agreement
+    
+    :param Token t: The token whose gender and number features to update
     """
     gender = t.feats.get('gender', None)
     number = t.feats['number']

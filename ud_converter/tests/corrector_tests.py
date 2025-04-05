@@ -1,11 +1,12 @@
 """
 Pytest-style tests for the corrector module.
-These tests assume that each line is a valid CONLL line (a tab‐separated string),
-and they assert that:
-  - The POS (column 4) is a known POS.
-  - Each feature in the FEATS column (column 6) is in feats_dict.
+
+This module contains validation tests for CoNLL files to ensure they follow 
+the expected format and constraints. The tests verify:
+  - The POS (column 4) is a known POS tag
+  - Each feature in the FEATS column (column 6) is in feats_dict
   - The features listed in the POS_FEATS column (column 5, after the first element)
-    (via feats_dict mapping) are allowed for that POS.
+    (via feats_dict mapping) are allowed for that POS
 """
 from typing import List
 from utils.constants import feats_dict, feats_of_pos
@@ -13,7 +14,10 @@ from utils.constants import feats_dict, feats_of_pos
 
 def test_pos(lines: List[str]) -> None:
     """
-    Asserts that every POS (field 3) in the provided lines is a known POS.
+    Validates that every POS tag in the input is in the allowed set.
+    
+    :param lines: List of CoNLL format lines to validate
+    :raise AssertionError: for invalid POS tags
     """
     for line in lines:
         if not line.strip():
@@ -25,7 +29,10 @@ def test_pos(lines: List[str]) -> None:
 
 def test_feats(lines: List[str]) -> None:
     """
-    Asserts that every feature in the FEATS column (field 6) is in feats_dict.
+    Validates that every feature in the FEATS column is in the allowed set.
+    
+    :param lines: List of CoNLL format lines to validate
+    :raise AssertionError for invalid features
     """
     for line in lines:
         if not line.strip():
@@ -41,8 +48,14 @@ def test_feats(lines: List[str]) -> None:
 
 def test_feats_pos_combination(lines: List[str]) -> None:
     """
-    Asserts that for each line, the features from the POS_FEATS field (field 5, after the POS)
-    (mapped via feats_dict) are allowed for the given POS (field 4) according to feats_of_pos.
+    Validates that features from POS_FEATS are allowed for the given POS.
+    
+    Ensures that for each line, the features from the POS_FEATS field (field 5, 
+    after the POS) mapped via feats_dict are allowed for that specific POS tag
+    according to the feats_of_pos dictionary.
+    
+    :param lines: List of CoNLL format lines to validate
+    :raise AssertionError: for invalid feature-POS combinations
     """
     for line in lines:
         if not line.strip():

@@ -1,5 +1,8 @@
 """
-Module for the post tag conversion.
+Module for post-processing after the main tag conversion.
+
+This module handles tasks that need to be performed after the main POS and feature
+conversion, such as handling multiword expressions and space-after annotations.
 """
 from typing import Dict
 from utils.classes import Sentence, Token
@@ -7,7 +10,13 @@ from utils.classes import Sentence, Token
 
 def post_conversion(s: Sentence, meta: Dict[str, str]) -> None:
     """
-    Handles the post tag conversion.
+    Handles post-processing tasks after the main tag conversion.
+    
+    This function orchestrates various post-conversion processes including
+    multiword expression handling and space-after annotations.
+    
+    :param Sentence s: The sentence to process
+    :param meta: Metadata dictionary with additional information for the conversion
     """
     text = meta.get("text")
     add_mwe(s, text)
@@ -17,7 +26,13 @@ def post_conversion(s: Sentence, meta: Dict[str, str]) -> None:
 def add_mwe(s: Sentence, text: str) -> None:
     """
     Adds multiword tokens (MWEs) to the sentence.
-    The new multiword token is inserted at the beginning of the group.
+    
+    This function identifies multiword expressions based on the original text
+    and creates special multiword tokens. The new multiword token is inserted 
+    at the beginning of the group in the sentence's token list.
+    
+    :param Sentence s: The sentence to process
+    :param str text: The original text of the sentence
     """
     if not text:
         return
@@ -64,6 +79,12 @@ def add_mwe(s: Sentence, text: str) -> None:
 def add_no_space_misc(s: Sentence, text: str) -> None:
     """
     Adds SpaceAfter=No to UD misc for tokens that are not followed by a space.
+    
+    This function analyzes the original text to determine which tokens are not 
+    followed by spaces and marks them accordingly in the UD MISC field.
+    
+    :param Sentence s: The sentence to process
+    :param str text: The original text of the sentence, if available
     """
     if not text:
         return

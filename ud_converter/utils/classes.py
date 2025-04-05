@@ -1,5 +1,9 @@
 """
-Module for the Sentence and Token classes.
+Module containing the Sentence and Token classes used throughout the UD Converter project.
+
+This module defines the core data structures for representing sentences and tokens
+in the converter, with support for both the original MPDT properties and the 
+converted Universal Dependencies properties.
 """
 from collections import defaultdict
 from typing import Dict, List
@@ -8,11 +12,19 @@ from utils.constants import feats_dict, MULTIWORD_EXPRESSIONS as MWE
 
 class Sentence:
     """
-    A Sentence holds a list of Node objects.
-    It provides a get_root method returning the Node whose gov_id == "0".
+    Class representing a sentence as a collection of tokens.
+    
+    A Sentence holds a list of Token objects and provides methods for accessing
+    and manipulating the sentence structure, including finding the root token,
+    accessing the sentence text, and managing sentence-level metadata.
     """
 
     def __init__(self, tokens: List['Token']) -> None:
+        """
+        Initialize a Sentence object.
+        
+        :param List[Token] tokens: List of Token objects that make up the sentence
+        """
         self.tokens: List['Token'] = tokens
         self.dict_by_id: Dict[str, 'Token'] = {token.id: token for token in tokens}
         self.metadata = defaultdict(str)
@@ -22,8 +34,12 @@ class Sentence:
 
     def get_root(self) -> 'Token' | None:
         """
-        Returns the Token whose gov_id == '0' (i.e. the root).
-        If for some reason there's no root, returns None.
+        Returns the root token of the sentence.
+        
+        The root token is defined as the token whose gov_id is '0'.
+        
+        :return: The root Token object, or None if no root is found
+        :rtype: Token | None
         """
         for token in self.tokens:
             if token.gov_id == '0':
@@ -32,41 +48,85 @@ class Sentence:
 
     @property
     def text(self) -> str:
-        """Returns the text of the sentence."""
+        """
+        Returns the text of the sentence.
+        
+        If 'text' is available in the metadata, returns that value.
+        Otherwise, returns the tokens joined by spaces.
+        
+        :return: The text of the sentence
+        :rtype: str
+        """
         if 'text' in self.metadata:
             return self.metadata['text']
         return " ".join(token.form for token in self.tokens)
 
     @property
     def meta(self) -> Dict[str, str]:
-        """Returns the metadata of the sentence."""
+        """
+        Returns the metadata of the sentence.
+        
+        :return: Dictionary of metadata for the sentence
+        """
         return self.metadata
 
     @meta.setter
     def meta(self, value: Dict[str, str]) -> None:
-        """Sets the metadata of the sentence."""
+        """
+        Sets the metadata of the sentence.
+        
+        :param Dict[str, str] value: Dictionary of metadata to set
+        """
         self.metadata.update(value)
 
     def write_meta(self, out) -> None:
-        """Writes the metadata of the sentence."""
+        """
+        Writes the metadata of the sentence to the given output stream.
+        
+        Each metadata key-value pair is written as a line in the format:
+
+        \# key = value
+        
+        :param out: Output stream to write to
+        """
         for key, value in self.meta.items():
             out.write(f"# {key} = {value}\n")
 
     def __str__(self) -> str:
-        """Returns the sentence as its tokens joined by newline."""
+        """
+        Returns a string representation of the sentence.
+        
+        The string consists of all tokens in the sentence, each on its own line.
+        
+        :return: String representation of the sentence
+        :rtype: str
+        """
         return "\n".join(str(token) for token in self.tokens)
 
-    def __iter__(self) -> List['Token']:
-        """Returns an iterator over the tokens in the sentence."""
+    def __iter__(self):
+        """
+        Returns an iterator over the tokens in the sentence.
+        
+        :return: Iterator over the tokens
+        :rtype: iterator
+        """
         return iter(self.tokens)
 
 
 class Token:
     """
-    A token has its properties:
-    id, form, lemma, pos, pos_feats, feats, gov_id, dep_label, sent_id, misc
+    Class representing a token in a sentence.
+    
+    Each Token object stores both the original MPDT information and
+    the converted UD information for a single token.
     """
+    
     def __init__(self, line: str) -> None:
+        """
+        Initialize a Token object.
+        
+        :param str line: Line from the input file representing the token
+        """
         if line != 'mwe':
             columns: List[str] = line.split("\t")
             self.sentence = None
@@ -113,6 +173,7 @@ class Token:
             self.data['sent_id'] = '_'
             self.data['misc'] = '_'
             self.data['umisc'] = defaultdict(str)
+
     @property
     def id(self) -> str:
         """Returns the id of the token."""
@@ -135,32 +196,61 @@ class Token:
 
     @property
     def lemma(self) -> str:
-        """Returns the lemma of the token."""
+        """
+        Returns the lemma of the token.
+        
+        :return: The lemmatized form of the token
+        :rtype: str
+        """
         return self.data['lemma']
 
     @lemma.setter
     def lemma(self, value: str) -> None:
-        """Sets the lemma of the token."""
+        """
+        Sets the lemma of the token.
+        
+        :param value: The lemmatized form to set
+        """
         self.data['lemma'] = value
 
     @property
     def pos(self) -> str:
-        """Returns the pos of the token."""
+        """
+        Returns the part of speech (POS) tag of the token in MPDT format.
+        
+        :return: The POS tag in MPDT format
+        :rtype: str
+        """
         return self.data['pos']
 
     @pos.setter
     def pos(self, value: str) -> None:
-        """Sets the pos of the token."""
+        """
+        Sets the part of speech (POS) tag of the token in MPDT format.
+        
+        :param value: The POS tag in MPDT format to set
+        """
         self.data['pos'] = value
 
     @property
     def pos_feats(self) -> str:
-        """Returns the token's pos with its features."""
+        """
+        Returns the token's POS tag with its features in MPDT format.
+        
+        For example: "subst:sg:nom:m"
+        
+        :return: The POS tag with features
+        :rtype: str
+        """
         return self.data['pos_feats']
 
     @pos_feats.setter
     def pos_feats(self, value: str) -> None:
-        """Sets the token's pos with its features."""
+        """
+        Sets the token's POS tag with its features in MPDT format.
+        
+        :param str value: The POS tag with features to set
+        """
         self.data['pos_feats'] = value
 
     @property
@@ -277,8 +367,8 @@ class Token:
 
     def __str__(self) -> str:
         """
-        Returns the Token as a line in UD CONLL-U format.
-        Columns: ID, FORM, LEMMA, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS, MISC.
+        Returns the Token as a line in CoNLL format or in UD CONLL-U format.
+        Columns: ID, FORM, LEMMA, (U)POS, XPOS, FEATS, HEAD, DEPREL, DEPS, MISC.
         For FEATS, if no features are present, outputs '_'. DEPS is set to '_'.
         """
         if self.data['upos'] == '':
@@ -388,9 +478,15 @@ class Token:
     @property
     def rec_gov_via_label(self, label: str) -> 'Token' | None:
         """
-        Returns the governor of the token if the dependency label is == label, and gov's gov is != label. 
-        If there is no such governor, returns None.
-        If the governor's governor is == label, returns the governor's governor, etc.
+        Recursively finds a governing token via a specific dependency path.
+        
+        This method looks for the first token in the upward dependency path
+        that is connected via the specified label but whose governor is not
+        connected via the same label.
+        
+        :param str label: The dependency label to follow in the recursion
+        :return: The found governor Token, or None if not found
+        :rtype: Token | None
         """
         if self.sentence is None:
             return None
@@ -404,10 +500,16 @@ class Token:
     @property
     def rec_child_with_label_via_label(self, target_label: str, label: str) -> 'Token' | None:
         """
-        Returns the child of the token with the given dependency label.
-        If there is no such child, goes through the children's children with the given label and looks for the target label.
-        If a child is found, return it.
-        If no child is found, returns None.
+        Recursively finds a child token with a specific label following a path.
+        
+        This method first looks among direct children for one with the target label.
+        If none is found, it recursively searches through the children connected
+        via the specified label.
+        
+        :param str target_label: The dependency label to look for in children
+        :param str label: The dependency label to follow in the recursive search
+        :return: The found child Token, or None if not found
+        :rtype: Token | None
         """
         if self.sentence is None:
             return None

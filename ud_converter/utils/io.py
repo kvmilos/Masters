@@ -1,5 +1,9 @@
 """
-Module for reading and writing CONLL files.
+Module for reading and writing CoNLL files.
+
+This module provides functions for reading CoNLL files and writing
+CONLL-U files in the Universal Dependencies format, as well as
+loading metadata from JSON files.
 """
 import logging
 import json
@@ -12,8 +16,13 @@ logger = logging.getLogger('ud_converter.io')
 def read_conll(filepath: str) -> List[Sentence]:
     """
     Reads a .conll file and returns a list of Sentence objects.
-    Blank lines separate sentences.
-    Lines starting with '#' (if any) are treated as comments and skipped.
+    
+    Blank lines separate sentences. Lines starting with '#' (if any) 
+    are treated as comments and skipped.
+    
+    :param str filepath: Path to the CoNLL-X format file to read
+    :return: List of Sentence objects containing the parsed sentences
+    :rtype: List[Sentence]
     """
     sentences = []
     current_lines = []
@@ -40,8 +49,14 @@ def read_conll(filepath: str) -> List[Sentence]:
 
 def write_ud_conll(sentences: List[Sentence], outfile_path: str, meta = None) -> None:
     """
-    Writes the converted sentences in UD CONLL-U format to outfile_path.
-    For each sentence, writes metadata lines (if available) then each token by calling its __str__.
+    Writes the converted sentences in UD CONLL-U format.
+    
+    For each sentence, writes metadata lines (if available) then each token 
+    by calling its __str__ method.
+    
+    :param List[Sentence] sentences: List of Sentence objects to write
+    :param str outfile_path: Path to the output file
+    :param meta: Dictionary of metadata keyed by sentence index (as string)
     """
     with open(outfile_path, 'w', encoding='utf-8') as out:
         for idx, sentence in enumerate(sentences, start=1):
@@ -56,6 +71,9 @@ def write_ud_conll(sentences: List[Sentence], outfile_path: str, meta = None) ->
 def load_meta(meta_path: str):
     """
     Loads metadata from a JSON file.
+    
+    :param meta_path: Path to the JSON metadata file
+    :return: Dictionary containing the metadata
     """
     try:
         with open(meta_path, 'r', encoding='utf-8') as f:

@@ -1,5 +1,13 @@
 """
-Module for the conversion of numeral phrases to UD.
+Module for the conversion of numeral phrases to Universal Dependencies format.
+
+This module handles the conversion of various types of numeral phrases:
+- Standard numeral phrases
+- Coordinated numeral phrases
+- Multiword expression numeral phrases
+- Named entity numeral phrases
+
+Each type requires specific structural transformations to conform to UD guidelines.
 """
 import logging
 from typing import Iterable
@@ -11,7 +19,12 @@ logger = logging.getLogger('ud_converter.dependency.structures.numeral')
 
 def convert_numeral(s: Iterable['Token'] ) -> None:
     """
-    Conversion of numeral phrases to UD.
+    Converts numeral phrases from MPDT format to UD format.
+    
+    This function identifies different types of numeral phrases and applies
+    the appropriate conversion function based on the syntactic context.
+    
+    :param Sentence s: An iterable of Token objects representing a sentence
     """
     for t in s:
         if t.pos == 'num':
@@ -29,7 +42,12 @@ def convert_numeral(s: Iterable['Token'] ) -> None:
 
 def standard_numeral(t: Token) -> None:
     """
-    Conversion of standard numeral phrases to UD.
+    Converts standard numeral phrases to UD format.
+    
+    In standard numeral phrases, the complement becomes the head in UD,
+    and the numeral becomes a modifier of the complement.
+    
+    :param Token t: The numeral Token to convert
     """
     comp = t.children_with_label('comp')
     if len(comp) != 1:
@@ -58,7 +76,12 @@ def standard_numeral(t: Token) -> None:
 
 def coordinated_numeral(t: Token) -> None:
     """
-    Conversion of coordinated numeral phrases to UD.
+    Converts coordinated numeral phrases to UD format.
+    
+    In coordinated numeral phrases, the complement becomes the head,
+    and the coordination structure is reattached to the complement.
+    
+    :param Token t: The numeral Token to convert
     """
     comp = t.children_with_label('comp')
     if len(comp) != 1:
@@ -73,7 +96,12 @@ def coordinated_numeral(t: Token) -> None:
 
 def mwe_numeral(t: Token) -> None:
     """
-    Conversion of MWE numeral phrases to UD.
+    Converts multiword expression numeral phrases to UD format.
+    
+    In MWE numeral phrases, the multiword expression becomes the head,
+    and the numeral becomes a modifier of the MWE.
+    
+    :param Token t: The numeral Token to convert
     """
     mwe = t.rec_child_with_label_via_label('mwe', 'comp')
     mwe.ugov = t.gov
@@ -84,7 +112,12 @@ def mwe_numeral(t: Token) -> None:
 
 def ne_numeral(t: Token) -> None:
     """
-    Conversion of named entity numeral phrases to UD.
+    Converts named entity numeral phrases to UD format.
+    
+    In named entity numeral phrases, the named entity becomes the head,
+    and the numeral becomes a flat modifier of the named entity.
+    
+    :param Token t: The numeral Token to convert
     """
     ne = t.children_with_label('ne')
     if ne != t.rec_child_with_label_via_label('ne', 'comp'):
@@ -101,7 +134,11 @@ def ne_numeral(t: Token) -> None:
 
 def numeral_label(t: Token) -> str:
     """
-    Returns the label for a numeral phrase.
+    Determines the appropriate UD dependency label for a numeral token.
+    
+    :param Token t: The numeral Token to label
+    :return: The appropriate UD dependency label ('nummod' for NUM, 'det' for DET)
+    :rtype: str
     """
     if not t.udep_label and t.upos == 'NUM':
         return 'nummod'

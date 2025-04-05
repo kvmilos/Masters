@@ -1,5 +1,9 @@
 """
 Module for the lemma_based_upos function to be done before the POS-specific conversion.
+
+This module handles pre-conversion rules that are based on the lemma rather than
+the part of speech. It includes special handling for certain conjunctions, adpositions,
+numbers, and capitalized words.
 """
 import re
 import logging
@@ -14,7 +18,13 @@ logger = logging.getLogger('ud_converter.morphosyntax.preconversion')
 
 def lemma_based_upos(t: Token) -> None:
     """
-    Applies the lemma-based conversion.
+    Applies the lemma-based conversion to Universal POS tags.
+    
+    This function handles special cases where the UPOS tag depends on the lemma
+    rather than just the part of speech. It includes handling for subordinating 
+    conjunctions, postpositions, coordinating conjunctions, numbers, and proper nouns.
+    
+    :param Token t: The token to be converted
     """
     if (t.lemma in ['niż', 'niżeli', 'anizeli', 'niźli', 'jakby', 'jakoby', 'niczym', 'niby'] and
     t.pos not in ['subst', 'part', 'adv']):
@@ -45,7 +55,15 @@ def lemma_based_upos(t: Token) -> None:
             logger.debug("Converted %s to %s", t.form, t.upos)
 
 def number(t: Token, roman: bool = False) -> None:
-    """Converts a number."""
+    """
+    Converts a token that represents a number to the appropriate UPOS tag.
+    
+    This function handles various kinds of numerals, including ordinal numbers,
+    cardinal numbers, and numbers written in digit or Roman numeral form.
+    
+    :param Token t: The token to be converted
+    :param bool roman: Boolean flag indicating if the number is in Roman numeral format
+    """
     if t.upos == '':
         if t.pos == 'adj':
             pos_specific_upos(t)

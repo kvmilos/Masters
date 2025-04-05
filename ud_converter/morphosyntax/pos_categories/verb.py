@@ -1,5 +1,9 @@
 """
 Module for verb POS-specific conversion.
+
+This module handles the conversion of various verb forms from the Middle Polish 
+Dependency Treebank format to Universal Dependencies tags and features, including
+different tenses, moods, aspects, and verbal forms.
 """
 from utils.classes import Token
 from utils.constants import FEATS_UPDATE as FU

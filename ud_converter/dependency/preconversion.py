@@ -1,5 +1,9 @@
 """
-Module for the preconversion of the sentence.
+Module for preprocessing dependency conversion from MPDT to UD.
+
+This module handles preliminary adjustments to tokens before the main 
+dependency structure conversion takes place, such as correcting POS tags 
+based on syntactic context.
 """
 from typing import Iterable
 from utils.classes import Token
@@ -7,7 +11,16 @@ from utils.classes import Token
 
 def preconversion(s: Iterable['Token']) -> None:
     """
-    Preconversion of the sentence.
+    Performs preprocessing adjustments before dependency conversion.
+    
+    This function applies a series of rules to adjust token properties based
+    on syntactic context, ensuring that the subsequent dependency conversion
+    steps have the correct input. It handles cases like:
+    1. Adding features to subordinating conjunctions in comparative constructions
+    2. Correcting POS tags for auxiliary verbs that function as main verbs
+    3. Ensuring proper identification of auxiliaries
+    
+    :param Sentence s: The sentence containing tokens to preprocess
     """
     for t in s:
         if (t.gov and t.upos == 'SCONJ' and
