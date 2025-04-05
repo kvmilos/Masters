@@ -1,10 +1,11 @@
 """
 Module for the preconversion of the sentence.
 """
-from utils.classes import Sentence
+from typing import Iterable
+from utils.classes import Token
 
 
-def preconversion(s: Sentence) -> None:
+def preconversion(s: Iterable['Token']) -> None:
     """
     Preconversion of the sentence.
     """

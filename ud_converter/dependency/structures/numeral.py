@@ -2,13 +2,14 @@
 Module for the conversion of numeral phrases to UD.
 """
 import logging
-from utils.classes import Sentence, Token
+from typing import Iterable
+from utils.classes import Token
 from dependency.labels import convert_label as cl
 
 logger = logging.getLogger('ud_converter.dependency.structures.numeral')
 
 
-def convert_numeral(s: Sentence) -> None:
+def convert_numeral(s: Iterable['Token'] ) -> None:
     """
     Conversion of numeral phrases to UD.
     """
@@ -34,7 +35,7 @@ def standard_numeral(t: Token) -> None:
     if len(comp) != 1:
         logger.warning('Expected 1 comp child, got %d for standard numeral phrase: %s', len(comp), t.form)
         return
-    comp = comp[0]
+    comp : Token = comp[0]
     comp.ugov = t.gov
     comp.udep_label = '_'
     t.ugov = comp

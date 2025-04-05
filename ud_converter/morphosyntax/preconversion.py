@@ -6,7 +6,7 @@ import logging
 from utils.classes import Token
 from morphosyntax.conversion import pos_specific_upos
 
-re_romam = re.compile(r'^M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$')
+re_roman = re.compile(r'^M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$')
 re_arabic = re.compile(r'^\d+([\.,]\d+)*$')
 
 logger = logging.getLogger('ud_converter.morphosyntax.preconversion')
@@ -35,7 +35,7 @@ def lemma_based_upos(t: Token) -> None:
     elif t.pos not in ['subst', 'ign'] and re_arabic.match(t.lemma):
         number(t)
         logger.debug("Converted %s to %s", t.form, t.upos)
-    elif t.pos not in ['interj', 'qub', 'part', 'conj', 'ign', 'brev', 'subst', 'prep', 'xxs', 'xxx'] and re_romam.match(t.lemma):
+    elif t.pos not in ['interj', 'qub', 'part', 'conj', 'ign', 'brev', 'subst', 'prep', 'xxs', 'xxx'] and re_roman.match(t.lemma):
         number(t, roman=True)
         logger.debug("Converted %s to %s", t.form, t.upos)
     elif t.lemma[0].isupper():

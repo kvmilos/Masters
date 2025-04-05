@@ -2,7 +2,7 @@
 Module for the Sentence and Token classes.
 """
 from collections import defaultdict
-from typing import Dict, List, Optional
+from typing import Dict, List
 from utils.constants import feats_dict, MULTIWORD_EXPRESSIONS as MWE
 
 
@@ -20,7 +20,7 @@ class Sentence:
         for token in tokens:
             token.sentence = self
 
-    def get_root(self) -> Optional['Token']:
+    def get_root(self) -> 'Token' | None:
         """
         Returns the Token whose gov_id == '0' (i.e. the root).
         If for some reason there's no root, returns None.
@@ -306,7 +306,7 @@ class Token:
         ])
 
     @property
-    def gov(self) -> Optional['Token']:
+    def gov(self) -> 'Token' | None:
         """Returns the governor Token, or None if it's the root or something is missing."""
         if self.sentence is None:
             return None
@@ -315,7 +315,7 @@ class Token:
         return self.sentence.dict_by_id.get(self.gov_id)
 
     @property
-    def ugov(self) -> Optional['Token']:
+    def ugov(self) -> 'Token' | None:
         """Returns the governor Token, or None if it's the root or something is missing."""
         if self.sentence is None:
             return None
@@ -342,14 +342,14 @@ class Token:
         ]
 
     @property
-    def prev(self) -> Optional['Token']:
+    def prev(self) -> 'Token' | None:
         """Returns the previous token in the sentence."""
         if self.sentence is None:
             return None
         return self.sentence.dict_by_id.get(str(int(self.id) - 1), None)
 
     @property
-    def next(self) -> Optional['Token']:
+    def next(self) -> 'Token' | None:
         """Returns the next token in the sentence."""
         if self.sentence is None:
             return None
@@ -386,7 +386,7 @@ class Token:
         ]
 
     @property
-    def rec_gov_via_label(self, label: str) -> Optional['Token']:
+    def rec_gov_via_label(self, label: str) -> 'Token' | None:
         """
         Returns the governor of the token if the dependency label is == label, and gov's gov is != label. 
         If there is no such governor, returns None.
@@ -402,7 +402,7 @@ class Token:
         return None
 
     @property
-    def rec_child_with_label_via_label(self, target_label: str, label: str) -> Optional['Token']:
+    def rec_child_with_label_via_label(self, target_label: str, label: str) -> 'Token' | None:
         """
         Returns the child of the token with the given dependency label.
         If there is no such child, goes through the children's children with the given label and looks for the target label.
