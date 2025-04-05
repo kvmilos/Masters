@@ -78,6 +78,10 @@ def process_conll_file(file_path: str, output_dir: str, test: bool = False) -> N
     """
     Reads a CONLL file from file_path, applies corrections to each non-empty line,
     and writes the corrected file to output_dir with the same filename.
+    
+    :param str file_path: Path to the input CONLL file
+    :param str output_dir: Directory where corrected file will be saved
+    :param bool test: If True, runs validation tests on the corrected lines
     """
     print(f'Processing file: {file_path}')
     corrected_lines = []

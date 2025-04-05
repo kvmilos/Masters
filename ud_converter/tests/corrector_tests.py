@@ -17,7 +17,7 @@ def test_pos(lines: List[str]) -> None:
     Validates that every POS tag in the input is in the allowed set.
     
     :param lines: List of CoNLL format lines to validate
-    :raise AssertionError: for invalid POS tags
+    :raises AssertionError: for invalid POS tags
     """
     for line in lines:
         if not line.strip():
@@ -32,7 +32,7 @@ def test_feats(lines: List[str]) -> None:
     Validates that every feature in the FEATS column is in the allowed set.
     
     :param lines: List of CoNLL format lines to validate
-    :raise AssertionError for invalid features
+    :raises AssertionError: for invalid features
     """
     for line in lines:
         if not line.strip():
@@ -55,7 +55,7 @@ def test_feats_pos_combination(lines: List[str]) -> None:
     according to the feats_of_pos dictionary.
     
     :param lines: List of CoNLL format lines to validate
-    :raise AssertionError: for invalid feature-POS combinations
+    :raises AssertionError: for invalid feature-POS combinations
     """
     for line in lines:
         if not line.strip():

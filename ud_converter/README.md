@@ -61,7 +61,7 @@ python corrector.py input_path output_dir [--test]
 Arguments:
 - `input_path`: Path to a directory containing CoNLL files, or to one specific ConLL file
 - `output_dir`: Path to a directory for the output file(s) to be saved there
-- `--test` (optional): Test the 
+- `--test` (optional): Test the corrected file for valid POS tags, features, and feature-POS combinations
 
 ## Development Status
 

@@ -445,7 +445,6 @@ class Token:
             return None
         return self.sentence.dict_by_id.get(str(int(self.id) + 1), None)
 
-    @property
     def children_with_label(self, label: str) -> List['Token']:
         """Returns a list of children of the token with the given dependency label."""
         if self.sentence is None:
@@ -455,7 +454,6 @@ class Token:
             if n.dep_label == label
         ]
 
-    @property
     def children_with_ud_label(self, label: str) -> List['Token']:
         """Returns a list of children of the token with the given dependency label in UD format."""
         if self.sentence is None:
@@ -465,7 +463,6 @@ class Token:
             if n.udep_label == label
         ]
 
-    @property
     def children_with_lemma(self, lemma: str) -> List['Token']:
         """Returns a list of children of the token with the given lemma."""
         if self.sentence is None:
@@ -475,7 +472,6 @@ class Token:
             if n.lemma == lemma
         ]
 
-    @property
     def rec_gov_via_label(self, label: str) -> 'Token' | None:
         """
         Recursively finds a governing token via a specific dependency path.
@@ -497,7 +493,6 @@ class Token:
                 return self.gov.rec_gov_via_label(label)
         return None
 
-    @property
     def rec_child_with_label_via_label(self, target_label: str, label: str) -> 'Token' | None:
         """
         Recursively finds a child token with a specific label following a path.

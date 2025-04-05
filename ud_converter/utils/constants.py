@@ -208,8 +208,8 @@ MULTIWORD_EXPRESSIONS = {
     'wyżej wymieniony': 'wyżej_wymieniony',
     'wyżej wymieniony': 'wyżej_wymieniony',
     'przed_naszą_erą': 'przed_naszą_erą',
-    'przed naszą_erą': 'przed_naszą_erą',
-    'przed naszą_erą': 'przed_naszą_erą'
+    'przed naszą erą': 'przed_naszą_erą',
+    'przed naszą erą': 'przed_naszą_erą'
 }
 
 # List of particles
