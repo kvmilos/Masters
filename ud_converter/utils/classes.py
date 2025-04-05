@@ -2,7 +2,7 @@
 Module for the Sentence and Token classes.
 """
 from collections import defaultdict
-from typing import Dict, List
+from typing import Dict, List, Optional
 from utils.constants import feats_dict, MULTIWORD_EXPRESSIONS as MWE
 
 
@@ -20,7 +20,7 @@ class Sentence:
         for token in tokens:
             token.sentence = self
 
-    def get_root(self):
+    def get_root(self) -> Optional['Token']:
         """
         Returns the Token whose gov_id == '0' (i.e. the root).
         If for some reason there's no root, returns None.
@@ -56,7 +56,8 @@ class Sentence:
         """Returns the sentence as its tokens joined by newline."""
         return "\n".join(str(token) for token in self.tokens)
 
-    def __iter__(self):
+    def __iter__(self) -> List['Token']:
+        """Returns an iterator over the tokens in the sentence."""
         return iter(self.tokens)
 
 
@@ -163,7 +164,7 @@ class Token:
         self.data['pos_feats'] = value
 
     @property
-    def feats(self):
+    def feats(self) -> Dict[str, str]:
         """Returns a dictionary of feats for the token."""
         return self.data['feats']
 
@@ -224,7 +225,7 @@ class Token:
         self.data['misc'] = value
 
     @property
-    def umisc(self):
+    def umisc(self) -> Dict[str, str]:
         """Returns the UD misc of the token."""
         return self.data['umisc']
 
@@ -255,7 +256,7 @@ class Token:
         self.data['upos'] = value
 
     @property
-    def ufeats(self):
+    def ufeats(self) -> Dict[str, str]:
         """Returns the ufeats of the token."""
         return self.data['ufeats']
 
@@ -265,7 +266,7 @@ class Token:
         self.data['ufeats'].update(value)
 
     @property
-    def udep_label(self):
+    def udep_label(self) -> str:
         """Returns the udep_label of the token."""
         return self.data['udep_label']
 
@@ -305,7 +306,7 @@ class Token:
         ])
 
     @property
-    def gov(self):
+    def gov(self) -> Optional['Token']:
         """Returns the governor Token, or None if it's the root or something is missing."""
         if self.sentence is None:
             return None
@@ -314,7 +315,7 @@ class Token:
         return self.sentence.dict_by_id.get(self.gov_id)
 
     @property
-    def ugov(self):
+    def ugov(self) -> Optional['Token']:
         """Returns the governor Token, or None if it's the root or something is missing."""
         if self.sentence is None:
             return None
@@ -341,14 +342,14 @@ class Token:
         ]
 
     @property
-    def prev(self):
+    def prev(self) -> Optional['Token']:
         """Returns the previous token in the sentence."""
         if self.sentence is None:
             return None
         return self.sentence.dict_by_id.get(str(int(self.id) - 1), None)
 
     @property
-    def next(self):
+    def next(self) -> Optional['Token']:
         """Returns the next token in the sentence."""
         if self.sentence is None:
             return None
@@ -385,7 +386,7 @@ class Token:
         ]
 
     @property
-    def rec_gov_via_label(self, label: str) -> 'Token':
+    def rec_gov_via_label(self, label: str) -> Optional['Token']:
         """
         Returns the governor of the token if the dependency label is == label, and gov's gov is != label. 
         If there is no such governor, returns None.
@@ -401,7 +402,7 @@ class Token:
         return None
 
     @property
-    def rec_child_with_label_via_label(self, target_label: str, label: str) -> 'Token':
+    def rec_child_with_label_via_label(self, target_label: str, label: str) -> Optional['Token']:
         """
         Returns the child of the token with the given dependency label.
         If there is no such child, goes through the children's children with the given label and looks for the target label.
