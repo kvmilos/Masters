@@ -148,6 +148,7 @@ class Token:
             self.data['ugov'] = None
             self.data['dep_label'] = columns[7]
             self.data['udep_label'] = ''
+            self.data['eud'] = defaultdict(str) 
             self.data['sent_id'] = columns[8]
             self.data['misc'] = columns[9]
             self.data['umisc'] = defaultdict(str)
@@ -170,6 +171,7 @@ class Token:
             self.data['ugov'] = None
             self.data['dep_label'] = '_'
             self.data['udep_label'] = '_'
+            self.data['eud'] = defaultdict(str) 
             self.data['sent_id'] = '_'
             self.data['misc'] = '_'
             self.data['umisc'] = defaultdict(str)
@@ -293,6 +295,16 @@ class Token:
     def dep_label(self, value: str) -> None:
         """Sets the dependency label of the token."""
         self.data['dep_label'] = value
+    
+    @property
+    def eud(self) -> Dict[str, str]:
+        """Returns the enhanced dependencies of the token."""
+        return self.data['eud']
+
+    @eud.setter
+    def eud(self, value: Dict[str, str]) -> None:
+        """Updates the eud of the token."""
+        self.data['eud'].update(value)
 
     @property
     def sent_id(self) -> str:

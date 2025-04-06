@@ -1,5 +1,5 @@
 """
-Pytest-style tests for the corrector module.
+Tests for the corrector module.
 
 This module contains validation tests for CoNLL files to ensure they follow 
 the expected format and constraints. The tests verify:
