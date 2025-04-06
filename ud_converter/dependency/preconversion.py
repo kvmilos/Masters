@@ -1,28 +1,27 @@
 """
 Module for preprocessing dependency conversion from MPDT to UD.
 
-This module handles preliminary adjustments to tokens before the main 
-dependency structure conversion takes place, such as correcting POS tags 
+This module handles preliminary adjustments to tokens before the main
+dependency structure conversion takes place, such as correcting POS tags
 based on syntactic context.
 """
-from typing import Iterable
-from utils.classes import Token
+from utils.classes import Sentence
 
 
-def preconversion(s: Iterable['Token']) -> None:
+def preconversion(s: Sentence) -> None:
     """
     Performs preprocessing adjustments before dependency conversion.
-    
+
     This function applies a series of rules to adjust token properties based
     on syntactic context, ensuring that the subsequent dependency conversion
     steps have the correct input. It handles cases like:
     1. Adding features to subordinating conjunctions in comparative constructions
     2. Correcting POS tags for auxiliary verbs that function as main verbs
     3. Ensuring proper identification of auxiliaries
-    
+
     :param Sentence s: The sentence containing tokens to preprocess
     """
-    for t in s:
+    for t in s.tokens:
         if (t.gov and t.upos == 'SCONJ' and
         t.lemma in ['jak', 'jakby'] and
         t.dep_label == 'adjunct_compar'):
@@ -41,7 +40,7 @@ def preconversion(s: Iterable['Token']) -> None:
         elif (t.upos == 'AUX' and t.pos not in ['aglt', 'cond'] and
         not t.children and t.lemma == 'być' and
         t.dep_label not in ['aux', 'aglt'] and
-        t.rec_gov_via_label('conjunct').dep_label != 'aux' and
+        t.rec_gov_via_label('conjunct')[0].dep_label != 'aux' and
         not t.gov.children_with_label('pd')):
             t.upos = 'VERB'
 

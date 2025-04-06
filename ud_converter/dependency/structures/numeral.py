@@ -10,23 +10,22 @@ This module handles the conversion of various types of numeral phrases:
 Each type requires specific structural transformations to conform to UD guidelines.
 """
 import logging
-from typing import Iterable
-from utils.classes import Token
+from utils.classes import Sentence, Token
 from dependency.labels import convert_label as cl
 
 logger = logging.getLogger('ud_converter.dependency.structures.numeral')
 
 
-def convert_numeral(s: Iterable['Token'] ) -> None:
+def convert_numeral(s: Sentence) -> None:
     """
     Converts numeral phrases from MPDT format to UD format.
     
     This function identifies different types of numeral phrases and applies
     the appropriate conversion function based on the syntactic context.
     
-    :param Sentence s: An iterable of Token objects representing a sentence
+    :param Sentence s: The sentence to convert
     """
-    for t in s:
+    for t in s.tokens:
         if t.pos == 'num':
             if t.children_with_label('comp'):
                 standard_numeral(t)
