@@ -11,9 +11,9 @@ from datetime import datetime
 def setup_logging(log_level: int = logging.INFO) -> logging.Logger:
     """
     Set up logging configuration for the project.
-    
+
     :param log_level: The logging level to use for the console (default: logging.INFO)
-        
+
     :return: The configured logger for the ud_converter module
     """
     log_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'logs')

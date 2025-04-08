@@ -97,7 +97,7 @@ def add_no_space_misc(s: Sentence, text: str) -> None:
                 start = int(start_str)
                 end = int(end_str)
                 for num in range(start, end + 1):
-                    excluded_ids.add(str(num))
+                    excluded_ids.add(num)
             except Exception:
                 pass
 

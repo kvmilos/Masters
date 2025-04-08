@@ -475,7 +475,7 @@ def modifier(t: Token) -> str:
     elif t.gov.upos == 'ADJ':
 
         if t.gov.pos in ['ppas', 'pact']:
-            if t.upos == 'ADJ' and int(t.id) < int(t.gov.id) and not case and not mark and not t.gov.children_with_label('aux'):
+            if t.upos == 'ADJ' and t.id < t.gov.id and not case and not mark and not t.gov.children_with_label('aux'):
                 return 'amod'
             else:
                 return adverbial(t)

@@ -79,7 +79,7 @@ def coordination(t: Token, punct_conj: bool, ud_label: str = None) -> None:
     # conjuncts (coordinated elements)
     conjuncts = [c for c in children if c.udep_label == '_' and c.dep_label == 'conjunct']
     # pre-conjunctions (e.g., the first 'albo' in 'albo ... albo ...')
-    pre_coords = [c for c in children if c.udep_label == '_' and c.dep_label == 'pre_coord' and int(c.id) < int(t.id)]
+    pre_coords = [c for c in children if c.udep_label == '_' and c.dep_label == 'pre_coord' and c.id < t.id]
     # Punctuation marks
     puncts = [c for c in children if c.dep_label == 'punct']
     # Shared dependents (arguments and modifiers shared by all conjuncts)
@@ -96,7 +96,7 @@ def coordination(t: Token, punct_conj: bool, ud_label: str = None) -> None:
         return
 
     # main_c is the first coordinated conjunct, which is the head in UD
-    main_c = sorted(conjuncts, key=lambda x: int(x.id))[0]
+    main_c = sorted(conjuncts, key=lambda x: x.id)[0]
 
     # Conversion of coordination structures with punctuation marks
     if punct_conj:
@@ -152,11 +152,11 @@ def find_next_token(tokens: List[Token], t: Token) -> Token:
     :rtype: Token | None
     """
     # Sort tokens by ID
-    sorted_tokens = sorted(tokens, key=lambda x: int(x.id))
+    sorted_tokens = sorted(tokens, key=lambda x: x.id)
 
     # Find the first token (in the list) that comes after the specified token
     for c in sorted_tokens:
-        if int(c.id) > int(t.id):
+        if c.id > t.id:
             return c
 
     return None
@@ -177,15 +177,15 @@ def process_conjuncts(conjuncts: List[Token], main_c: Token, t: Token) -> None:
             c.ugov = main_c
             c.udep_label = 'conj'
             if c.pos == 'conj' and [cc for cc in c.children_with_label('conjunct') if cc.udep_label == '_']:
-                min_cc = min([cc for cc in c.children_with_label('conjunct') if cc.udep_label == '_'], key=lambda x: int(x.id))
+                min_cc = min([cc for cc in c.children_with_label('conjunct') if cc.udep_label == '_'], key=lambda x: x.id)
                 min_cc.eud = {main_c.id: 'conj'}
             else:
                 c.eud = {main_c.id: 'conj'}
             if t.dep_label == 'conjunct' and t.udep_label == '_':
-                temp_c = min([cc for cc in t.gov.children_with_label('conjunct') if cc.udep_label == '_'], key=lambda x: int(x.id))
+                temp_c = min([cc for cc in t.gov.children_with_label('conjunct') if cc.udep_label == '_'], key=lambda x: x.id)
                 temp_successors = [cc for cc in temp_c.children_with_label('conjunct') if cc.udep_label == '_']
                 if temp_successors:
-                    temp2 = min(temp_successors, key=lambda x: int(x.id))
+                    temp2 = min(temp_successors, key=lambda x: x.id)
                     c.eud = {temp2.id: 'conj'}
                 else:
                     c.eud = {temp_c.id: 'conj'}
@@ -197,7 +197,7 @@ def process_conjuncts(conjuncts: List[Token], main_c: Token, t: Token) -> None:
                         if govc.udep_label == '_':
                             # if conjunct is a conjunction, then we have a coordination structure and we need to find the first conjunct of this coordination
                             if govc.pos == 'conj':
-                                enhanced_conjuncts.append(min([cc for cc in govc.children_with_label('conjunct') if cc.udep_label == '_'], key=lambda x: int(x.id)))
+                                enhanced_conjuncts.append(min([cc for cc in govc.children_with_label('conjunct') if cc.udep_label == '_'], key=lambda x: x.id))
                             else:
                                 enhanced_conjuncts.append(govc)
                     if enhanced_conjuncts:
@@ -205,7 +205,7 @@ def process_conjuncts(conjuncts: List[Token], main_c: Token, t: Token) -> None:
                             c.eud = {ec.id: cl(t)}
                 else:
                     if c.pos == 'conj' and [cc for cc in c.children_with_label('conjunct') if cc.udep_label == '_']:
-                        min_cc = min([cc for cc in c.children_with_label('conjunct') if cc.udep_label == '_'], key=lambda x: int(x.id))
+                        min_cc = min([cc for cc in c.children_with_label('conjunct') if cc.udep_label == '_'], key=lambda x: x.id)
                         c.eud = {min_cc.id: cl(t)}
                     else:
                         c.eud = {t.gov.id: cl(t)}
@@ -233,11 +233,11 @@ def process_precoords(pre_coords: List[Token], conjuncts: List[Token]) -> None:
     """
     for pre in pre_coords:
         # Find conjuncts that come after the pre-conjunction
-        later_conjuncts = [c for c in conjuncts if int(c.id) > int(pre.id)]
+        later_conjuncts = [c for c in conjuncts if c.id > pre.id]
 
         if later_conjuncts:
             # Attach pre-conjunction to the nearest following conjunct
-            pre.ugov = min(later_conjuncts, key=lambda x: int(x.id))
+            pre.ugov = min(later_conjuncts, key=lambda x: x.id)
             pre.udep_label = 'cc:preconj'
 
 

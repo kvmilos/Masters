@@ -23,7 +23,7 @@ logger = setup_logging()
 def main() -> None:
     """
     Main function for the converter.
-    
+
     Processes command-line arguments, reads input files, performs the conversion,
     and writes the results to the specified output file. Supports both full
     conversion and tags-only mode.

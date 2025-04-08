@@ -21,7 +21,7 @@ import re
 def correct_gender_and_neut(line: str) -> str:
     """
     Applies corrections to the gender and accentability fields of the line.
-    
+
     It replaces occurrences of 'zneut' with 'neut' and fixes n2 to n, and if ':m' appears in the POS features
     while '|n' is present in FEATS, it changes ':m' to ':n'.
     """
@@ -43,10 +43,10 @@ def correct_gender_and_neut(line: str) -> str:
 def correct_conll_line_fields(line: str) -> str:
     """
     Corrects a single CONLL line by adjusting the POS and feature columns.
-    
+
     The fields are assumed to be:
       0: ID, 1: FORM, 2: LEMMA, 3: POS, 4: POS_FEATS, 5: FEATS, etc.
-    
+
     Corrections applied:
       - The correct_gender_and_neut function is applied.
       - The POS field (column 3) is trimmed to remove any extra appended features (using the first element).
@@ -78,7 +78,7 @@ def process_conll_file(file_path: str, output_dir: str, test: bool = False) -> N
     """
     Reads a CONLL file from file_path, applies corrections to each non-empty line,
     and writes the corrected file to output_dir with the same filename.
-    
+
     :param str file_path: Path to the input CONLL file
     :param str output_dir: Directory where corrected file will be saved
     :param bool test: If True, runs validation tests on the corrected lines

@@ -25,8 +25,8 @@ def convert_prepositional(s: Sentence) -> None:
         if t.upos == 'ADP' and t.gov:
             if t.dep_label == 'mwe':
                 # Handle prepositions that are part of multiword expressions
-                super_gov = t.rec_gov_via_label('mwe')[0]
-                super_gov_child = t.rec_gov_via_label('mwe')[1]
+                super_gov = t.super_gov_via_label('mwe')[0]
+                super_gov_child = t.super_gov_via_label('mwe')[1]
                 if super_gov and super_gov.udep_label == '_' and super_gov.dep_label in ['adjunct_compar', 'adjunct_comment']:
                     # Skip comparative and comment adjuncts
                     logger.warning('Skipping comparative or comment adjunct (preposition): %s', t.form)
@@ -47,14 +47,14 @@ def convert_pp(prep: Token, gov: Token, t: Token) -> None:
 
     :param Token prep: The preposition token or child of the super-governor
     :param Token gov: The super-governor of the preposition
-    :param Token t: The prepostion token
+    :param Token t: The preposition token
     """
     # Find the complements of the preposition but only on the right side
     comp = [c for c in t.children_with_label('comp') if c.id > prep.id]
 
     if not comp:
         # Try to find a complement through a multiword expression
-        mwe_comp = t.rec_child_with_label_via_label('comp', 'mwe')
+        mwe_comp = t.super_child_with_label_via_label('comp', 'mwe')
 
         if not mwe_comp:
             # Handle special cases like "obok lub zamiast jednostek"
@@ -131,4 +131,4 @@ def convert_prep_dependents(t: Token, comp: Token) -> None:
     # Attach each dependent to the complement
     for d in dependents:
         d.ugov = comp
-        d.udep_label = d.udep_label
+        # TODO: d.udep_label = ???

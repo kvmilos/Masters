@@ -31,9 +31,9 @@ def convert_numeral(s: Sentence) -> None:
                 standard_numeral(t)
             elif (t.gov.upos == 'CCONJ' or t.gov.upos == 'PUNCT' and t.dep_label == 'conjunct') and t.gov.children_with_label('comp'):
                 coordinated_numeral(t)
-            elif t.rec_child_with_label_via_label('mwe', 'comp'):
+            elif t.super_child_with_label_via_label('mwe', 'comp'):
                 mwe_numeral(t)
-            elif t.rec_child_with_label_via_label('ne', 'comp'):
+            elif t.super_child_with_label_via_label('ne', 'comp'):
                 ne_numeral(t)
             else:
                 logger.warning('No conversion for numeral phrase: %s', t.form)
@@ -102,7 +102,7 @@ def mwe_numeral(t: Token) -> None:
     
     :param Token t: The numeral Token to convert
     """
-    mwe = t.rec_child_with_label_via_label('mwe', 'comp')
+    mwe = t.super_child_with_label_via_label('mwe', 'comp')
     mwe.ugov = t.gov
     mwe.udep_label = cl(t)
     t.ugov = mwe
@@ -119,7 +119,7 @@ def ne_numeral(t: Token) -> None:
     :param Token t: The numeral Token to convert
     """
     ne = t.children_with_label('ne')
-    if ne != t.rec_child_with_label_via_label('ne', 'comp'):
+    if ne != t.super_child_with_label_via_label('ne', 'comp'):
         logger.warning('HERE WE PROBABLY HAVE A PROBLEM')
     if len(ne) != 1:
         logger.warning('Expected 1 named entity child, got %d for numeral phrase: %s', len(ne), t.form)
