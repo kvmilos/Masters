@@ -93,7 +93,7 @@ class Sentence:
         for key, value in self.meta.items():
             out.write(f"# {key} = {value}\n")
 
-    def __str__(self) -> str:
+    def to_string(self, form='mpdt') -> str:
         """
         Returns a string representation of the sentence.
 
@@ -102,7 +102,7 @@ class Sentence:
         :return: String representation of the sentence
         :rtype: str
         """
-        return "\n".join(str(token) for token in self.tokens)
+        return "\n".join(token.to_string(form) for token in self.tokens)
 
 
 class Token:
@@ -369,7 +369,7 @@ class Token:
         """Sets the udep_label of the token."""
         self.data['udep_label'] = value
 
-    def __str__(self, form='mpdt') -> str:
+    def to_string(self, form='mpdt') -> str:
         """
         Returns the Token as a line in CoNLL format or in UD CONLL-U format.
         Columns: ID, FORM, LEMMA, (U)POS, XPOS, FEATS, HEAD, DEPREL, DEPS, MISC.

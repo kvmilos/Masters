@@ -52,7 +52,7 @@ def write_ud_conll(sentences: List[Sentence], outfile_path: str, meta = None) ->
     Writes the converted sentences in UD CONLL-U format.
     
     For each sentence, writes metadata lines (if available) then each token 
-    by calling its __str__ method.
+    by calling its to_string method.
     
     :param List[Sentence] sentences: List of Sentence objects to write
     :param str outfile_path: Path to the output file
@@ -64,7 +64,7 @@ def write_ud_conll(sentences: List[Sentence], outfile_path: str, meta = None) ->
             sent_meta = meta[str(idx)] if meta else {}
             sentence.meta = sent_meta
             sentence.write_meta(out)
-            out.write(str(sentence))
+            out.write(sentence.to_string('ud'))
             out.write("\n\n")
 
 
