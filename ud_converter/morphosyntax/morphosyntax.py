@@ -23,7 +23,7 @@ def convert_to_upos(s: Sentence, meta: Dict[str, str]) -> None:
     :param Sentence s: The sentence containing tokens to be converted
     :param meta: Metadata dictionary with additional information for the conversion
     """
-    for token in s:
+    for token in s.tokens:
         preconversion(token)
         conversion(token)
     postconversion(s, meta)

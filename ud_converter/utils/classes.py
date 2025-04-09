@@ -7,7 +7,7 @@ converted Universal Dependencies properties.
 """
 import re
 from collections import defaultdict
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 from utils.constants import feats_dict, MULTIWORD_EXPRESSIONS as MWE
 
 
@@ -27,13 +27,13 @@ class Sentence:
         :param List[Token] tokens: List of Token objects that make up the sentence
         """
         self.tokens: List['Token'] = tokens
-        self.dict_by_id: Dict[int, 'Token'] = {token.id: token for token in tokens}
+        self.dict_by_id: Dict[str, 'Token'] = {token.id: token for token in tokens}
         self.metadata = defaultdict(str)
 
         for token in tokens:
             token.sentence = self
 
-    def get_root(self) -> 'Token' | None:
+    def get_root(self) -> Optional['Token']:
         """
         Returns the root token of the sentence.
 
@@ -43,7 +43,7 @@ class Sentence:
         :rtype: Token | None
         """
         for token in self.tokens:
-            if token.gov_id == 0:
+            if token.gov_id == '0':
                 return token
         return None
 
@@ -123,7 +123,7 @@ class Token:
             columns: List[str] = line.split("\t")
             self.sentence = None
             self.data = {}
-            self.data['id'] = int(columns[0])
+            self.data['id'] = columns[0]
             self.data['form'] = columns[1]
             self.data['lemma'] = MWE.get(columns[2], columns[2])
             self.data['pos'] = columns[3]
@@ -134,7 +134,7 @@ class Token:
             if self.data['feats_raw'] != "_":
                 self.data['feats'] = {feats_dict[feat]: feat for feat in self.data['feats_raw'].split("|")}
             self.data['ufeats'] = defaultdict(str)
-            self.data['gov_id'] = int(columns[6])
+            self.data['gov_id'] = columns[6]
             self.data['ugov_id'] = None
             self.data['gov'] = None
             self.data['ugov'] = None
@@ -148,7 +148,7 @@ class Token:
         else:
             self.sentence = None
             self.data = {}
-            self.data['id'] = -1
+            self.data['id'] = '_'
             self.data['form'] = '_'
             self.data['lemma'] = '_'
             self.data['pos'] = '_'
@@ -157,7 +157,7 @@ class Token:
             self.data['feats_raw'] = '_'
             self.data['feats'] = defaultdict(str)
             self.data['ufeats'] = defaultdict(str)
-            self.data['gov_id'] = -1
+            self.data['gov_id'] = '0'
             self.data['ugov_id'] = None
             self.data['gov'] = None
             self.data['ugov'] = None
@@ -169,12 +169,12 @@ class Token:
             self.data['umisc'] = defaultdict(str)
 
     @property
-    def id(self) -> int:
+    def id(self) -> str:
         """Returns the id of the token."""
         return self.data['id']
 
     @id.setter
-    def id(self, value: int) -> None:
+    def id(self, value: str) -> None:
         """Sets the id of the token."""
         self.data['id'] = value
 
@@ -237,7 +237,7 @@ class Token:
         :rtype: str
         """
         return self.data['pos_feats']
-    
+
     @pos_feats.setter
     def pos_feats(self, value: str) -> None:
         """
@@ -259,22 +259,22 @@ class Token:
         self.data['feats_raw'] = "|".join(value.values())
 
     @property
-    def gov_id(self) -> int:
+    def gov_id(self) -> str:
         """Returns the id of the governor of the token."""
         return self.data['gov_id']
 
     @gov_id.setter
-    def gov_id(self, value: int) -> None:
+    def gov_id(self, value: str) -> None:
         """Sets the id of the governor of the token."""
         self.data['gov_id'] = value
 
     @property
-    def ugov_id(self) -> int:
+    def ugov_id(self) -> str:
         """Returns the id of the governor of the token."""
         return self.data['ugov_id']
 
     @ugov_id.setter
-    def ugov_id(self, value: int) -> None:
+    def ugov_id(self, value: str) -> None:
         """Sets the id of the governor of the token."""
         self.data['ugov_id'] = value
 
@@ -407,20 +407,20 @@ class Token:
         ])
 
     @property
-    def gov(self) -> 'Token' | None:
+    def gov(self) -> Optional['Token']:
         """Returns the governor Token, or None if it's the root or something is missing."""
         if self.sentence is None:
             return None
-        if self.gov_id == 0:
+        if self.gov_id == '0':
             return None
         return self.sentence.dict_by_id.get(self.gov_id)
 
     @property
-    def ugov(self) -> 'Token' | None:
+    def ugov(self) -> Optional['Token']:
         """Returns the governor Token, or None if it's the root or something is missing."""
         if self.sentence is None:
             return None
-        if self.ugov_id == 0:
+        if self.ugov_id == '0':
             return None
         return self.sentence.dict_by_id.get(self.ugov_id)
 
@@ -443,18 +443,18 @@ class Token:
         ]
 
     @property
-    def prev(self) -> 'Token' | None:
+    def prev(self) -> Optional['Token']:
         """Returns the previous token in the sentence."""
         if self.sentence is None:
             return None
-        return self.sentence.dict_by_id.get(self.id - 1, None)
+        return self.sentence.dict_by_id.get(str(int(self.id) - 1), None)
 
     @property
-    def next(self) -> 'Token' | None:
+    def next(self) -> Optional['Token']:
         """Returns the next token in the sentence."""
         if self.sentence is None:
             return None
-        return self.sentence.dict_by_id.get(self.id + 1, None)
+        return self.sentence.dict_by_id.get(str(int(self.id) + 1), None)
 
     def children_with_label(self, label: str) -> List['Token']:
         """
@@ -498,7 +498,7 @@ class Token:
             if n.lemma == lemma
         ]
 
-    def super_gov_via_label(self, label: str) -> Tuple['Token', 'Token'] | None:
+    def super_gov_via_label(self, label: str) -> Optional[Tuple['Token', 'Token']]:
         """
         Recursively finds a governing token via a specific dependency path.
 
@@ -519,7 +519,7 @@ class Token:
                 return self.gov.super_gov_via_label(label)
         return None
 
-    def super_child_with_label_via_label(self, target_label: str, label: str) -> 'Token' | None:
+    def super_child_with_label_via_label(self, target_label: str, label: str) -> Optional['Token']:
         """
         Recursively finds a child token with a specific label following a path.
 

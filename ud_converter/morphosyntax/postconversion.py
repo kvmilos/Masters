@@ -4,17 +4,17 @@ Module for post-processing after the main tag conversion.
 This module handles tasks that need to be performed after the main POS and feature
 conversion, such as handling multiword expressions and space-after annotations.
 """
-from typing import Dict
+from typing import Dict, Optional
 from utils.classes import Sentence, Token
 
 
 def post_conversion(s: Sentence, meta: Dict[str, str]) -> None:
     """
     Handles post-processing tasks after the main tag conversion.
-    
+
     This function orchestrates various post-conversion processes including
     multiword expression handling and space-after annotations.
-    
+
     :param Sentence s: The sentence to process
     :param meta: Metadata dictionary with additional information for the conversion
     """
@@ -23,14 +23,14 @@ def post_conversion(s: Sentence, meta: Dict[str, str]) -> None:
     add_no_space_misc(s, text)
 
 
-def add_mwe(s: Sentence, text: str) -> None:
+def add_mwe(s: Sentence, text: Optional[str]) -> None:
     """
     Adds multiword tokens (MWEs) to the sentence.
-    
+
     This function identifies multiword expressions based on the original text
-    and creates special multiword tokens. The new multiword token is inserted 
+    and creates special multiword tokens. The new multiword token is inserted
     at the beginning of the group in the sentence's token list.
-    
+
     :param Sentence s: The sentence to process
     :param str text: The original text of the sentence
     """
@@ -76,13 +76,13 @@ def add_mwe(s: Sentence, text: str) -> None:
     s.dict_by_id = {token.id: token for token in new_tokens}
 
 
-def add_no_space_misc(s: Sentence, text: str) -> None:
+def add_no_space_misc(s: Sentence, text: Optional[str]) -> None:
     """
     Adds SpaceAfter=No to UD misc for tokens that are not followed by a space.
-    
-    This function analyzes the original text to determine which tokens are not 
+
+    This function analyzes the original text to determine which tokens are not
     followed by spaces and marks them accordingly in the UD MISC field.
-    
+
     :param Sentence s: The sentence to process
     :param str text: The original text of the sentence, if available
     """
@@ -97,7 +97,7 @@ def add_no_space_misc(s: Sentence, text: str) -> None:
                 start = int(start_str)
                 end = int(end_str)
                 for num in range(start, end + 1):
-                    excluded_ids.add(num)
+                    excluded_ids.add(str(num))
             except Exception:
                 pass
 

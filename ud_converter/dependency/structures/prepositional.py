@@ -50,7 +50,7 @@ def convert_pp(prep: Token, gov: Token, t: Token) -> None:
     :param Token t: The preposition token
     """
     # Find the complements of the preposition but only on the right side
-    comp = [c for c in t.children_with_label('comp') if c.id > prep.id]
+    comp = [c for c in t.children_with_label('comp') if int(c.id) > int(prep.id)]
 
     if not comp:
         # Try to find a complement through a multiword expression
