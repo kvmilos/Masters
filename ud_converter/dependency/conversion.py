@@ -12,6 +12,9 @@ from dependency.structures.prepositional import convert_prepositional
 from dependency.structures.copula import convert_copula
 from dependency.structures.subordination import convert_subordination
 from dependency.structures.coordination import convert_coordination
+from dependency.labels import convert_label as label_conversion
+from dependency.edges import edges_correction
+from dependency.postconversion import postconversion
 
 
 def main(s: Sentence) -> None:
@@ -26,13 +29,15 @@ def main(s: Sentence) -> None:
     preconversion(s)
     structure_conversion(s)
     label_conversion(s)
+    # edges_correction(s) TODO
+    postconversion(s)
 
 
 def structure_conversion(s: Sentence) -> None:
     """
     Converts the sentence structure according to Universal Dependencies guidelines.
     
-    This function applies a series of structure transformations to convert 
+    This function applies a series of structure transformations to convert
     specific syntactic constructions, including numerals, prepositional phrases,
     copula constructions, subordinate clauses, and coordination structures.
     
@@ -43,15 +48,3 @@ def structure_conversion(s: Sentence) -> None:
     convert_copula(s)
     convert_subordination(s)
     convert_coordination(s)
-
-
-def label_conversion(s: Sentence) -> None:
-    """
-    Converts dependency labels from MPDT to Universal Dependencies format.
-    
-    This function maps the original MPDT dependency labels to their 
-    corresponding Universal Dependencies labels based on the defined mapping rules.
-    
-    :param Sentence s: The sentence to convert
-    """
-    ...

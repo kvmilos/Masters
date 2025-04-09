@@ -601,20 +601,18 @@ nie ma w danych
 
 ## 3. Pytania / problemy
 
-- obecnie ppron12 bez accentability idzie do Variant=Short razem z nakc, a ppron3 z neut,zneut idzie do Variant=Short razem z nakc, nie jestem tego pewien - sprawdzic
-
 - NumType=Sets poczytać
 
-- jej / jego
+- przy 'bedzie' wcześniej było Tense=Fut, ale w nowym kodzie jest zamiast tego Voice=Act (wygląda na błędne użycie impt zamiast 'bedzie' ale może to celowo?) - tu jest ok - dodaje sie tense tam gdzie ma byc
 
-- przy 'bedzie' wcześniej było Tense=Fut, ale w nowym kodzie jest zamiast tego Voice=Act (wygląda na błędne użycie impt zamiast 'bedzie' ale może to celowo?)
-- tu jest ok - dodaje sie tense tam gdzie ma byc
+- czym są cneg, obj_factor, obj_purp? - nie ma ich w instrukcji do anotacji PDB - cneg to negacja do fraz ktore sa nieczasownikowe
 
-- czym są cneg, obj_factor, obj_purp? - nie ma ich w instrukcji do anotacji PDB
-- cneg to negacja do fraz ktore sa nieczasownikowe
+- xpos = comp do korektora (czy na pewno?)
 
-- xpos = comp do korektora
+################################################
 
-constituent negation	84 
-obj_factor	4
-obj_purp	6
+- _complete_enhanced w eud.py - robi coś moim zdaniem bezsensownego, tj. sprawdza czy nadrzędnikiem tokenu jest on sam (???)
+
+- też w eud.py _complete_enhanced_dictionary - o co chodzi z mark_rel -> mark ?
+
+- subordination.py - _convert_punctuation_marks ustawia ud_label na samo siebie
