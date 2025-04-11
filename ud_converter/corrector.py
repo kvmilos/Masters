@@ -15,29 +15,6 @@ Example:
 """
 import os
 import sys
-import re
-
-
-def correct_gender_and_neut(line: str) -> str:
-    """
-    Applies corrections to the gender and accentability fields of the line.
-
-    It replaces occurrences of 'zneut' with 'neut' and fixes n2 to n, and if ':m' appears in the POS features
-    while '|n' is present in FEATS, it changes ':m' to ':n'.
-    """
-    fields = line.split('\t')
-    if 'zneut' in fields[4] or 'zneut' in fields[5]:
-        fields[4] = fields[4].replace('zneut', 'neut')
-        fields[5] = fields[5].replace('zneut', 'neut')
-
-    fields[4] = re.sub(r'\bn2\b', 'n', fields[4])
-    fields[5] = re.sub(r'\bn2\b', 'n', fields[5])
-
-    if (':m:' in fields[4] or ':m\t' in fields[4]) and ('|n|' in fields[5] or '|n\t' in fields[5]):
-        fields[4] = fields[4].replace(':m:', ':n:')
-        fields[4] = fields[4].replace(':m\t', ':n\t')
-
-    return '\t'.join(fields)
 
 
 def correct_conll_line_fields(line: str) -> str:
@@ -48,28 +25,34 @@ def correct_conll_line_fields(line: str) -> str:
       0: ID, 1: FORM, 2: LEMMA, 3: POS, 4: POS_FEATS, 5: FEATS, etc.
 
     Corrections applied:
-      - The correct_gender_and_neut function is applied.
       - The POS field (column 3) is trimmed to remove any extra appended features (using the first element).
+      - The FEATS field (column 6) is adjusted to replace error colons with pipes.
       - The POS_FEATS field (column 4) is split by colon; the features (everything after the first element)
         are compared with the features obtained from the FEATS field (column 6, split by "|").
       - If their lengths differ, the POS_FEATS field is rebuilt as POS + ":" + ":".join(feats_from_token).
     """
-    line = correct_gender_and_neut(line)
 
     fields = line.split('\t')
     # Adjust POS (field 3)
     if ':' in fields[3]:
-        fields[3] = fields[3].split(":")[0]
+        fields[3] = fields[3].split(':')[0]
+
+    # Adjust FEATS (field 5)
+    if ':' in fields[5]:
+        fields[5] = fields[5].replace(':', '|')
+
+    if 'maniem1' in fields[5]:
+        fields[5] = fields[5].replace('maniem1', 'manim1')
 
     # Extract features from POS_FEATS (field 4)
-    pos_feats_parts = fields[4].split(":")
+    pos_feats_parts = fields[4].split(':')
     feats_from_pos_feats = pos_feats_parts[1:] if len(pos_feats_parts) > 1 else []
 
     # Extract features from FEATS (field 5); if "_" then no features.
-    feats_from_token = [] if fields[5] == "_" else fields[5].split("|")
+    feats_from_token = [] if fields[5] == '_' else fields[5].split('|')
 
     if len(feats_from_pos_feats) != len(feats_from_token):
-        fields[4] = fields[3] + (":" + ":".join(feats_from_token) if feats_from_token else "")
+        fields[4] = fields[3] + (':' + ':'.join(feats_from_token) if feats_from_token else '')
 
     return '\t'.join(fields)
 
@@ -102,7 +85,7 @@ def process_conll_file(file_path: str, output_dir: str, test: bool = False) -> N
 
     file_name = os.path.basename(file_path)
     output_path = os.path.join(output_dir, file_name)
-    with open(output_path, "w", encoding="utf-8") as outfile:
+    with open(output_path, 'w', encoding='utf-8') as outfile:
         outfile.writelines(corrected_lines)
     print(f'Corrected file saved as: {output_path}')
 
@@ -130,5 +113,5 @@ def main() -> None:
     else:
         process_conll_file(input_path, output_path, test)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

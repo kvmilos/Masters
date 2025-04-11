@@ -105,7 +105,7 @@ def ppraet(t: Token) -> None:
     """Converts a ppraet."""
     t.upos = 'ADJ'
     gn(t)
-    t.ufeats = {'Case': FU[t.feats['case']], 'Aspect': FU[t.feats['aspect']],
+    t.ufeats = {'Case': FU[t.feats['case']], 'Aspect': FU[t.feats['aspect']], 'Degree': FU[t.feats['degree']],
                 'Polarity': 'Neg' if t.feats['negation'] == 'neg' else 'Pos', 'VerbForm': 'Part', 'Voice': 'Pass'}
 
 def fut(t: Token) -> None:

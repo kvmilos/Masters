@@ -44,7 +44,7 @@ def main() -> None:
     for tag, count in sorted_tags:
         print(f"{tag} : {count}")
 
-    output_file = "mpdt_tags_corrected.txt"
+    output_file = "mpdt_tags_corrected2.txt"
     with open(output_file, "w", encoding="utf-8") as f:
         for tag, count in sorted_tags:
             f.write(f"{tag:<35}{count}\n")

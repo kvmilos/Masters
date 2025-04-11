@@ -38,8 +38,6 @@ feats_dict = {
     'f': 'gender',
     'n': 'gender',
     'm': 'gender',
-    'p1': 'gender', # obsługa p1 do usunięcia
-    'p2': 'gender', # obsługa p2 do usunięcia
     'manim1': 'gender',
     'manim2': 'gender',
     'pri': 'person',
@@ -48,7 +46,7 @@ feats_dict = {
     'pos': 'degree',
     'com': 'degree',
     'sup': 'degree',
-    'pt': 'subgender', # obsługa pt do dodania
+    'pt': 'subgender',
     'akc': 'accentability',
     'nakc': 'accentability',
     'neut': 'accentability',
@@ -111,7 +109,7 @@ feats_of_pos = {
     'pactb': ['number', 'case', 'gender', 'degree', 'aspect', 'negation'],
     'ppas': ['number', 'case', 'gender', 'degree', 'aspect', 'negation'],
     'ppasb': ['number', 'case', 'gender', 'degree', 'aspect', 'negation'],
-    'ppraet': ['number', 'case', 'gender', 'degree', 'aspect', 'negation'], # obsługa degree w ppraet do dodania
+    'ppraet': ['number', 'case', 'gender', 'degree', 'aspect', 'negation'],
     'fut': ['number', 'person', 'aspect'],
     'plusq': ['number', 'gender', 'aspect'],
     'aglt': ['number', 'person', 'aspect', 'vocalicity'],

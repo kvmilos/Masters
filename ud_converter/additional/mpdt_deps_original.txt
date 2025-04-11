@@ -36,12 +36,12 @@ aglt                               245
 app                                642
 aux                                317
 cneg                               42
-comp                               6789
+comp                               6790
 comp_ag                            66
 comp_fin                           977
 comp_inf                           706
 cond                               148
-conjunct                           6072
+conjunct                           6070
 dep                                2
 imp                                40
 item                               195
@@ -64,9 +64,9 @@ obj_stimul                         71
 obj_theme                          335
 orphan                             149
 parataxis                          1
-pd                                 427
+pd                                 426
 pre_coord                          128
-punct                              6894
+punct                              6896
 refl                               808
 root                               2018
 subj                               2286
