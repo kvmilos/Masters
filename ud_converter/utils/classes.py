@@ -121,7 +121,7 @@ class Token:
         """
         if line != 'mwe':
             columns: List[str] = line.split("\t")
-            self.sentence = None
+            self.sentence: Optional['Sentence'] = None
             self.data = {}
             self.data['id'] = columns[0]
             self.data['form'] = columns[1]
