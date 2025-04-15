@@ -14,7 +14,7 @@ the immediately succeeding conjunct.
 """
 import logging
 import re
-from typing import List
+from typing import List, Optional
 from utils.classes import Sentence, Token
 from dependency.labels import convert_label as cl
 
@@ -101,13 +101,14 @@ def coordination(t: Token, punct_conj: bool, ud_label: str = None) -> None:
     # Conversion of coordination structures with punctuation marks
     if punct_conj:
         # Attach the first conjunct to the governor
-        main_c.ugov = t.gov
-        main_c.udep_label = ud_label if ud_label else t.gov.udep_label
+        if t.gov:
+            main_c.ugov = t.gov
+            main_c.udep_label = ud_label if ud_label else t.gov.udep_label
 
         # Handle enhanced dependencies
         if t.dep_label == 'conjunct':
             # Add enhanced dependency from the super-governor to the main conjunct
-            if t.gov.gov and len(t.gov.gov.children_with_label('conjunct')) == 0:
+            if t.gov and t.gov.gov and len(t.gov.gov.children_with_label('conjunct')) == 0:
                 main_c.eud = {t.gov.gov.id: cl(t.gov)}
         elif t.gov and t.gov.id not in main_c.eud and t.gov.pos != 'conj':
             main_c.eud = {t.gov.id: cl(t.gov)}
@@ -117,9 +118,10 @@ def coordination(t: Token, punct_conj: bool, ud_label: str = None) -> None:
     # Conversion of coordination structures with conjunctions
     else:
         # Attach the first conjunct to the governor
-        main_c.ugov = t.gov
-        main_c.udep_label = ud_label if ud_label else t.udep_label
-        t.udep_label = 'cc'
+        if t.gov:
+            main_c.ugov = t.gov
+            main_c.udep_label = ud_label if ud_label else t.udep_label
+            t.udep_label = 'cc'
 
         # Find the next conjunct after the conjunction
         next_conjunct = find_next_token(conjuncts, t)
@@ -142,7 +144,7 @@ def coordination(t: Token, punct_conj: bool, ud_label: str = None) -> None:
     process_other(other, conjuncts, main_c, t)
 
 
-def find_next_token(tokens: List[Token], t: Token) -> Token:
+def find_next_token(tokens: List[Token], t: Token) -> Optional[Token]:
     """
     Finds the next token from the given list after the specified token.
 
@@ -181,7 +183,7 @@ def process_conjuncts(conjuncts: List[Token], main_c: Token, t: Token) -> None:
                 min_cc.eud = {main_c.id: 'conj'}
             else:
                 c.eud = {main_c.id: 'conj'}
-            if t.dep_label == 'conjunct' and t.udep_label == '_':
+            if t.dep_label == 'conjunct' and t.udep_label == '_' and t.gov:
                 temp_c = min([cc for cc in t.gov.children_with_label('conjunct') if cc.udep_label == '_'], key=lambda x: int(x.id))
                 temp_successors = [cc for cc in temp_c.children_with_label('conjunct') if cc.udep_label == '_']
                 if temp_successors:
@@ -207,7 +209,7 @@ def process_conjuncts(conjuncts: List[Token], main_c: Token, t: Token) -> None:
                     if c.pos == 'conj' and [cc for cc in c.children_with_label('conjunct') if cc.udep_label == '_']:
                         min_cc = min([cc for cc in c.children_with_label('conjunct') if cc.udep_label == '_'], key=lambda x: int(x.id))
                         c.eud = {min_cc.id: cl(t)}
-                    else:
+                    elif t.gov:
                         c.eud = {t.gov.id: cl(t)}
 
 
@@ -220,7 +222,9 @@ def process_puncts(puncts: List[Token], conjuncts: List[Token]) -> None:
     """
     for p in puncts:
         # Find the nearest conjunct after the punctuation
-        p.ugov = find_next_token(conjuncts, p)
+        next_token = find_next_token(conjuncts, p)
+        if next_token:
+            p.ugov = next_token
         p.udep_label = 'punct'
 
 

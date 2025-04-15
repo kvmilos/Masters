@@ -15,7 +15,7 @@ def convert_label(t: Token) -> str:
     """
     Converts a dependency label from MPDT format to Universal Dependencies format.
     
-    This function applies a series of rules to determine the appropriate UD 
+    This function applies a series of rules to determine the appropriate UD
     dependency label based on the token's part of speech, lemma, syntactic context,
     and original dependency label in the MPDT format.
     
@@ -33,19 +33,19 @@ def convert_label(t: Token) -> str:
     elif t.pos == 'interj' and t.dep_label != 'root':
         return 'discourse:intj'
     # subordinating conjunction
-    elif t.lemma == 'o' and t.children_with_lemma('tyle') == 1 and t.children_with_lemma('tyle')[0].dep_label == 'mwe':
+    elif t.lemma == 'o' and len(t.children_with_lemma('tyle')) == 1 and t.children_with_lemma('tyle')[0].dep_label == 'mwe':
         return 'mark'
-    elif t.lemma == 'o' and t.children_with_lemma('tyle') > 1:
+    elif t.lemma == 'o' and len(t.children_with_lemma('tyle')) > 1:
         logger.warning('Multiple "tyle"-lemma children for o: %s', t.form)
     # possessive determiner or determiner
     elif t.upos == 'DET' and t.pos != 'num' and t.dep_label in ['adjunct', 'poss']:
-        if t.ufeats['Poss'] == 'Yes':
+        if t.ufeats.get('Poss') == 'Yes':
             return 'det:poss'
         else:
             return 'det'
     # passive auxiliary or auxiliary
     elif t.dep_label == 'aux':
-        if t.governor and t.governor.pos == 'ppas':
+        if t.gov and t.gov.pos == 'ppas':
             return 'aux:pass'
         else:
             return 'aux'
@@ -105,7 +105,7 @@ def convert_label(t: Token) -> str:
     elif t.dep_label == 'comp':
         mark = t.children_with_ud_label('mark')
 
-        if t.gov.upos in ['PROPN', 'NOUN', 'X', 'NUM', 'SYM']:
+        if t.gov and t.gov.upos in ['PROPN', 'NOUN', 'X', 'NUM', 'SYM']:
             if (t.gov.pos.startswith('ger') or
                 t.upos == 'VERB' and mark or
                 t.upos == 'ADJ' and mark and (t.children_with_label('aux') or t.children_with_ud_label('cop'))):
@@ -119,7 +119,7 @@ def convert_label(t: Token) -> str:
                     return verb_complement(t)
                 else:
                     return 'nmod:arg'
-        elif t.gov.upos == 'ADJ':
+        elif t.gov and t.gov.upos == 'ADJ':
             if t.upos in ['PROPN', 'NOUN', 'PRON', 'X', 'ADJ', 'DET', 'NUM', 'SYM']:
                 if mark:
                     return verb_complement(t)
@@ -127,12 +127,12 @@ def convert_label(t: Token) -> str:
                     return 'obl:arg'
             elif t.upos == 'VERB' and mark:
                 return verb_complement(t)
-        elif (t.gov.upos in ['VERB', 'ADV'] or 
+        elif t.gov and (t.gov.upos in ['VERB', 'ADV'] or
               t.gov.upos == 'PART' and t.gov.lemma in ['tak', 'chyba', 'prawie', 'pewnie', 'zwłaszcza'] or
               t.gov.upos == 'DET' and t.gov.lemma in ['ten', 'taki'] or
               t.gov.upos == 'INTJ'):
             return verb_complement(t)
-        elif t.gov.upos == 'PRON':
+        elif t.gov and t.gov.upos == 'PRON':
             if t.gov.lemma == 'to':
                 return verb_complement(t, cleft=True)
             else:
@@ -174,7 +174,7 @@ def convert_label(t: Token) -> str:
         return 'iobj'
     # nominal modifier predicate or open clausal complement predicate
     elif t.dep_label == 'pd' and t.lemma not in ['być', 'bywać']:
-        if t.upos == 'NOUN' and t.gov.lemma in ['być', 'bywać'] and t.gov.upos == 'NOUN':
+        if t.upos == 'NOUN' and t.gov and t.gov.lemma in ['być', 'bywać'] and t.gov.upos == 'NOUN':
             return 'nmod:pred'
         else:
             return 'xcomp:pred'
@@ -186,7 +186,7 @@ def convert_label(t: Token) -> str:
         return 'root'
     # subject
     elif t.dep_label == 'subj':
-        if t.gov.upos == 'ADJ' and t.gov.ufeats['Voice'] == 'Pass':
+        if t.gov and t.gov.upos == 'ADJ' and t.gov.ufeats.get('Voice') == 'Pass':
             if (t.children_with_ud_label('mark') and (t.upos == 'VERB' or
                 t.upos in ['ADJ', 'NOUN', 'PRON', 'PROPN'] and t.children_with_ud_label('cop'))):
                 return 'csubj:pass'
@@ -196,7 +196,7 @@ def convert_label(t: Token) -> str:
               t.upos == 'VERB' and t.pos != 'inf'):
             return 'csubj'
         elif t.upos in ['PROPN', 'NOUN', 'PRON', 'ADJ', 'NUM', 'X', 'DET'] and not t.children_with_ud_label('case'):
-            if t.gov.pos.startswith('ger'):
+            if t.gov and t.gov.pos.startswith('ger'):
                 return 'obl:agent'
             else:
                 return 'nsubj'
@@ -221,7 +221,7 @@ def convert_label(t: Token) -> str:
         return 'advmod:neg'
     # fixed multiword expressions
     elif t.dep_label == 'mwe':
-        if (t.gov.upos == 'NUM' or
+        if t.gov and (t.gov.upos == 'NUM' or
             t.gov.upos == 'DET' and t.gov.pos == 'num' and t.upos != 'ADV' or
             t.gov.upos == 'NOUN' and t.gov.lemma == 'setka' or
             t.gov.pos in ['dig', 'brev'] and t.pos == 'dig'):
@@ -247,8 +247,7 @@ def convert_label(t: Token) -> str:
         return 'parataxis:restart'
     elif t.dep_label == 'dep':
         return 'dep'
-    else:
-        return t.dep_label
+    return t.dep_label
 
 
 def verb_complement(t: Token, cleft: bool = False) -> str:
@@ -256,7 +255,7 @@ def verb_complement(t: Token, cleft: bool = False) -> str:
     Helper function for converting verb complement dependencies to UD labels.
     
     This function determines the correct Universal Dependencies label for verb
-    complements based on their syntactic context, including handling cleft 
+    complements based on their syntactic context, including handling cleft
     constructions, infinitives, and various types of clauses.
     
     :param Token t: The token for which to determine the UD dependency label
@@ -280,6 +279,9 @@ def verb_complement(t: Token, cleft: bool = False) -> str:
         elif t.upos in ['NOUN', 'PRON', 'PROPN']:
             cop = t.children_with_ud_label('cop')
             if cop:
+                if len(cop) > 1:
+                    logger.warning('Multiple copula children for %s: %s', t.form, cop)
+                cop = cop[0]
                 if cop.pos == 'inf':
                     return 'xcomp:cleft'
                 return 'ccomp:cleft'
@@ -305,6 +307,9 @@ def verb_complement(t: Token, cleft: bool = False) -> str:
             if t.children_with_ud_label('mark'):
                 cop = t.children_with_ud_label('cop')
                 if cop:
+                    if len(cop) > 1:
+                        logger.warning('Multiple copula children for %s: %s', t.form, cop)
+                    cop = cop[0]
                     if cop.pos == 'inf':
                         return 'xcomp'
                     return 'ccomp'
@@ -323,8 +328,7 @@ def verb_complement(t: Token, cleft: bool = False) -> str:
         elif t.upos == 'ADP' and not t.children_with_ud_label('comp'):
             return 'obl:orphan'
 
-        else:
-            return t.udep_label
+    return t.udep_label
 
 
 def modifier(t: Token) -> str:
@@ -333,7 +337,7 @@ def modifier(t: Token) -> str:
     
     This function determines the appropriate Universal Dependencies label for
     modifiers based on their part of speech, the part of speech of their governor,
-    and other syntactic properties. It handles various types of adjectival, 
+    and other syntactic properties. It handles various types of adjectival,
     nominal, and adverbial modifiers.
     
     :param Token t: The token for which to determine the UD dependency label
@@ -343,11 +347,14 @@ def modifier(t: Token) -> str:
     mark = t.children_with_ud_label('mark')
     case = t.children_with_ud_label('case')
 
-    if t.gov.upos in ['PROPN', 'NOUN', 'PRON', 'X', 'NUM', 'SYM']:
+    if t.gov and t.gov.upos in ['PROPN', 'NOUN', 'PRON', 'X', 'NUM', 'SYM']:
 
         if t.upos == 'ADJ':
             if t.pos in ['ppas', 'pact']:
                 if mark:
+                    if len(mark) > 1:
+                        logger.warning('Multiple "mark"-children for %s: %s', t.form, mark)
+                    mark = mark[0]
                     if mark.lemma == 'jako' and mark.ufeats.get('ConjType'):
                         return 'amod'
                     else:
@@ -361,6 +368,9 @@ def modifier(t: Token) -> str:
                     return 'acl'
             else:
                 if mark:
+                    if len(mark) > 1:
+                        logger.warning('Multiple "mark"-children for %s: %s', t.form, mark)
+                    mark = mark[0]
                     if mark.lemma == 'jako' and mark.ufeats.get('ConjType') and t.gov.pos != 'ger' and t.dep_label == 'adjunct_attrib':
                         return 'amod'
                     else:
@@ -376,7 +386,7 @@ def modifier(t: Token) -> str:
                     return adverbial(t)
                 else:
                     return 'acl'
-            elif t.dep_label.startswith('adjunct_') and t.gov.children_with_ud_label('cop'):
+            elif t.dep_label.startswith('adjunct_') and t.gov and t.gov.children_with_ud_label('cop'):
                 return adverbial(t)
             else:
                 return 'nmod'
@@ -389,6 +399,9 @@ def modifier(t: Token) -> str:
 
         elif t.upos == 'DET' and t.pos == 'adj':
             if mark:
+                if len(mark) > 1:
+                    logger.warning('Multiple "mark"-children for %s: %s', t.form, mark)
+                mark = mark[0]
                 if mark.lemma == 'jako' and mark.ufeats.get('ConjType'):
                     return 'amod'
                 else:
@@ -437,10 +450,9 @@ def modifier(t: Token) -> str:
         elif t.upos == 'ADP' and t.dep_label == 'adjunct_attrib':
             return 'nmod'
 
-        else:
-            return adverbial(t)
+        return adverbial(t)
 
-    elif t.gov.upos == 'DET' and t.gov.pos in ['num', 'adj']:
+    elif t.gov and t.gov.upos == 'DET' and t.gov.pos in ['num', 'adj']:
 
         if t.upos == 'ADJ':
             if t.pos in ['ppas', 'pact']:
@@ -472,9 +484,9 @@ def modifier(t: Token) -> str:
         else:
             return adverbial(t)
 
-    elif t.gov.upos == 'ADJ':
+    elif t.gov and t.gov.upos == 'ADJ':
 
-        if t.gov.pos in ['ppas', 'pact']:
+        if t.gov and t.gov.pos in ['ppas', 'pact']:
             if t.upos == 'ADJ' and int(t.id) < int(t.gov.id) and not case and not mark and not t.gov.children_with_label('aux'):
                 return 'amod'
             else:
@@ -497,10 +509,10 @@ def modifier(t: Token) -> str:
             else:
                 return adverbial(t)
 
-    elif t.gov.upos in ['VERB', 'ADV', 'PART', 'INTJ', 'SCONJ']:
+    elif t.gov and t.gov.upos in ['VERB', 'ADV', 'PART', 'INTJ', 'SCONJ']:
         return adverbial(t)
 
-    elif t.gov.upos == 'ADP' and t.children_with_label('mwe'):
+    elif t.gov and t.gov.upos == 'ADP' and t.children_with_label('mwe'):
         if t.upos == 'ADP':
             return 'advmod'
         elif t.upos == 'ADV':
@@ -510,8 +522,7 @@ def modifier(t: Token) -> str:
         elif t.upos == 'CCONJ' and not t.gov.children_with_label('conjunct'):
             return 'cc'
 
-    else:
-        return adverbial(t)
+    return adverbial(t)
 
 
 def adverbial(t: Token) -> str:
@@ -606,5 +617,4 @@ def adverbial(t: Token) -> str:
     elif t.upos == 'CCONJ' and not t.children_with_label('conjunct'):
         return 'cc'
 
-    else:
-        return t.udep_label
+    return t.udep_label

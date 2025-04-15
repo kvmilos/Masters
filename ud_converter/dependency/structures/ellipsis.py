@@ -96,8 +96,9 @@ def process_ellipsis(punct: Token, head: Token) -> None:
     dependents = [d for d in punct.children if d != head]
 
     # Attach the new head to the governor of the punctuation mark
-    head.ugov = punct.gov
-    head.udep_label = punct.udep_label
+    if punct.gov:
+        head.ugov = punct.gov
+        head.udep_label = punct.udep_label
 
     # Attach the punctuation mark to the new head
     punct.ugov = head

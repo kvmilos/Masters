@@ -85,8 +85,11 @@ def jako(t: Token) -> None:
         gov = t.gov
 
         # Attach the predicative complement to the governor
-        pd.ugov = gov
-        pd.udep_label = t.udep_label
+        if gov:
+            pd.ugov = gov
+            pd.udep_label = t.udep_label
+        else:
+            logger.warning("The attributive construction JAKO has no governor.")
 
         # Attach 'jako' to the predicative complement
         t.ugov = pd
@@ -107,10 +110,15 @@ def complex_subordinating_conjunction(t: Token) -> None:
     
     :param Token t: The second part of the complex conjunction
     """
-    super_gov = t.super_gov_via_label('mwe')[0]
-    super_gov_child = t.super_gov_via_label('mwe')[1]
+    if not t.super_gov_via_label('mwe') and t.gov:
+        logger.warning("Complex subordinating conjunction has no super-governor: %s %s",
+                      t.gov.form, t.form)
+        return
 
-    if not super_gov:
+    super_gov = t.super_gov_via_label('mwe')[0] # type: ignore
+    super_gov_child = t.super_gov_via_label('mwe')[1] # type: ignore
+
+    if not super_gov and t.gov:
         logger.warning("Complex subordinating conjunction has no governor: %s %s",
                       t.gov.form, t.form)
         return
@@ -121,6 +129,9 @@ def complex_subordinating_conjunction(t: Token) -> None:
     if not comp:
         if t.lemma not in ['to']:
             logger.warning("Subordinate conjunction '%s' has no dependents.", t.lemma)
+            return
+        else:
+            logger.debug("Subordinate conjunction '%s' which is a 'to' has no dependents.", t.lemma)
             return
 
     # Attach the complement to the super-governor
@@ -143,10 +154,15 @@ def complex_subordinating_threeword_conjunction(t: Token) -> None:
     
     :param Token t: The last part of the complex conjunction
     """
-    super_gov = t.super_gov_via_label('mwe')[0]
-    super_gov_child = t.super_gov_via_label('mwe')[1]
+    if not t.super_gov_via_label('mwe') and t.gov:
+        logger.warning("Complex subordinating conjunction has no super-governor: %s %s",
+                      t.gov.form, t.form)
+        return
 
-    if not super_gov:
+    super_gov = t.super_gov_via_label('mwe')[0] # type: ignore
+    super_gov_child = t.super_gov_via_label('mwe')[1] # type: ignore
+
+    if (not super_gov) and t.gov:
         logger.warning("Complex subordinating conjunction has no governor: %s %s",
                       t.gov.form, t.form)
         return

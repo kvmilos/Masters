@@ -32,7 +32,7 @@ def convert_copula(s: Sentence) -> None:
     """
     for t in s.tokens:
         # Check for copula verbs with lemma 'to'
-        if t.lemma == 'to' and t.pos == 'pred':
+        if t.lemma == 'to' and t.pos == 'pred' and t.gov:
             # Check for different types of predicative expressions
             if t.children_with_label('subj'):
                 if len(t.children_with_label('pd')) == 1:
@@ -90,7 +90,7 @@ def convert_predicative_adj(cop: Token, gov: Token) -> None:
             # Example: "Widok to niezapomniany"
             # Attach the subject to the predicative complement
             subj[0].ugov = pd
-            subj[0].udep_label = cl(cop.dep_label)
+            subj[0].udep_label = cl(cop)
 
         # Attach the predicative complement to the governor
         pd.ugov = gov
@@ -130,7 +130,7 @@ def convert_predicative_other(cop: Token, gov: Token, subj: Token) -> None:
 
         # Attach the predicative complement to the subject
         pd[0].ugov = subj
-        pd[0].udep_label = cl(pd[0].dep_label)
+        pd[0].udep_label = cl(pd[0])
 
     else:
         # Example: "To jest miłość"
@@ -166,7 +166,7 @@ def convert_coordinated_copula(cop: Token, gov: Token) -> None:
         if subj:
             # Attach the subject to the predicative complement
             subj[0].ugov = pd
-            subj[0].udep_label = cl(subj[0].dep_label)
+            subj[0].udep_label = cl(subj[0])
 
             # Attach the predicative complement to the governor
             pd.ugov = gov

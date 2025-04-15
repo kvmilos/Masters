@@ -7,7 +7,6 @@ preposition to its complement with a 'case' relation.
 """
 import logging
 from utils.classes import Sentence, Token
-from dependency.labels import convert_label as cl
 
 logger = logging.getLogger('ud_converter.dependency.structures.prepositional')
 
@@ -25,8 +24,11 @@ def convert_prepositional(s: Sentence) -> None:
         if t.upos == 'ADP' and t.gov:
             if t.dep_label == 'mwe':
                 # Handle prepositions that are part of multiword expressions
-                super_gov = t.super_gov_via_label('mwe')[0]
-                super_gov_child = t.super_gov_via_label('mwe')[1]
+                if not t.super_gov_via_label('mwe'):
+                    logger.warning('Super-governor not found for preposition: %s', t.form)
+                    continue
+                super_gov = t.super_gov_via_label('mwe')[0] # type: ignore
+                super_gov_child = t.super_gov_via_label('mwe')[1] # type: ignore
                 if super_gov and super_gov.udep_label == '_' and super_gov.dep_label in ['adjunct_compar', 'adjunct_comment']:
                     # Skip comparative and comment adjuncts
                     logger.warning('Skipping comparative or comment adjunct (preposition): %s', t.form)
@@ -58,11 +60,11 @@ def convert_pp(prep: Token, gov: Token, t: Token) -> None:
 
         if not mwe_comp:
             # Handle special cases like "obok lub zamiast jednostek"
-            if prep.dep_label == 'conjunct' and gov.udep_label != 'case':
+            if prep.dep_label == 'conjunct' and gov.udep_label != 'case' and t.gov:
                 conj_comp = t.gov.children_with_label('comp')
 
                 if not conj_comp:
-                    if prep.dep_label == 'comp' and gov.upos in ['VERB', 'ADV']:
+                    if prep.dep_label == 'comp' and gov and gov.upos in ['VERB', 'ADV']:
                         # Handle orphaned obliques
                         prep.udep_label = 'obl:orphan'
                     else:

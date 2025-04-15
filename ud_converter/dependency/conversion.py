@@ -28,7 +28,8 @@ def main(s: Sentence) -> None:
     """
     preconversion(s)
     structure_conversion(s)
-    label_conversion(s)
+    for t in s.tokens:
+        label_conversion(t)
     # edges_correction(s) TODO
     postconversion(s)
 

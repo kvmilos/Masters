@@ -40,8 +40,8 @@ def preconversion(s: Sentence) -> None:
         elif (t.upos == 'AUX' and t.pos not in ['aglt', 'cond'] and
         not t.children and t.lemma == 'być' and
         t.dep_label not in ['aux', 'aglt'] and
-        t.super_gov_via_label('conjunct')[0].dep_label != 'aux' and
-        not t.gov.children_with_label('pd')):
+        t.super_gov_via_label('conjunct') and
+        t.super_gov_via_label('conjunct')[0].dep_label != 'aux' and t.gov and not t.gov.children_with_label('pd')): # type: ignore
             t.upos = 'VERB'
 
         elif t.upos == 'VERB' and t.dep_label == 'aux':

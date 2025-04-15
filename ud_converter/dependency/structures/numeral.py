@@ -29,7 +29,7 @@ def convert_numeral(s: Sentence) -> None:
         if t.pos == 'num':
             if t.children_with_label('comp'):
                 standard_numeral(t)
-            elif (t.gov.upos == 'CCONJ' or t.gov.upos == 'PUNCT' and t.dep_label == 'conjunct') and t.gov.children_with_label('comp'):
+            elif t.gov and (t.gov.upos == 'CCONJ' or t.gov.upos == 'PUNCT' and t.dep_label == 'conjunct') and t.gov.children_with_label('comp'):
                 coordinated_numeral(t)
             elif t.super_child_with_label_via_label('mwe', 'comp'):
                 mwe_numeral(t)
@@ -52,9 +52,10 @@ def standard_numeral(t: Token) -> None:
     if len(comp) != 1:
         logger.warning('Expected 1 comp child, got %d for standard numeral phrase: %s', len(comp), t.form)
         return
-    comp : Token = comp[0]
-    comp.ugov = t.gov
-    comp.udep_label = '_'
+    comp = comp[0]
+    if t.gov:
+        comp.ugov = t.gov
+        comp.udep_label = '_'
     t.ugov = comp
     t.udep_label = numeral_label(t)
     for c in t.children:
@@ -87,10 +88,11 @@ def coordinated_numeral(t: Token) -> None:
         logger.warning('Expected 1 comp child, got %d for coordinated numeral phrase: %s', len(comp), t.form)
         return
     comp = comp[0]
-    comp.ugov = t.gov.gov
-    comp.udep_label = cl(t.gov)
-    t.gov.ugov = comp
-    t.gov.udep_label = numeral_label(t.gov)
+    if t.gov and t.gov.gov:
+        comp.ugov = t.gov.gov
+        comp.udep_label = cl(t.gov)
+        t.gov.ugov = comp
+        t.gov.udep_label = numeral_label(t.gov)
 
 
 def mwe_numeral(t: Token) -> None:
@@ -103,8 +105,12 @@ def mwe_numeral(t: Token) -> None:
     :param Token t: The numeral Token to convert
     """
     mwe = t.super_child_with_label_via_label('mwe', 'comp')
-    mwe.ugov = t.gov
-    mwe.udep_label = cl(t)
+    if t.gov and mwe:
+        mwe.ugov = t.gov
+        mwe.udep_label = cl(t)
+    if not mwe:
+        logger.warning('No MWE found for numeral phrase: %s', t.form)
+        return
     t.ugov = mwe
     t.udep_label = numeral_label(t)
 
@@ -125,8 +131,9 @@ def ne_numeral(t: Token) -> None:
         logger.warning('Expected 1 named entity child, got %d for numeral phrase: %s', len(ne), t.form)
         return
     ne = ne[0]
-    ne.ugov = t.gov
-    ne.udep_label = cl(t)
+    if t.gov:
+        ne.ugov = t.gov
+        ne.udep_label = cl(t)
     t.ugov = ne
     t.udep_label = 'nummod:flat'
 

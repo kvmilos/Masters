@@ -86,7 +86,7 @@ class Sentence:
 
         Each metadata key-value pair is written as a line in the format:
 
-        \# key = value
+        "# {key} = {value}"
 
         :param out: Output stream to write to
         """
@@ -513,6 +513,8 @@ class Token:
         if self.sentence is None:
             return None
         if self.dep_label == label:
+            if self.gov is None:
+                return None
             if self.gov.dep_label != label:
                 return self.gov, self
             else:
