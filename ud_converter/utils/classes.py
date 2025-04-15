@@ -365,7 +365,7 @@ class Token:
         return self.data['udep_label']
 
     @udep_label.setter
-    def udep_label(self, value: Dict[str, str]) -> None:
+    def udep_label(self, value: str) -> None:
         """Sets the udep_label of the token."""
         self.data['udep_label'] = value
 
