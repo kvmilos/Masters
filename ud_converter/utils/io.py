@@ -7,25 +7,27 @@ loading metadata from JSON files.
 """
 import logging
 import json
-from typing import List
+from typing import List, Dict
 from utils.classes import Sentence, Token
 
 logger = logging.getLogger('ud_converter.io')
 
 
-def read_conll(filepath: str) -> List[Sentence]:
+def read_conll(filepath: str, meta: Dict[str, Dict[str, str]] = None) -> List[Sentence]:
     """
     Reads a .conll file and returns a list of Sentence objects.
     
-    Blank lines separate sentences. Lines starting with '#' (if any) 
+    Blank lines separate sentences. Lines starting with '#' (if any)
     are treated as comments and skipped.
     
     :param str filepath: Path to the CoNLL-X format file to read
+    :param meta: Optional dictionary of metadata keyed by sentence index
     :return: List of Sentence objects containing the parsed sentences
     :rtype: List[Sentence]
     """
     sentences = []
     current_lines = []
+    sent_count = 0
 
     with open(filepath, 'r', encoding='utf-8') as f:
         for line in f:
@@ -34,15 +36,23 @@ def read_conll(filepath: str) -> List[Sentence]:
                 continue
             if line.strip() == '':
                 if current_lines:
+                    sent_count += 1
                     tokens = [Token(l) for l in current_lines]
                     sentence = Sentence(tokens)
+                    if meta:
+                        sent_meta = meta.get(str(sent_count), {'sent_id': str(sent_count)})
+                        sentence.meta = sent_meta
                     sentences.append(sentence)
                     current_lines = []
             else:
                 current_lines.append(line)
         if current_lines:
+            sent_count += 1
             tokens = [Token(l) for l in current_lines]
             sentence = Sentence(tokens)
+            if meta:
+                sent_meta = meta.get(str(sent_count), {'sent_id': str(sent_count)})
+                sentence.meta = sent_meta
             sentences.append(sentence)
 
     return sentences
