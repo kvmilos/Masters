@@ -37,6 +37,6 @@ def update_gender_number(t: Token) -> None:
     elif gender == 'n':
         t.ufeats = {'Gender': 'Neut', 'Number': FU[number]}
     else:
-        logger.warning("Sentence %d: Unknown gender: '%s' in token '%s' with pos '%s'", t.sentence.id, gender, t.form, t.pos)
+        logger.warning("Sentence %s: Unknown gender: '%s' in token '%s' with pos '%s'", t.sentence.id, gender, t.form, t.pos)
     if t.feats.get('subgender', None) == 'pt':
         t.ufeats = {'Number': 'Ptan'}
