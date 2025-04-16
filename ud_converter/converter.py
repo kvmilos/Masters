@@ -47,20 +47,18 @@ def main() -> None:
     meta_data = load_meta(meta_file) if meta_file else {}
 
     logger.info('Reading input file %s', input_file)
-    sentences = read_conll(input_file)
+    sentences = read_conll(input_file, meta_data)
     logger.info('Read %d sentences', len(sentences))
 
     if tags_only:
         logger.info('Performing tags-feats-only conversion.')
-        for i, sentence in enumerate(sentences):
-            meta = meta_data.get(str(i + 1), {})
-            convert_to_upos(sentence, meta)
+        for sentence in sentences:
+            convert_to_upos(sentence, sentence.meta)
     else:
         logger.info('Performing full dependency conversion.')
         logger.info('Converting tags and feats.')
-        for i, sentence in enumerate(sentences):
-            meta = meta_data.get(str(i + 1), {})
-            convert_to_upos(sentence, meta)
+        for sentence in sentences:
+            convert_to_upos(sentence, sentence.meta)
         logger.info('Converting dependencies.')
         for sentence in sentences:
             convert_dependencies(sentence)
