@@ -290,6 +290,6 @@ def punctuation_marks(t: Token, comp: Token) -> None:
     for punct in [c for c in t.children if c.upos == 'PUNCT']:
         if not punct.children:
             punct.ugov = comp
-            # punct.udep_label = 'punct' TODO: ???
+            punct.udep_label = 'punct'
         else:
             logger.warning("Punctuation mark '%s' has dependents.", punct.form)
