@@ -29,6 +29,7 @@ class Sentence:
         self.tokens: List['Token'] = tokens
         self.dict_by_id: Dict[str, 'Token'] = {token.id: token for token in tokens}
         self.metadata = defaultdict(str)
+        self.id = None
 
         for token in tokens:
             token.sentence = self
@@ -79,6 +80,7 @@ class Sentence:
         :param Dict[str, str] value: Dictionary of metadata to set
         """
         self.metadata.update(value)
+        self.id = self.metadata['sent_id']
 
     def write_meta(self, out) -> None:
         """
@@ -121,7 +123,7 @@ class Token:
         """
         if line != 'mwe':
             columns: List[str] = line.split("\t")
-            self.sentence: Optional['Sentence'] = None
+            self.sentence: Sentence
             self.data = {}
             self.data['id'] = columns[0]
             self.data['form'] = columns[1]
@@ -146,7 +148,7 @@ class Token:
             self.data['umisc'] = defaultdict(str)
             self.data['umisc']['Translit'] = columns[9]
         else:
-            self.sentence = None
+            self.sentence: Sentence
             self.data = {}
             self.data['id'] = '_'
             self.data['form'] = '_'
@@ -388,7 +390,7 @@ class Token:
         elif form == 'ud':
             upos_str = self.data['upos']
             feats_str = '|'.join([f'{k}={v}' for k, v in sorted(self.data['ufeats'].items())]) if self.data['ufeats'] else '_'
-            sent_str = '_'
+            sent_str = '|'.join([f'{gov_id}:{label}' for gov_id, label in sorted(self.data['eud'].items())]) if self.data['eud'] else '_'
             misc_str = '|'.join([f'{k}={v}' for k, v in sorted(self.data['umisc'].items())]) if self.data['umisc'] else '_'
         else:
             raise ValueError(f"Invalid form parameters: {form}")

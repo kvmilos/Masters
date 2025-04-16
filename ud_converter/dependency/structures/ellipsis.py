@@ -47,32 +47,32 @@ def convert_ellipsis(s: Sentence) -> None:
                     process_ellipsis(t, subj[0])
                     continue
                 elif len(subj) > 1:
-                    logger.warning("Multiple subjects found for elliptical structure at token: %s", t.form)
+                    logger.warning("Sentence %s: Multiple subjects found for elliptical structure at token: '%s'", t.sentence.id, t.form)
 
                 obj = t.children_with_re_label('obj')
                 if len(obj) == 1:
                     process_ellipsis(t, obj[0])
                     continue
                 elif len(obj) > 1:
-                    logger.warning("Multiple objects found for elliptical structure at token: %s", t.form)
+                    logger.warning("Sentence %s: Multiple objects found for elliptical structure at token: '%s'", t.sentence.id, t.form)
 
                 comp = t.children_with_re_label('comp')
                 if len(comp) == 1:
                     process_ellipsis(t, comp[0])
                     continue
                 elif len(comp) > 1:
-                    logger.warning("Multiple complements found for elliptical structure at token: %s", t.form)
+                    logger.warning("Sentence %s: Multiple complements found for elliptical structure at token: '%s'", t.sentence.id, t.form)
 
                 adjunct = t.children_with_re_label('adjunct')
                 if len(adjunct) == 1:
                     process_ellipsis(t, adjunct[0])
                     continue
                 elif len(adjunct) > 1:
-                    logger.warning("Multiple adjuncts found for elliptical structure at token: %s", t.form)
+                    logger.warning("Sentence %s: Multiple adjuncts found for elliptical structure at token: '%s'", t.sentence.id, t.form)
 
                 # If no suitable head is found, log a warning
                 if t.children:
-                    logger.warning("No suitable head found for elliptical structure at token: %s", t.form)
+                    logger.warning("Sentence %s: No suitable head found for elliptical structure at token: '%s'", t.sentence.id, t.form)
 
 
 def process_ellipsis(punct: Token, head: Token) -> None:

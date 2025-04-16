@@ -21,10 +21,10 @@ logger = logging.getLogger('ud_converter.dependency.structures.subordination')
 def convert_subordination(s: Sentence) -> None:
     """
     Converts subordinate clauses from MPDT format to UD format.
-    
+
     This function identifies different types of subordinate clauses and applies
     the appropriate conversion function based on the syntactic context.
-    
+
     :param Sentence s: The sentence to convert
     """
     for t in s.tokens:
@@ -65,19 +65,19 @@ def convert_subordination(s: Sentence) -> None:
 def jako(t: Token) -> None:
     """
     Converts attributive constructions with 'jako'.
-    
+
     In UD, the predicate of the attributive clause becomes the head,
     and 'jako' is attached to it with a 'mark' relation.
-    
+
     Example: "Widok jako niezapomniany" → nsubj(niezapomniany, Widok), mark(niezapomniany, jako)
-    
+
     :param Token t: The 'jako' token
     """
     # Find the predicative complement (pd)
     pds = t.children_with_label('pd')
 
     if not pds:
-        logger.warning("The attributive construction JAKO has no dependents.")
+        logger.warning("Sentence %s: The attributive construction JAKO has no dependents.", t.sentence.id)
         return
 
     if len(pds) == 1:
@@ -89,29 +89,29 @@ def jako(t: Token) -> None:
             pd.ugov = gov
             pd.udep_label = t.udep_label
         else:
-            logger.warning("The attributive construction JAKO has no governor.")
+            logger.warning("Sentence %s: The attributive construction JAKO has no governor.", t.sentence.id)
 
         # Attach 'jako' to the predicative complement
         t.ugov = pd
         t.udep_label = 'mark'
     else:
-        logger.warning("The attributive construction JAKO has %d dependents pd: %s",
+        logger.warning("Sentence %s: The attributive construction JAKO has %d dependents pd: %s", t.sentence.id,
                       len(pds), [p.form for p in pds])
 
 
 def complex_subordinating_conjunction(t: Token) -> None:
     """
     Converts subordinate clauses with complex subordinating conjunctions.
-    
+
     Examples: 'jako że', 'podczas gdy', 'mimo że', 'tak więc', 'o ile'
-    
+
     In UD, the predicate of the subordinate clause becomes the head,
     and the subordinating conjunction is attached to it with a 'mark' relation.
-    
+
     :param Token t: The second part of the complex conjunction
     """
     if not t.super_gov_via_label('mwe') and t.gov:
-        logger.warning("Complex subordinating conjunction has no super-governor: %s %s",
+        logger.warning("Sentence %s: Complex subordinating conjunction has no super-governor: '%s' '%s'", t.sentence.id,
                       t.gov.form, t.form)
         return
 
@@ -119,7 +119,7 @@ def complex_subordinating_conjunction(t: Token) -> None:
     super_gov_child = t.super_gov_via_label('mwe')[1] # type: ignore
 
     if not super_gov and t.gov:
-        logger.warning("Complex subordinating conjunction has no governor: %s %s",
+        logger.warning("Sentence %s: Complex subordinating conjunction has no governor: '%s' '%s'", t.sentence.id,
                       t.gov.form, t.form)
         return
 
@@ -128,10 +128,10 @@ def complex_subordinating_conjunction(t: Token) -> None:
 
     if not comp:
         if t.lemma not in ['to']:
-            logger.warning("Subordinate conjunction '%s' has no dependents.", t.lemma)
+            logger.warning("Sentence %s: Subordinate conjunction '%s' has no dependents.", t.sentence.id, t.lemma)
             return
         else:
-            logger.debug("Subordinate conjunction '%s' which is a 'to' has no dependents.", t.lemma)
+            logger.debug("Sentence %s: Subordinate conjunction '%s' which is a 'to' has no dependents.", t.sentence.id, t.lemma)
             return
 
     # Attach the complement to the super-governor
@@ -149,13 +149,13 @@ def complex_subordinating_conjunction(t: Token) -> None:
 def complex_subordinating_threeword_conjunction(t: Token) -> None:
     """
     Converts subordinate clauses with special multiword expressions.
-    
+
     Examples: 'w miarę jak', 'w przypadku gdy', 'w wypadku gdyby'
-    
+
     :param Token t: The last part of the complex conjunction
     """
     if not t.super_gov_via_label('mwe') and t.gov:
-        logger.warning("Complex subordinating conjunction has no super-governor: %s %s",
+        logger.warning("Sentence %s: Complex subordinating conjunction has no super-governor: '%s' '%s'", t.sentence.id,
                       t.gov.form, t.form)
         return
 
@@ -163,7 +163,7 @@ def complex_subordinating_threeword_conjunction(t: Token) -> None:
     super_gov_child = t.super_gov_via_label('mwe')[1] # type: ignore
 
     if (not super_gov) and t.gov:
-        logger.warning("Complex subordinating conjunction has no governor: %s %s",
+        logger.warning("Sentence %s: Complex subordinating conjunction has no governor: '%s' '%s'", t.sentence.id,
                       t.gov.form, t.form)
         return
 
@@ -171,11 +171,11 @@ def complex_subordinating_threeword_conjunction(t: Token) -> None:
     comp = t.children_with_label('comp_fin')
 
     if not comp:
-        logger.warning("Subordinate conjunction '%s' has no dependents.", t.lemma)
+        logger.warning("Sentence %s: Subordinate conjunction '%s' has no dependents.", t.sentence.id, t.lemma)
         return
 
     if len(comp) > 1:
-        logger.warning("Subordinate conjunction '%s' has %d dependents comp_fin: %s",
+        logger.warning("Sentence %s: Subordinate conjunction '%s' has %d dependents comp_fin: %s", t.sentence.id,
                       t.lemma, len(comp), [c.form for c in comp])
         return
 
@@ -198,17 +198,17 @@ def complex_subordinating_threeword_conjunction(t: Token) -> None:
 def subordinating_conjunction(t: Token) -> None:
     """
     Converts subordinate clauses with simple subordinating conjunctions.
-    
+
     Examples: 'że', 'żeby', 'ponieważ'
-    
+
     In UD, the predicate of the subordinate clause becomes the head,
     and the subordinating conjunction is attached to it with a 'mark' relation.
-    
+
     :param Token t: The subordinating conjunction token
     """
 
     if not t.gov:
-        logger.warning("Subordinating conjunction has no governor: %s", t.form)
+        logger.warning("Sentence %s: Subordinating conjunction has no governor: '%s'", t.sentence.id, t.form)
         return
 
     # Find the complement of the subordinate clause
@@ -216,7 +216,7 @@ def subordinating_conjunction(t: Token) -> None:
 
     if not comp:
         if t.lemma not in ['to', 'dopóty'] and t.dep_label != 'dep':
-            logger.warning("Subordinate conjunction '%s' has no dependents.", t.lemma)
+            logger.warning("Sentence %s: Subordinate conjunction '%s' has no dependents.", t.sentence.id, t.lemma)
         return
 
     # Attach the complement to the governor
@@ -234,12 +234,12 @@ def subordinating_conjunction(t: Token) -> None:
 def find_complement(t: Token) -> Optional[Token]:
     """
     Finds the complement of a subordinate clause.
-    
+
     This function looks for complements in the following order:
     1. comp_fin (finite complement)
     2. comp_inf (infinitive complement)
     3. comp (other complement)
-    
+
     :param Token t: The subordinating conjunction token
     :return: The complement token, or None if not found
     :rtype: Optional[Token]
@@ -250,7 +250,7 @@ def find_complement(t: Token) -> Optional[Token]:
         if len(comp_fin) == 1:
             return comp_fin[0]
         else:
-            logger.warning("Subordinate conjunction '%s' has %d dependents comp_fin: %s",
+            logger.warning("Sentence %s: Subordinate conjunction '%s' has %d dependents comp_fin: %s", t.sentence.id,
                           t.lemma, len(comp_fin), [c.form for c in comp_fin])
             return None
 
@@ -260,7 +260,7 @@ def find_complement(t: Token) -> Optional[Token]:
         if len(comp_inf) == 1:
             return comp_inf[0]
         else:
-            logger.warning("Subordinate conjunction '%s' has %d dependents comp_inf: %s",
+            logger.warning("Sentence %s: Subordinate conjunction '%s' has %d dependents comp_inf: %s", t.sentence.id,
                           t.lemma, len(comp_inf), [c.form for c in comp_inf])
             return None
 
@@ -270,7 +270,7 @@ def find_complement(t: Token) -> Optional[Token]:
         if len(comp) == 1:
             return comp[0]
         else:
-            logger.warning("Subordinate conjunction '%s' has %d dependents comp: %s",
+            logger.warning("Sentence %s: Subordinate conjunction '%s' has %d dependents comp: %s", t.sentence.id,
                           t.lemma, len(comp), [c.form for c in comp])
             return None
 
@@ -280,10 +280,10 @@ def find_complement(t: Token) -> Optional[Token]:
 def punctuation_marks(t: Token, comp: Token) -> None:
     """
     Converts punctuation marks in a subordinate clause.
-    
+
     In UD, punctuation marks cannot be dependents of 'mark', so they are
     attached to the predicate of the subordinate clause.
-    
+
     :param Token t: The subordinating conjunction token
     :param Token comp: The complement token
     """
@@ -292,4 +292,4 @@ def punctuation_marks(t: Token, comp: Token) -> None:
             punct.ugov = comp
             punct.udep_label = 'punct'
         else:
-            logger.warning("Punctuation mark '%s' has dependents.", punct.form)
+            logger.warning("Sentence %s: Punctuation mark '%s' has dependents.", t.sentence.id, punct.form)

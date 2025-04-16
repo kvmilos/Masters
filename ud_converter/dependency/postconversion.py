@@ -101,7 +101,8 @@ def look_for_clause_type(t: Token) -> str:
             return 'Int'
         if t.udep_label == 'fixed':
             return 'Mwe'
+        print(t.to_string(form='mpdt'), t.to_string(form='ud'))
         return look_for_clause_type(gov)
     else:
-        logger.warning('No governor found for pronoun: %s', t.form)
+        logger.warning("Sentence %d: No governor found for pronoun: '%s'", t.sentence.id, t.form)
         return ''

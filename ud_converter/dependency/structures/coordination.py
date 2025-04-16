@@ -58,9 +58,7 @@ def convert_coordination(s: Sentence) -> None:
                 if t.udep_label == 'conj' and t.children_with_label('conjunct'):
                     coordination(t, True, ud_label='conj')
                 else:
-                    logger.warning('No conversion for coordination structure: %s', t.form)
-        else:
-            logger.warning('No conversion for coordination structure: %s', t.form)
+                    logger.warning("Sentence %d: No conversion for coordination structure: '%s'", t.sentence.id, t.form)
 
 
 def coordination(t: Token, punct_conj: bool, ud_label: str = None) -> None:

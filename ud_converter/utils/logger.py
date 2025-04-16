@@ -35,7 +35,7 @@ def setup_logging(log_level: int = logging.INFO) -> logging.Logger:
 
     info_file_handler = logging.FileHandler(info_log_file, encoding='utf-8')
     info_file_handler.setLevel(logging.INFO)
-    info_file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)-40s - %(levelname)-8s - %(message)s'))
+    info_file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)-60s - %(levelname)-8s - %(message)s'))
 
     console_handler = logging.StreamHandler()
     console_handler.setLevel(log_level)

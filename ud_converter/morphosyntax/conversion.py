@@ -22,11 +22,11 @@ logger = logging.getLogger('ud_converter.morphosyntax.conversion')
 def pos_specific_upos(t: Token) -> None:
     """
     Applies the conversion to UPOS based on the token's part of speech (POS).
-    
+
     This function acts as a dispatcher that routes each token to the appropriate
     conversion function based on its original POS tag. It handles all POS categories
     defined in the MPDT tagset.
-    
+
     :param Token t: The token to be converted
     """
     if t.upos == '':
@@ -119,5 +119,5 @@ def pos_specific_upos(t: Token) -> None:
         elif t.pos == 'incert':
             incert(t)
         else:
-            logger.warning('Unrecognised part of speech >>%s<< of the token >>%s<< in >>%s<<', t.pos, t.form, t.sentence.text if t.sentence else 'unknown')
-        logger.debug('Converted %s to %s', t.form, t.upos)
+            logger.warning("Sentence %s: Unrecognised part of speech >>%s<< of the token >>%s<< in >>%s<<", t.sentence.id, t.pos, t.form, t.sentence.text if t.sentence else 'unknown')
+        logger.debug("Sentence %s: Converted %s to %s", t.sentence.id, t.form, t.upos)

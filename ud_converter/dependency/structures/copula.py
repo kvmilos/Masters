@@ -41,7 +41,7 @@ def convert_copula(s: Sentence) -> None:
                     else:
                         convert_predicative_other(t, t.gov, t.children_with_label('subj')[0])
                 else:
-                    logger.warning("Multiple predicative expressions found for copula: %s", t.form)
+                    logger.warning("Sentence %d: Multiple predicative expressions found for copula: '%s'", t.sentence.id, t.form)
             else:
                 convert_predicative_adj(t, t.gov)
 
@@ -52,7 +52,7 @@ def convert_copula(s: Sentence) -> None:
                 if len(t.children_with_label('pd')) == 1:
                     convert_predicative_adj(t, t.gov)
                 else:
-                    logger.warning("Multiple predicative expressions found for copula: %s", t.form)
+                    logger.warning("Sentence %d: Multiple predicative expressions found for copula: '%s'", t.sentence.id, t.form)
 
         # Check for coordinated copula constructions
         elif t.upos == 'CCONJ' and len(t.children_with_label('conjunct')) > 1:
@@ -61,10 +61,7 @@ def convert_copula(s: Sentence) -> None:
                     if len(t.children_with_label('pd')) == 1:
                         convert_coordinated_copula(t, t.gov)
                     else:
-                        logger.warning("Multiple predicative expressions found for copula: %s", t.form)
-
-        else:
-            logger.warning('No conversion for copula structure: %s', t.form)
+                        logger.warning("Sentence %d: Multiple predicative expressions found for copula: '%s'", t.sentence.id, t.form)
 
 
 def convert_predicative_adj(cop: Token, gov: Token) -> None:
@@ -103,7 +100,7 @@ def convert_predicative_adj(cop: Token, gov: Token) -> None:
         # Process other dependents of the copula
         process_copula_dependents(cop, pd, subj[0] if subj else None)
     elif len(pds) > 1:
-        logger.warning("Multiple predicative expressions found for copula: %s", cop.form)
+        logger.warning("Sentence %d: Multiple predicative expressions found for copula: '%s'", cop.sentence.id, cop.form)
 
 
 def convert_predicative_other(cop: Token, gov: Token, subj: Token) -> None:
