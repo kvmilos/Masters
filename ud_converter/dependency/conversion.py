@@ -1,7 +1,7 @@
 """
 Module for the conversion of dependency structures from MPDT to UD format.
 
-This module handles the complete pipeline for converting dependency structures, 
+This module handles the complete pipeline for converting dependency structures,
 including preprocessing, structural conversions, and label mapping according to
 Universal Dependencies guidelines.
 """
@@ -30,7 +30,7 @@ def main(s: Sentence) -> None:
     structure_conversion(s)
     for t in s.tokens:
         label_conversion(t)
-    # edges_correction(s) TODO
+    edges_correction(s)
     postconversion(s)
 
 

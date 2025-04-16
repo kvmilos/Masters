@@ -65,8 +65,8 @@ Arguments:
 
 ## Development Status
 
-Currently, the conversion of POS tags and morphological features is implemented. 
-Dependency relation conversion: Work in progress
+Currently, the conversion of POS tags and morphological features is implemented.
+Dependency relation conversion: Base implemented, needs corrections and further work
 
 ## References
 

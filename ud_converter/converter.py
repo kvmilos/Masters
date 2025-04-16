@@ -9,13 +9,13 @@ Usage:
     python converter.py input_file.conll output_file.conllu [meta_file.json] [--tags-only]
 
 --tags-only: if present, only performs POS -> UPOS conversion.
-Full dependency conversion is not implemented yet.
 """
 import sys
 
 from utils.io import read_conll, write_ud_conll, load_meta
 from utils.logger import setup_logging
 from morphosyntax.morphosyntax import convert_to_upos
+from dependency.conversion import main as convert_dependencies
 
 logger = setup_logging()
 
@@ -62,8 +62,8 @@ def main() -> None:
             meta = meta_data.get(str(i + 1), {})
             convert_to_upos(sentence, meta)
         logger.info('Converting dependencies.')
-        # NOT IMPLEMENTED YET
-        logger.warning('Dependency conversion is not implemented yet')
+        for sentence in sentences:
+            convert_dependencies(sentence)
 
     logger.info('Writing output to %s', output_file)
     write_ud_conll(sentences, output_file, meta_data)
