@@ -443,6 +443,19 @@ class Token:
         ]
 
     @property
+    def uchildren(self) -> List['Token']:
+        """
+        Returns a list of tokens for which this token is the governor.
+        If there are no children, returns an empty list.
+        """
+        if self.sentence is None:
+            return []
+        return [
+            n for n in self.sentence.tokens
+            if n.ugov_id == self.id
+        ]
+
+    @property
     def prev(self) -> Optional['Token']:
         """Returns the previous token in the sentence."""
         if self.sentence is None:
