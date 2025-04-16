@@ -133,4 +133,3 @@ def convert_prep_dependents(t: Token, comp: Token) -> None:
     # Attach each dependent to the complement
     for d in dependents:
         d.ugov = comp
-        # TODO: d.udep_label = ???
