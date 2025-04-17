@@ -67,6 +67,7 @@ def add_mwe(s: Sentence, text: Optional[str]) -> None:
             mwe_token.id = f'{first.id}-{last.id}'
             mwe_token.form = ''.join(t.form for t in group)
             mwe_token.umisc = {'Translit': ''.join([t.form for t in group])}
+            mwe_token.sentence = s
             new_tokens.append(mwe_token)
             new_tokens.extend(group)
         else:

@@ -121,9 +121,10 @@ class Token:
 
         :param str line: Line from the input file representing the token
         """
+        self.sentence: 'Sentence'
+
         if line != 'mwe':
             columns: List[str] = line.split("\t")
-            self.sentence: Sentence
             self.data = {}
             self.data['id'] = columns[0]
             self.data['form'] = columns[1]
@@ -148,7 +149,6 @@ class Token:
             self.data['umisc'] = defaultdict(str)
             self.data['umisc']['Translit'] = columns[9]
         else:
-            self.sentence: Sentence
             self.data = {}
             self.data['id'] = '_'
             self.data['form'] = '_'
@@ -411,8 +411,6 @@ class Token:
     @property
     def gov(self) -> Optional['Token']:
         """Returns the governor Token, or None if it's the root or something is missing."""
-        if self.sentence is None:
-            return None
         if self.gov_id == '0':
             return None
         return self.sentence.dict_by_id.get(self.gov_id)
@@ -420,8 +418,6 @@ class Token:
     @property
     def ugov(self) -> Optional['Token']:
         """Returns the governor Token, or None if it's the root or something is missing."""
-        if self.sentence is None:
-            return None
         if self.ugov_id == '0':
             return None
         return self.sentence.dict_by_id.get(self.ugov_id)
@@ -437,8 +433,6 @@ class Token:
         Returns a list of tokens for which this token is the governor.
         If there are no children, returns an empty list.
         """
-        if self.sentence is None:
-            return []
         return [
             n for n in self.sentence.tokens
             if n.gov_id == self.id
@@ -450,8 +444,6 @@ class Token:
         Returns a list of tokens for which this token is the governor.
         If there are no children, returns an empty list.
         """
-        if self.sentence is None:
-            return []
         return [
             n for n in self.sentence.tokens
             if n.ugov_id == self.id
@@ -460,15 +452,11 @@ class Token:
     @property
     def prev(self) -> Optional['Token']:
         """Returns the previous token in the sentence."""
-        if self.sentence is None:
-            return None
         return self.sentence.dict_by_id.get(str(int(self.id) - 1), None)
 
     @property
     def next(self) -> Optional['Token']:
         """Returns the next token in the sentence."""
-        if self.sentence is None:
-            return None
         return self.sentence.dict_by_id.get(str(int(self.id) + 1), None)
 
     def children_with_label(self, label: str) -> List['Token']:
@@ -479,8 +467,6 @@ class Token:
         :return: A list of children with the given label
         :rtype: List[Token]
         """
-        if self.sentence is None:
-            return []
         return [
             n for n in self.children
             if n.dep_label == label
@@ -488,8 +474,6 @@ class Token:
 
     def children_with_ud_label(self, label: str) -> List['Token']:
         """Returns a list of children of the token with the given dependency label in UD format."""
-        if self.sentence is None:
-            return []
         return [
             n for n in self.children
             if n.udep_label == label
@@ -497,8 +481,6 @@ class Token:
 
     def children_with_re_label(self, label: str) -> List['Token']:
         """Returns a list of children of the token with the given dependency label in regex format."""
-        if self.sentence is None:
-            return []
         return [
             n for n in self.children
             if re.search(label, n.dep_label)
@@ -506,8 +488,6 @@ class Token:
 
     def children_with_lemma(self, lemma: str) -> List['Token']:
         """Returns a list of children of the token with the given lemma."""
-        if self.sentence is None:
-            return []
         return [
             n for n in self.children
             if n.lemma == lemma
@@ -525,8 +505,6 @@ class Token:
         :return: The found governor Token, or None if not found
         :rtype: Token | None
         """
-        if self.sentence is None:
-            return None
         if self.dep_label == label:
             if self.gov is None:
                 return None
@@ -549,8 +527,6 @@ class Token:
         :return: The found child Token, or None if not found
         :rtype: Token | None
         """
-        if self.sentence is None:
-            return None
         if self.dep_label == label:
             for child in self.children:
                 if child.dep_label == target_label:
