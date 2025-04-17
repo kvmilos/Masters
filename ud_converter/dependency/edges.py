@@ -55,7 +55,8 @@ def remove_dependents_of_auxiliary(s: Sentence) -> None:
                 # Reattach dependents to the semantic governor
                 for dep in t.children:
                     if dep.lemma != 'nie' and dep.dep_label != 'neg' and dep.udep_label != 'conj':
-                        dep.ugov = sgov
+                        if dep != sgov:
+                            dep.ugov = sgov
                         logger.debug("Sentence %s: Reattached dependent %s from auxiliary %s to %s", t.sentence.id, dep.form, t.form, sgov.form)
 
 
