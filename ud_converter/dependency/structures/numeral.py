@@ -70,8 +70,6 @@ def standard_numeral(t: Token) -> None:
             else:
                 c.ugov = comp
                 c.udep_label = cl(c)
-        else:
-            logger.warning("Sentence %s: No label for standard numeral phrase: '%s', %s", t.sentence.id, t.form, t.upos)
 
 
 def coordinated_numeral(t: Token) -> None:
