@@ -29,7 +29,7 @@ def main(s: Sentence) -> None:
     preconversion(s)
     structure_conversion(s)
     for t in s.tokens:
-        label_conversion(t)
+        t.udep_label = label_conversion(t)
     edges_correction(s)
     postconversion(s)
 
