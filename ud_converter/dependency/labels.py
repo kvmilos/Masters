@@ -353,7 +353,7 @@ def modifier(t: Token) -> str:
             if t.pos in ['ppas', 'pact']:
                 if mark:
                     if len(mark) > 1:
-                        logger.warning("Sentence %s: Multiple 'mark'-children for '%s': %s", t.sentence.id, t.form, mark)
+                        logger.warning("Sentence %s: Multiple 'mark'-children for '%s': %s", t.sentence.id, t.form, [m.form for m in mark])
                     mark = mark[0]
                     if mark.lemma == 'jako' and mark.ufeats.get('ConjType'):
                         return 'amod'
@@ -369,7 +369,7 @@ def modifier(t: Token) -> str:
             else:
                 if mark:
                     if len(mark) > 1:
-                        logger.warning("Sentence %s: Multiple 'mark'-children for '%s': %s", t.sentence.id, t.form, mark)
+                        logger.warning("Sentence %s: Multiple 'mark'-children for '%s': %s", t.sentence.id, t.form, [m.form for m in mark])
                     mark = mark[0]
                     if mark.lemma == 'jako' and mark.ufeats.get('ConjType') and t.gov.pos != 'ger' and t.dep_label == 'adjunct_attrib':
                         return 'amod'
@@ -400,7 +400,7 @@ def modifier(t: Token) -> str:
         elif t.upos == 'DET' and t.pos == 'adj':
             if mark:
                 if len(mark) > 1:
-                    logger.warning("Sentence %s: Multiple 'mark'-children for '%s': %s", t.sentence.id, t.form, mark)
+                    logger.warning("Sentence %s: Multiple 'mark'-children for '%s': %s", t.sentence.id, t.form, [m.form for m in mark])
                 mark = mark[0]
                 if mark.lemma == 'jako' and mark.ufeats.get('ConjType'):
                     return 'amod'
@@ -562,8 +562,8 @@ def adverbial(t: Token) -> str:
 
     elif t.upos in ['PRON', 'NOUN', 'X', 'PROPN', 'NUM', 'SYM']:
         if mark:
-            if len(mark) > 0:
-                logger.warning("Sentence %s: Multiple 'mark'-children for '%s': %s", t.sentence.id, t.form, mark)
+            if len(mark) > 1:
+                logger.warning("Sentence %s: Multiple 'mark'-children for '%s': %s", t.sentence.id, t.form, [m.form for m in mark])
             if mark[0].lemma == 'jako' and 'ConjType' in mark[0].ufeats:
                 return 'obl'
             else:
@@ -574,8 +574,8 @@ def adverbial(t: Token) -> str:
     elif t.upos == 'ADJ':
         if t.pos in ['ppas', 'pact']:
             if mark:
-                if len(mark) > 0:
-                    logger.warning("Sentence %s: Multiple 'mark'-children for '%s': %s", t.sentence.id, t.form, mark)
+                if len(mark) > 1:
+                    logger.warning("Sentence %s: Multiple 'mark'-children for '%s': %s", t.sentence.id, t.form, [m.form for m in mark])
                 if mark[0].lemma == 'jako' and 'ConjType' in mark[0].ufeats:
                     return 'obl'
                 else:
@@ -587,8 +587,8 @@ def adverbial(t: Token) -> str:
                     return 'xcomp'
         else:
             if mark:
-                if len(mark) > 0:
-                    logger.warning("Sentence %s: Multiple 'mark'-children for '%s': %s", t.sentence.id, t.form, mark)
+                if len(mark) > 1:
+                    logger.warning("Sentence %s: Multiple 'mark'-children for '%s': %s", t.sentence.id, t.form, [m.form for m in mark])
                 if mark[0].lemma == 'jako' and 'ConjType' in mark[0].ufeats:
                     return 'obl'
                 else:
@@ -598,8 +598,8 @@ def adverbial(t: Token) -> str:
 
     elif t.upos == 'DET' and t.pos in ['num', 'adj']:
         if mark:
-            if len(mark) > 0:
-                logger.warning("Sentence %s: Multiple 'mark'-children for '%s': %s", t.sentence.id, t.form, mark)
+            if len(mark) > 1:
+                logger.warning("Sentence %s: Multiple 'mark'-children for '%s': %s", t.sentence.id, t.form, [m.form for m in mark])
             if mark[0].lemma == 'jako' and 'ConjType' in mark[0].ufeats:
                 return 'obl'
             else:
