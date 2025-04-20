@@ -29,15 +29,15 @@ def complete_eud(s: Sentence) -> None:
     :param Sentence s: The sentence to process
     """
     for t in s.tokens:
-        if t.ugov:
+        if t.ugov_id:
             # Add the basic dependency to the enhanced dependencies
-            t.eud = {t.ugov.id: t.udep_label}
+            t.eud = {t.ugov_id: t.udep_label}
 
             # Handle special cases for mark_rel
             if t.udep_label == 'mark_rel':
                 ChangeCollector.record(t.sentence.id, t.id, f"Converting mark_rel to mark for token: '{t.form}'", module="postconversion")
                 t.udep_label = 'mark'
-                if t.ugov.gov:
+                if t.ugov and t.ugov.gov:
                     t.eud = {t.ugov.gov.id: 'ref'}
 
         # Update any placeholder labels

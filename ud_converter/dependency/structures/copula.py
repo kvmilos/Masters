@@ -35,21 +35,21 @@ def convert_copula(s: Sentence) -> None:
             if t.children_with_label('subj'):
                 if len(t.children_with_label('pd')) == 1:
                     if t.children_with_label('pd')[0].upos == 'ADJ':
-                        convert_predicative_adj(t, t.gov)
+                        convert_predicative_adj(t, t.gov_id)
                     else:
                         convert_predicative_other(t, t.gov, t.children_with_label('subj')[0])
                 else:
                     ChangeCollector.record(t.sentence.id, t.id, f"Multiple predicative expressions found for copula: '{t.form}'", module="structures.copula", level='warning')
 
             else:
-                convert_predicative_adj(t, t.gov)
+                convert_predicative_adj(t, t.gov_id)
 
         # Check for auxiliary verbs that function as copulas
         elif t.upos == 'AUX':
             # Example: "To było by zabawne, gdyby nie oferowali tej forsy."
-            if t.children_with_label('pd') and t.gov:
+            if t.children_with_label('pd'):
                 if len(t.children_with_label('pd')) == 1:
-                    convert_predicative_adj(t, t.gov)
+                    convert_predicative_adj(t, t.gov_id)
                 else:
                     ChangeCollector.record(t.sentence.id, t.id, f"Multiple predicative expressions found for copula: '{t.form}'", module="structures.copula", level='warning')
 
@@ -63,7 +63,7 @@ def convert_copula(s: Sentence) -> None:
                         ChangeCollector.record(t.sentence.id, t.id, f"Multiple predicative expressions found for copula: '{t.form}'", module="structures.copula", level='warning')
 
 
-def convert_predicative_adj(cop: Token, gov: Token) -> None:
+def convert_predicative_adj(cop: Token, gov_id: str) -> None:
     """
     Converts a predicative expression with an adjectival predicate.
 
@@ -73,7 +73,7 @@ def convert_predicative_adj(cop: Token, gov: Token) -> None:
     Example: "To było piękne."
 
     :param Token cop: The copula token
-    :param Token gov: The governor of the copula
+    :param str gov_id: The governor_id of the copula
     """
     # Find the predicative complement (pd)
     pds = cop.children_with_label('pd')
@@ -86,11 +86,11 @@ def convert_predicative_adj(cop: Token, gov: Token) -> None:
             # Example: "Widok to niezapomniany"
             # Attach the subject to the predicative complement
             subj[0].ugov = pd
-            subj[0].udep_label = cl(cop)
+            subj[0].udep_label = cl(subj[0])
 
         # Attach the predicative complement to the governor
-        pd.ugov = gov
-        pd.udep_label = cop.udep_label
+        pd.ugov_id = gov_id
+        pd.udep_label = cop.udep_label if cop.udep_label != '_' else cl(cop)
 
         # Attach the copula to the predicative complement
         cop.ugov = pd
