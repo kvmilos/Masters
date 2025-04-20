@@ -380,16 +380,22 @@ class Token:
         if form == 'mpdt':
             upos_str = self.data['pos']
             feats_str = self.data['feats_raw']
+            gov_str = self.data['gov_id']
+            dep_str = self.data['dep_label']
             sent_str = self.data['sent_id']
             misc_str = self.data['misc']
         elif form == 'ud-tags-only':
             upos_str = self.data['upos']
             feats_str = '|'.join([f'{k}={v}' for k, v in sorted(self.data['ufeats'].items())]) if self.data['ufeats'] else '_'
+            gov_str = self.data['gov_id'] if self.data['gov_id'] else '_'
+            dep_str = self.data['dep_label'] if self.data['dep_label'] else '_'
             sent_str = '_'
             misc_str = '|'.join([f'{k}={v}' for k, v in sorted(self.data['umisc'].items())]) if self.data['umisc'] else '_'
         elif form == 'ud':
             upos_str = self.data['upos']
             feats_str = '|'.join([f'{k}={v}' for k, v in sorted(self.data['ufeats'].items())]) if self.data['ufeats'] else '_'
+            gov_str = self.data['ugov_id'] if self.data['ugov_id'] else '_'
+            dep_str = self.data['udep_label'] if self.data['udep_label'] else '_'
             sent_str = '|'.join([f'{gov_id}:{label}' for gov_id, label in sorted(self.data['eud'].items())]) if self.data['eud'] else '_'
             misc_str = '|'.join([f'{k}={v}' for k, v in sorted(self.data['umisc'].items())]) if self.data['umisc'] else '_'
         else:
@@ -402,8 +408,8 @@ class Token:
             upos_str,
             self.data['pos_feats'],
             feats_str,
-            str(self.data['gov_id']),
-            self.data['dep_label'],
+            gov_str,
+            dep_str,
             sent_str,
             misc_str
         ])
