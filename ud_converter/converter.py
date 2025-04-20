@@ -37,10 +37,13 @@ def main() -> None:
 
     meta_file = None
     tags_only = False
+    form = 'ud'
 
     for arg in sys.argv[3:]:
         if arg == '--tags-only':
             tags_only = True
+            form = 'ud-tags-only'
+
         elif arg.endswith('.json'):
             meta_file = arg
 
@@ -64,7 +67,7 @@ def main() -> None:
             convert_dependencies(sentence)
 
     logger.info('Writing output to %s', output_file)
-    write_ud_conll(sentences, output_file, meta_data)
+    write_ud_conll(sentences, output_file, meta_data, form)
     logger.info('Conversion completed.')
 
 if __name__ == '__main__':

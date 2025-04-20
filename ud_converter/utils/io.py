@@ -57,7 +57,7 @@ def read_conll(filepath: str, meta: Dict[str, Dict[str, str]] = None) -> List[Se
 
     return sentences
 
-def write_ud_conll(sentences: List[Sentence], outfile_path: str, meta = None) -> None:
+def write_ud_conll(sentences: List[Sentence], outfile_path: str, meta = None, form = 'ud') -> None:
     """
     Writes the converted sentences in UD CONLL-U format.
 
@@ -74,7 +74,7 @@ def write_ud_conll(sentences: List[Sentence], outfile_path: str, meta = None) ->
             sent_meta = meta[str(idx)] if meta else {}
             sentence.meta = sent_meta
             sentence.write_meta(out)
-            out.write(sentence.to_string('ud'))
+            out.write(sentence.to_string(form))
             out.write("\n\n")
 
 
