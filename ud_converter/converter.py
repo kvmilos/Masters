@@ -12,7 +12,6 @@ Usage:
 """
 import sys
 import logging
-from collections import defaultdict
 from utils.io import read_conll, write_ud_conll, load_meta
 from utils.logger import setup_logging, ChangeCollector
 from morphosyntax.morphosyntax import convert_to_upos
@@ -69,16 +68,21 @@ def main() -> None:
             # clear previous events for this sentence
             ChangeCollector.clear()
             convert_dependencies(sentence)
-            # group events by token id and log in token order
-            events_by_token = defaultdict(list)
-            for _, tid, msg in ChangeCollector.get_events():
-                events_by_token[tid].append(msg)
-            # log with padded prefix S<sid>T<tid>:
-            for token in sentence.tokens:
-                tid = token.id
-                if tid in events_by_token:
-                    for msg in events_by_token[tid]:
-                        logger.debug("S%-5s T%-5s- %s", sentence.id, tid, msg)
+            # Replay events in module grouping and token order from the sentence
+            events = ChangeCollector.get_events()
+            # map each token.id to its position in the sentence for ordering
+            token_order = {tok.id: idx for idx, tok in enumerate(sentence.tokens)}
+            # sort events by sentence ID (as int) then by token position
+            events.sort(key=lambda e, to=token_order: (int(e[0]), to.get(e[1], float('inf'))))
+            # replay sorted events
+            for sid, tid, module, level, msg in events:
+                mod = module or 'conversion'
+                lg = logging.getLogger(f"ud_converter.dependency.{mod}")
+                if level == 'DEBUG':
+                    lg.debug("S%-5s T%-5s- %s", sid, tid, msg)
+                else:
+                    lg.warning("S%-5s T%-5s- %s", sid, tid, msg)
+            # Clear events after replay
             ChangeCollector.clear()
 
     logger.info('Writing output to %s', output_file)

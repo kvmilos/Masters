@@ -6,6 +6,7 @@ This module provides logging configuration for the entire project.
 import logging
 import os
 from datetime import datetime
+import inspect
 
 
 class ModuleFormatter(logging.Formatter):
@@ -74,8 +75,8 @@ def setup_logging() -> logging.Logger:
     root_logger.addHandler(console_handler)
 
     caller_logger = logging.getLogger('ud_converter')
-    caller_logger.info('WARNINGS and INFO saved to %s', info_log_file)
-    caller_logger.info('DEBUG saved to %s', debug_log_file)
+    caller_logger.info('WARNINGs and INFO are being saved to %s', info_log_file)
+    caller_logger.info('DEBUG, WARNINGs, and INFO are being saved to %s', debug_log_file)
 
     return caller_logger
 
@@ -96,16 +97,19 @@ class ChangeCollector:
         cls.events = []
 
     @classmethod
-    def record(cls, sentence_id, token_id, message):
+    def record(cls, sentence_id, token_id, message, module, level='DEBUG'):
         """
         Records a change event for a token.
+        :param module: dependency submodule name (e.g. 'edges.fixed') or 'conversion'
+        :param level: 'DEBUG' or 'WARNING'
         """
-        cls.events.append((sentence_id, token_id, message))
+        # Simply record the event; module should be provided by the caller
+        cls.events.append((sentence_id, token_id, module, level, message))
 
     @classmethod
     def get_events(cls):
         """
-        Returns the list of recorded events.
+        Returns the list of recorded events as tuples (sentence_id, token_id, module, level, message).
         """
         return cls.events
 
@@ -122,12 +126,25 @@ class LoggingDict(dict):
         old = self.get(key)
         super().__setitem__(key, value)
         if old != value:
-            sid = self.get('sent_id')
-            tid = self.get('id')
-            if old not in [None, '', '_']:
-                ChangeCollector.record(sid, tid, f"{key} changed from {old} to {value}")
-            else:
-                ChangeCollector.record(sid, tid, f"{key} set to {value}")
+            # Only record after token has been placed in a sentence
+            if not hasattr(self.token, 'sentence') or self.token.sentence is None:
+                return
+            sid = self.token.sentence.id
+            tid = self.token.id
+            msg = f"{key} changed from {old} to {value} for '{self.token.form}'" if old not in [None, '', '_'] else f"{key} set to {value} for '{self.token.form}'"
+
+            module = 'conversion'
+
+            for frame in inspect.stack()[1:]:
+                path = frame.filename.replace('\\', '/')
+                parts = path.split('ud_converter/')
+                if len(parts) == 2 and parts[1].startswith('dependency/'):
+                    # slice off 'dependency/' to get subpath without leading slash
+                    rel = parts[1][len('dependency/'):]  # correct slicing inclusive of slash
+                    rel = rel.rsplit('.', 1)[0]
+                    module = rel.replace('/', '.')
+                    break
+            ChangeCollector.record(sid, tid, msg, module=module, level='DEBUG')
 
     def update(self, *args, **kwargs):
         for k, v in dict(*args, **kwargs).items():

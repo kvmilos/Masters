@@ -6,9 +6,23 @@ Dependency Treebank format to Universal Dependencies format, considering the
 specific syntactic context of each token to determine the appropriate UD label.
 """
 import logging
-from utils.classes import Token
+from utils.classes import Sentence, Token
 from utils.constants import PARTICLES
+from utils.logger import ChangeCollector
 logger = logging.getLogger('ud_converter.dependency.labels')
+
+
+def labels_conversion(s: Sentence) -> None:
+    """
+    Converts dependency labels from MPDT to UD format.
+    
+    This function iterates over all tokens in the sentence and applies the
+    label conversion function to each token.
+    
+    :param Sentence s: The sentence to convert
+    """
+    for t in s.tokens:
+        t.udep_label = convert_label(t)
 
 
 def convert_label(t: Token) -> str:
@@ -36,7 +50,7 @@ def convert_label(t: Token) -> str:
     elif t.lemma == 'o' and len(t.children_with_lemma('tyle')) == 1 and t.children_with_lemma('tyle')[0].dep_label == 'mwe':
         return 'mark'
     elif t.lemma == 'o' and len(t.children_with_lemma('tyle')) > 1:
-        logger.warning("S%-5s T%-5s- Multiple 'tyle'-lemma children for o: '%s'", t.sentence.id, t.id, t.form)
+        ChangeCollector.record(t.sentence.id, t.id, "Multiple 'tyle'-lemma children for o", module="labels", level="WARNING")
     # possessive determiner or determiner
     elif t.upos == 'DET' and t.pos != 'num' and t.dep_label in ['adjunct', 'poss']:
         if t.ufeats.get('Poss') == 'Yes':
@@ -280,7 +294,7 @@ def verb_complement(t: Token, cleft: bool = False) -> str:
             cop = t.children_with_ud_label('cop')
             if cop:
                 if len(cop) > 1:
-                    logger.warning("S%-5s T%-5s- Multiple copula children for '%s': %s", t.sentence.id, t.id, t.form, cop)
+                    ChangeCollector.record(t.sentence.id, t.id, f"Multiple copula children for '{t.form}': {[c.form for c in cop]}", module="labels", level="WARNING")
                 cop = cop[0]
                 if cop.pos == 'inf':
                     return 'xcomp:cleft'
@@ -308,7 +322,7 @@ def verb_complement(t: Token, cleft: bool = False) -> str:
                 cop = t.children_with_ud_label('cop')
                 if cop:
                     if len(cop) > 1:
-                        logger.warning("S%-5s T%-5s- Multiple copula children for '%s': %s", t.sentence.id, t.id, t.form, cop)
+                        ChangeCollector.record(t.sentence.id, t.id, f"Multiple copula children for '{t.form}': {[c.form for c in cop]}", module="labels", level="WARNING")
                     cop = cop[0]
                     if cop.pos == 'inf':
                         return 'xcomp'
@@ -353,7 +367,7 @@ def modifier(t: Token) -> str:
             if t.pos in ['ppas', 'pact']:
                 if mark:
                     if len(mark) > 1:
-                        logger.warning("S%-5s T%-5s- Multiple 'mark'-children for '%s': %s", t.sentence.id, t.id, t.form, [m.form for m in mark])
+                        ChangeCollector.record(t.sentence.id, t.id, f"Multiple 'mark'-children for '{t.form}': {[m.form for m in mark]}", module="labels", level="WARNING")
                     mark = mark[0]
                     if mark.lemma == 'jako' and mark.ufeats.get('ConjType'):
                         return 'amod'
@@ -369,7 +383,7 @@ def modifier(t: Token) -> str:
             else:
                 if mark:
                     if len(mark) > 1:
-                        logger.warning("S%-5s T%-5s- Multiple 'mark'-children for '%s': %s", t.sentence.id, t.id, t.form, [m.form for m in mark])
+                        ChangeCollector.record(t.sentence.id, t.id, f"Multiple 'mark'-children for '{t.form}': {[m.form for m in mark]}", module="labels", level="WARNING")
                     mark = mark[0]
                     if mark.lemma == 'jako' and mark.ufeats.get('ConjType') and t.gov.pos != 'ger' and t.dep_label == 'adjunct_attrib':
                         return 'amod'
@@ -400,7 +414,7 @@ def modifier(t: Token) -> str:
         elif t.upos == 'DET' and t.pos == 'adj':
             if mark:
                 if len(mark) > 1:
-                    logger.warning("S%-5s T%-5s- Multiple 'mark'-children for '%s': %s", t.sentence.id, t.id, t.form, [m.form for m in mark])
+                    ChangeCollector.record(t.sentence.id, t.id, f"Multiple 'mark'-children for '{t.form}': {[m.form for m in mark]}", module="labels", level="WARNING")
                 mark = mark[0]
                 if mark.lemma == 'jako' and mark.ufeats.get('ConjType'):
                     return 'amod'
@@ -563,7 +577,7 @@ def adverbial(t: Token) -> str:
     elif t.upos in ['PRON', 'NOUN', 'X', 'PROPN', 'NUM', 'SYM']:
         if mark:
             if len(mark) > 1:
-                logger.warning("S%-5s T%-5s- Multiple 'mark'-children for '%s': %s", t.sentence.id, t.id, t.form, [m.form for m in mark])
+                ChangeCollector.record(t.sentence.id, t.id, f"Multiple 'mark'-children for '{t.form}': {[m.form for m in mark]}", module="labels", level="WARNING")
             if mark[0].lemma == 'jako' and 'ConjType' in mark[0].ufeats:
                 return 'obl'
             else:
@@ -575,7 +589,7 @@ def adverbial(t: Token) -> str:
         if t.pos in ['ppas', 'pact']:
             if mark:
                 if len(mark) > 1:
-                    logger.warning("S%-5s T%-5s- Multiple 'mark'-children for '%s': %s", t.sentence.id, t.id, t.form, [m.form for m in mark])
+                    ChangeCollector.record(t.sentence.id, t.id, f"Multiple 'mark'-children for '{t.form}': {[m.form for m in mark]}", module="labels", level="WARNING")
                 if mark[0].lemma == 'jako' and 'ConjType' in mark[0].ufeats:
                     return 'obl'
                 else:
@@ -588,7 +602,7 @@ def adverbial(t: Token) -> str:
         else:
             if mark:
                 if len(mark) > 1:
-                    logger.warning("S%-5s T%-5s- Multiple 'mark'-children for '%s': %s", t.sentence.id, t.id, t.form, [m.form for m in mark])
+                    ChangeCollector.record(t.sentence.id, t.id, f"Multiple 'mark'-children for '{t.form}': {[m.form for m in mark]}", module="labels", level="WARNING")
                 if mark[0].lemma == 'jako' and 'ConjType' in mark[0].ufeats:
                     return 'obl'
                 else:
@@ -599,7 +613,7 @@ def adverbial(t: Token) -> str:
     elif t.upos == 'DET' and t.pos in ['num', 'adj']:
         if mark:
             if len(mark) > 1:
-                logger.warning("S%-5s T%-5s- Multiple 'mark'-children for '%s': %s", t.sentence.id, t.id, t.form, [m.form for m in mark])
+                ChangeCollector.record(t.sentence.id, t.id, f"Multiple 'mark'-children for '{t.form}': {[m.form for m in mark]}", module="labels", level="WARNING")
             if mark[0].lemma == 'jako' and 'ConjType' in mark[0].ufeats:
                 return 'obl'
             else:

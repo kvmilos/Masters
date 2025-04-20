@@ -9,11 +9,9 @@ This module handles the conversion of various types of numeral phrases:
 
 Each type requires specific structural transformations to conform to UD guidelines.
 """
-import logging
+from utils.logger import ChangeCollector
 from utils.classes import Sentence, Token
 from dependency.labels import convert_label as cl
-
-logger = logging.getLogger('ud_converter.dependency.structures.numeral')
 
 
 def convert_numeral(s: Sentence) -> None:
@@ -29,14 +27,18 @@ def convert_numeral(s: Sentence) -> None:
         if t.pos == 'num':
             if t.children_with_label('comp'):
                 standard_numeral(t)
+                ChangeCollector.record(t.sentence.id, t.id, f"Converted standard numeral phrase: '{t.form}'", module="structures.numeral")
             elif t.gov and (t.gov.upos == 'CCONJ' or t.gov.upos == 'PUNCT' and t.dep_label == 'conjunct') and t.gov.children_with_label('comp'):
                 coordinated_numeral(t)
+                ChangeCollector.record(t.sentence.id, t.id, f"Converted coordinated numeral phrase: '{t.form}'", module="structures.numeral")
             elif t.super_child_with_label_via_label('mwe', 'comp'):
                 mwe_numeral(t)
+                ChangeCollector.record(t.sentence.id, t.id, f"Converted MWE numeral phrase: '{t.form}'", module="structures.numeral")
             elif t.super_child_with_label_via_label('ne', 'comp'):
                 ne_numeral(t)
+                ChangeCollector.record(t.sentence.id, t.id, f"Converted NE numeral phrase: '{t.form}'", module="structures.numeral")
             else:
-                logger.warning("S%-5s T%-5s- No conversion for numeral phrase: '%s'", s.id, t.id, t.form)
+                ChangeCollector.record(t.sentence.id, t.id, f"No conversion for numeral phrase: '{t.form}'", module="structures.numeral", level='WARNING')
 
 
 def standard_numeral(t: Token) -> None:
@@ -50,7 +52,7 @@ def standard_numeral(t: Token) -> None:
     """
     comp = t.children_with_label('comp')
     if len(comp) != 1:
-        logger.warning("S%-5s T%-5s- Expected 1 comp child, got %d for standard numeral phrase: '%s'", t.sentence.id, t.id, len(comp), t.form)
+        ChangeCollector.record(t.sentence.id, t.id, f"Expected 1 comp child, got {len(comp)} for standard numeral phrase: '{t.form}'", module="structures.numeral", level='WARNING')
         return
     comp = comp[0]
     if t.gov:
@@ -83,7 +85,7 @@ def coordinated_numeral(t: Token) -> None:
     """
     comp = t.children_with_label('comp')
     if len(comp) != 1:
-        logger.warning("S%-5s T%-5s- Expected 1 comp child, got %d for coordinated numeral phrase: '%s'", t.sentence.id, t.id, len(comp), t.form)
+        ChangeCollector.record(t.sentence.id, t.id, f"Expected 1 comp child, got {len(comp)} for coordinated numeral phrase: '{t.form}'", module="structures.numeral", level='WARNING')
         return
     comp = comp[0]
     if t.gov and t.gov.gov:
@@ -91,6 +93,9 @@ def coordinated_numeral(t: Token) -> None:
         comp.udep_label = cl(t.gov)
         t.gov.ugov = comp
         t.gov.udep_label = numeral_label(t.gov)
+    else:
+        ChangeCollector.record(t.sentence.id, t.id, f"No governor for coordinated numeral phrase: '{t.form}'", module="structures.numeral", level='WARNING')
+
 
 
 def mwe_numeral(t: Token) -> None:
@@ -107,7 +112,7 @@ def mwe_numeral(t: Token) -> None:
         mwe.ugov = t.gov
         mwe.udep_label = cl(t)
     if not mwe:
-        logger.warning("S%-5s T%-5s- No MWE found for numeral phrase: '%s'", t.sentence.id, t.id, t.form)
+        ChangeCollector.record(t.sentence.id, t.id, f"No MWE found for numeral phrase: '{t.form}'", module="structures.numeral", level='WARNING')
         return
     t.ugov = mwe
     t.udep_label = numeral_label(t)
@@ -124,9 +129,9 @@ def ne_numeral(t: Token) -> None:
     """
     ne = t.children_with_label('ne')
     if ne != t.super_child_with_label_via_label('ne', 'comp'):
-        logger.warning("S%-5s T%-5s- HERE WE PROBABLY HAVE A PROBLEM", t.sentence.id, t.id)
+        ChangeCollector.record(t.sentence.id, t.id, "HERE WE PROBABLY HAVE A PROBLEM", module="structures.numeral", level='WARNING')
     if len(ne) != 1:
-        logger.warning("S%-5s T%-5s- Expected 1 named entity child, got %d for numeral phrase: '%s'", t.sentence.id, t.id, len(ne), t.form)
+        ChangeCollector.record(t.sentence.id, t.id, f"Expected 1 named entity child, got {len(ne)} for numeral phrase: '{t.form}'", module="structures.numeral", level='WARNING')
         return
     ne = ne[0]
     if t.gov:
@@ -149,5 +154,5 @@ def numeral_label(t: Token) -> str:
     elif not t.udep_label and t.upos == 'DET':
         return 'det'
     else:
-        logger.warning("S%-5s T%-5s- No label for numeral phrase: '%s', %s", t.sentence.id, t.id, t.form, t.upos)
+        ChangeCollector.record(t.sentence.id, t.id, f"No label for numeral phrase: '{t.form}', {t.upos}", module="structures.numeral", level='WARNING')
         return '_'

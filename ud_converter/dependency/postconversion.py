@@ -4,10 +4,8 @@ Module for handling enhanced Universal Dependencies.
 This module provides functions for completing enhanced dependency graphs
 according to Universal Dependencies guidelines.
 """
-import logging
+from utils.logger import ChangeCollector
 from utils.classes import Sentence, Token
-
-logger = logging.getLogger('ud_converter.dependency.postconversion')
 
 
 def postconversion(s: Sentence) -> None:
@@ -37,6 +35,7 @@ def complete_eud(s: Sentence) -> None:
 
             # Handle special cases for mark_rel
             if t.udep_label == 'mark_rel':
+                ChangeCollector.record(t.sentence.id, t.id, f"Converting mark_rel to mark for token: '{t.form}'", module="postconversion")
                 t.udep_label = 'mark'
                 if t.ugov.gov:
                     t.eud = {t.ugov.gov.id: 'ref'}
@@ -44,6 +43,7 @@ def complete_eud(s: Sentence) -> None:
         # Update any placeholder labels
         for gov, label in list(t.eud.items()):
             if label == '_' and t.ugov:
+                ChangeCollector.record(t.sentence.id, t.id, f"Converting placeholder label '_' to '{t.ugov.udep_label}' for token: '{t.form}'", module="postconversion")
                 t.eud = {gov: t.ugov.udep_label}
 
 
@@ -57,6 +57,7 @@ def default_label_conversion(s: Sentence) -> None:
         if t.udep_label == '_':
             if t.dep_label == 'conjunct':
                 t.udep_label = 'case' if t.upos == 'ADP' else 'conj'
+                ChangeCollector.record(t.sentence.id, t.id, f"Converting conjunct label to '{t.udep_label}' for token: '{t.form}'", module="postconversion")
             else:
                 t.udep_label = 'dep'
 
@@ -98,7 +99,7 @@ def look_for_clause_type(t: Token, visited: set = None) -> str:
 
     # If we've already visited this token, we have a cycle
     if t.id in visited:
-        logger.warning("S%-5s T%-5s- Cycle detected in pronoun resolution for token '%s'", t.sentence.id, t.id, t.form)
+        ChangeCollector.record(t.sentence.id, t.id, f"Cycle detected in pronoun resolution for token '{t.form}'", module="postconversion", level='WARNING')
         return ''
 
     visited.add(t.id)
@@ -115,5 +116,5 @@ def look_for_clause_type(t: Token, visited: set = None) -> str:
             # print(t.to_string(form='mpdt'), t.to_string(form='ud'))
             return look_for_clause_type(gov, visited)
     else:
-        logger.warning("S%-5s T%-5s- No governor found for pronoun: '%s'", t.sentence.id, t.id, t.form)
+        ChangeCollector.record(t.sentence.id, t.id, f"No governor found for pronoun: '{t.form}'", module="postconversion", level='WARNING')
         return ''

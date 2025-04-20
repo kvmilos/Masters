@@ -12,7 +12,7 @@ from dependency.structures.prepositional import convert_prepositional
 from dependency.structures.copula import convert_copula
 from dependency.structures.subordination import convert_subordination
 from dependency.structures.coordination import convert_coordination
-from dependency.labels import convert_label as label_conversion
+from dependency.labels import labels_conversion
 from dependency.edges import edges_correction
 from dependency.postconversion import postconversion
 
@@ -28,8 +28,7 @@ def main(s: Sentence) -> None:
     """
     preconversion(s)
     structure_conversion(s)
-    for t in s.tokens:
-        t.udep_label = label_conversion(t)
+    labels_conversion(s)
     edges_correction(s)
     postconversion(s)
 

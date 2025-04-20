@@ -16,10 +16,8 @@ we use the 'orphan' relation when attaching other non-functional dependents to t
 Dependents are considered for promotion in the following order:
 nsubj > obj > iobj > obl > advmod > csubj > xcomp > ccomp > advcl > dislocated > vocative
 """
-import logging
+from utils.logger import ChangeCollector
 from utils.classes import Sentence, Token
-
-logger = logging.getLogger('ud_converter.dependency.structures.ellipsis')
 
 
 def convert_ellipsis(s: Sentence) -> None:
@@ -47,32 +45,32 @@ def convert_ellipsis(s: Sentence) -> None:
                     process_ellipsis(t, subj[0])
                     continue
                 elif len(subj) > 1:
-                    logger.warning("S%-5s T%-5s- Multiple subjects found for elliptical structure at token: '%s'", t.sentence.id, t.id, t.form)
+                    ChangeCollector.record(t.sentence.id, t.id, f"Multiple subjects found for elliptical structure at token: '{t.form}'", module="structures.ellipsis", level='WARNING')
 
                 obj = t.children_with_re_label('obj')
                 if len(obj) == 1:
                     process_ellipsis(t, obj[0])
                     continue
                 elif len(obj) > 1:
-                    logger.warning("S%-5s T%-5s- Multiple objects found for elliptical structure at token: '%s'", t.sentence.id, t.id, t.form)
+                    ChangeCollector.record(t.sentence.id, t.id, f"Multiple objects found for elliptical structure at token: '{t.form}'", module="structures.ellipsis", level='WARNING')
 
                 comp = t.children_with_re_label('comp')
                 if len(comp) == 1:
                     process_ellipsis(t, comp[0])
                     continue
                 elif len(comp) > 1:
-                    logger.warning("S%-5s T%-5s- Multiple complements found for elliptical structure at token: '%s'", t.sentence.id, t.id, t.form)
+                    ChangeCollector.record(t.sentence.id, t.id, f"Multiple complements found for elliptical structure at token: '{t.form}'", module="structures.ellipsis", level='WARNING')
 
                 adjunct = t.children_with_re_label('adjunct')
                 if len(adjunct) == 1:
                     process_ellipsis(t, adjunct[0])
                     continue
                 elif len(adjunct) > 1:
-                    logger.warning("S%-5s T%-5s- Multiple adjuncts found for elliptical structure at token: '%s'", t.sentence.id, t.id, t.form)
+                    ChangeCollector.record(t.sentence.id, t.id, f"Multiple adjuncts found for elliptical structure at token: '{t.form}'", module="structures.ellipsis", level='WARNING')
 
                 # If no suitable head is found, log a warning
                 if t.children:
-                    logger.warning("S%-5s T%-5s- No suitable head found for elliptical structure at token: '%s'", t.sentence.id, t.id, t.form)
+                    ChangeCollector.record(t.sentence.id, t.id, f"No suitable head found for elliptical structure at token: '{t.form}'", module="structures.ellipsis", level='WARNING')
 
 
 def process_ellipsis(punct: Token, head: Token) -> None:

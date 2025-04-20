@@ -12,13 +12,12 @@ The conversion follows Universal Dependencies guidelines, making the first conju
 the head of the coordination structure and attaching coordinating conjunctions to
 the immediately succeeding conjunct.
 """
-import logging
 import re
 from typing import List, Optional
+from utils.logger import ChangeCollector
 from utils.classes import Sentence, Token
 from dependency.labels import convert_label as cl
 
-logger = logging.getLogger('ud_converter.dependency.structures.coordination')
 
 # Regular expressions for identifying shared dependents
 RE_SHARED = re.compile(r'^(subj|obj|adjunct|comp|cop|obl|cond|aux|vocative|app|pd|orphan|item|aglt|refl|imp|ne|cneg)')
@@ -39,6 +38,7 @@ def convert_coordination(s: Sentence) -> None:
         # Coordination with a coordinating conjunction, e.g. "Siedzi i czyta."
         if t.upos == 'CCONJ' and t.children_with_label('conjunct') and t.gov:
             coordination(t, False)
+            ChangeCollector.record(t.sentence.id, t.id, f"Converted coordination structure: '{t.form}'", module="structures.coordination")
 
         # Coordination with the compound conjunctions "przy czym", "przy tym"
         elif t.lemma == 'przy' and t.next and t.next.form in ['czym', 'tym'] and t.children_with_label('conjunct') and t.gov:
@@ -46,19 +46,22 @@ def convert_coordination(s: Sentence) -> None:
             if t.next and t.next.gov == t and t.next.dep_label == 'mwe':
                 t.next.udep_label = 'fixed'
             coordination(t, False)
+            ChangeCollector.record(t.sentence.id, t.id, f"Converted coordination structure: '{t.form}'", module="structures.coordination")
 
         # Coordination with a punctuation mark used as a conjunction, e.g. "Siedzi, czyta."
         elif t.upos == 'PUNCT' and t.children_with_label('conjunct') and t.gov:
             conjuncts = t.children_with_label('conjunct')
             if t.udep_label != 'conj' and conjuncts and conjuncts[0].udep_label not in ['punct', 'cc']:
                 coordination(t, True)
+                ChangeCollector.record(t.sentence.id, t.id, f"Converted coordination structure: '{t.form}'", module="structures.coordination")
             else:
                 # Treatment of cases with a conjunct realized as a coordination
                 # e.g. "nie wziął udziału, ale teraz to wszystko odrobi, nadgoni"
                 if t.udep_label == 'conj' and t.children_with_label('conjunct'):
                     coordination(t, True, ud_label='conj')
+                    ChangeCollector.record(t.sentence.id, t.id, f"Converted coordination structure: '{t.form}'", module="structures.coordination")
                 else:
-                    logger.warning("S%-5s T%-5s- No conversion for coordination structure: '%s'", t.sentence.id, t.id, t.form)
+                    ChangeCollector.record(t.sentence.id, t.id, f"No conversion for coordination structure: '{t.form}'", module="structures.coordination", level='WARNING')
 
 
 def coordination(t: Token, punct_conj: bool, ud_label: str = None) -> None:

@@ -11,12 +11,9 @@ Universal Dependencies guidelines, including:
 These corrections ensure that the final dependency graph adheres to
 Universal Dependencies constraints on which nodes can have dependents.
 """
-import logging
 from typing import List, Optional
-from utils.classes import Sentence, Token
 from utils.logger import ChangeCollector
-
-logger = logging.getLogger('ud_converter.dependency.edges')
+from utils.classes import Sentence, Token
 
 
 def edges_correction(s: Sentence) -> None:
@@ -58,7 +55,7 @@ def remove_dependents_of_auxiliary(s: Sentence) -> None:
                     if dep.lemma != 'nie' and dep.dep_label != 'neg' and dep.udep_label != 'conj':
                         if dep != sgov:
                             dep.ugov = sgov
-                        ChangeCollector.record(t.sentence.id, dep.id, f"Reattached dependent {dep.form} from auxiliary {t.form} to {sgov.form}")
+                        ChangeCollector.record(t.sentence.id, dep.id, f"Reattached dependent '{dep.form}' from auxiliary '{t.form}' to '{sgov.form}'", module="edges.auxiliary")
 
 
 def find_semantic_governor(t: Token) -> Optional[Token]:
@@ -112,9 +109,9 @@ def remove_dependents_of_fixed(s: Sentence) -> None:
                     for dep in fixed_token.children:
                         if dep.ugov != fixed_head:
                             dep.ugov = fixed_head
-                            ChangeCollector.record(t.sentence.id, dep.id, f"Reattached dependent {dep.form} from fixed token {fixed_token.form} to {fixed_head.form}")
+                            ChangeCollector.record(t.sentence.id, dep.id, f"Reattached dependent '{dep.form}' from fixed token '{fixed_token.form}' to '{fixed_head.form}'", module="edges.fixed")
             else:
-                logger.warning("S%-5s T%-5s- Fixed token '%s' has no super-governor.", t.sentence.id, t.id, t.form)
+                ChangeCollector.record(t.sentence.id, t.id, f"Fixed token '{t.form}' has no super-governor.", module="edges.fixed", level="WARNING")
                 continue
 
 
@@ -161,9 +158,9 @@ def remove_dependents_of_flat(s: Sentence) -> None:
                     # swap attachments
                     flat.ugov = t.ugov
                     t.ugov = flat
-                    ChangeCollector.record(t.sentence.id, flat.id, f"Reordered flat structure: {flat.form} -> {t.form}")
+                    ChangeCollector.record(t.sentence.id, flat.id, f"Reordered flat structure: {flat.form} -> {t.form}", module="edges.flat")
                 else:
-                    logger.warning("S%-5s T%-5s- Flat token %s has no UD governor.", t.sentence.id, t.id, t.form)
+                    ChangeCollector.record(t.sentence.id, flat.id, f"Flat token '{flat.form}' has no UD governor.", module="edges.flat", level="WARNING")
 
 
 def remove_dependents_of_mark_case_cc(s: Sentence) -> None:
@@ -186,4 +183,4 @@ def remove_dependents_of_mark_case_cc(s: Sentence) -> None:
                     c.dep_label != 'abbrev_punct'):
                     # Reattach the dependent to the governor
                     c.ugov = t.ugov
-                    ChangeCollector.record(t.sentence.id, c.id, f"Reattached dependent {c.form} from {t.udep_label} {t.form} to {t.ugov.form}")
+                    ChangeCollector.record(t.sentence.id, c.id, f"Reattached dependent '{c.form}' from {t.udep_label} '{t.form}' to '{t.ugov.form}'", module="edges.mark_case_cc")
