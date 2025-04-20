@@ -30,29 +30,29 @@ def lemma_based_upos(t: Token) -> None:
     t.pos not in ['subst', 'part', 'adv']):
         t.upos = 'SCONJ'
         t.ufeats = {'ConjType': 'Comp'}
-        logger.debug("Sentence %s: Converted %s to %s", t.sentence.id, t.form, t.upos)
+        logger.debug("S%-5s T%-5s- Converted %s to %s", t.sentence.id, t.id, t.form, t.upos)
     elif t.lemma == 'jak' and t.pos not in ['subst', 'conj', 'adv']:
         t.upos = 'SCONJ'
         t.ufeats = {'ConjType': 'Comp'}
     elif t.lemma == 'temu':
         t.upos = 'ADP'
         t.ufeats = {'AdpType': 'Post', 'Case': 'Acc'}
-        logger.debug("Sentence %s: Converted %s to %s", t.sentence.id, t.form, t.upos)
+        logger.debug("S%-5s T%-5s- Converted %s to %s", t.sentence.id, t.id, t.form, t.upos)
     elif t.lemma in ['plus', 'minus'] and t.pos not in ['subst', 'part']:
         t.upos = 'CCONJ'
         t.ufeats = {'ConjType': 'Oper'}
-        logger.debug("Sentence %s: Converted %s to %s", t.sentence.id, t.form, t.upos)
+        logger.debug("S%-5s T%-5s- Converted %s to %s", t.sentence.id, t.id, t.form, t.upos)
     elif t.pos not in ['subst', 'ign'] and re_arabic.match(t.lemma):
         number(t)
-        logger.debug("Sentence %s: Converted %s to %s", t.sentence.id, t.form, t.upos)
+        logger.debug("S%-5s T%-5s- Converted %s to %s", t.sentence.id, t.id, t.form, t.upos)
     elif t.pos not in ['interj', 'qub', 'part', 'conj', 'ign', 'brev', 'subst', 'prep', 'xxs', 'xxx'] and re_roman.match(t.lemma):
         number(t, roman=True)
-        logger.debug("Sentence %s: Converted %s to %s", t.sentence.id, t.form, t.upos)
+        logger.debug("S%-5s T%-5s- Converted %s to %s", t.sentence.id, t.id, t.form, t.upos)
     elif t.lemma[0].isupper():
         pos_specific_upos(t)
         if t.pos in ['subst', 'depr']:
             t.upos = 'PROPN'
-            logger.debug("Sentence %s: Converted %s to %s", t.sentence.id, t.form, t.upos)
+            logger.debug("S%-5s T%-5s- Converted %s to %s", t.sentence.id, t.id, t.form, t.upos)
 
 def number(t: Token, roman: bool = False) -> None:
     """
@@ -76,7 +76,7 @@ def number(t: Token, roman: bool = False) -> None:
         elif t.pos in ['dig', 'romandig', 'xxx']:
             t.upos = 'X'
         else:
-            logger.warning('Sentence %s: Unrecognised part of speech >>%s<< of the numeral >>%s<< in >>%s<<', t.sentence.id, t.pos, t.lemma, t.sentence.text if t.sentence else 'unknown')
+            logger.warning('S%-5s T%-5s- Unrecognised part of speech >>%s<< of the numeral >>%s<< in >>%s<<', t.sentence.id, t.id, t.pos, t.lemma, t.sentence.text if t.sentence else 'unknown')
 
     if roman is True:
         t.ufeats = {'NumForm': 'Roman'}

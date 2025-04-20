@@ -9,6 +9,7 @@ import re
 from collections import defaultdict
 from typing import Dict, List, Tuple, Optional
 from utils.constants import feats_dict, MULTIWORD_EXPRESSIONS as MWE
+from utils.logger import LoggingDict
 
 
 class Sentence:
@@ -123,9 +124,9 @@ class Token:
         """
         self.sentence: 'Sentence'
 
+        self.data = LoggingDict(self)
         if line != 'mwe':
             columns: List[str] = line.split("\t")
-            self.data = {}
             self.data['id'] = columns[0]
             self.data['form'] = columns[1]
             self.data['lemma'] = MWE.get(columns[2], columns[2])
@@ -149,7 +150,7 @@ class Token:
             self.data['umisc'] = defaultdict(str)
             self.data['umisc']['Translit'] = columns[9]
         else:
-            self.data = {}
+            self.data = LoggingDict(self)
             self.data['id'] = '_'
             self.data['form'] = '_'
             self.data['lemma'] = '_'

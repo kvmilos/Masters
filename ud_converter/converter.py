@@ -11,13 +11,15 @@ Usage:
 --tags-only: if present, only performs POS -> UPOS conversion.
 """
 import sys
-
+import logging
+from collections import defaultdict
 from utils.io import read_conll, write_ud_conll, load_meta
-from utils.logger import setup_logging
+from utils.logger import setup_logging, ChangeCollector
 from morphosyntax.morphosyntax import convert_to_upos
 from dependency.conversion import main as convert_dependencies
 
-logger = setup_logging()
+setup_logging()
+logger = logging.getLogger('ud_converter.converter')
 
 
 def main() -> None:
@@ -64,7 +66,20 @@ def main() -> None:
             convert_to_upos(sentence, sentence.meta)
         logger.info('Converting dependencies.')
         for sentence in sentences:
+            # clear previous events for this sentence
+            ChangeCollector.clear()
             convert_dependencies(sentence)
+            # group events by token id and log in token order
+            events_by_token = defaultdict(list)
+            for _, tid, msg in ChangeCollector.get_events():
+                events_by_token[tid].append(msg)
+            # log with padded prefix S<sid>T<tid>:
+            for token in sentence.tokens:
+                tid = token.id
+                if tid in events_by_token:
+                    for msg in events_by_token[tid]:
+                        logger.debug("S%-5s T%-5s- %s", sentence.id, tid, msg)
+            ChangeCollector.clear()
 
     logger.info('Writing output to %s', output_file)
     write_ud_conll(sentences, output_file, meta_data, form)

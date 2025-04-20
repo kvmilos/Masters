@@ -14,9 +14,9 @@ from morphosyntax.pos_categories.adverb import adv
 from morphosyntax.pos_categories.numeral import numeral, adjnum, advnum
 from morphosyntax.pos_categories.pronoun import ppron12, ppron3, siebie
 from morphosyntax.pos_categories.verb import fin, bedzie, praet, impt, imps, inf, ger, pcon, pant, pact, pactb, ppas, ppasb, ppraet, fut, plusq, aglt, winien, pred
-from morphosyntax.pos_categories.other import brev, frag, interj, part, prep, conj, comp,interp, xxx, dig, romandig, ign, sym, incert
+from morphosyntax.pos_categories.other import brev, frag, interj, part, prep, conj, comp, interp, xxx, dig, romandig, ign, sym, incert
 
-logger = logging.getLogger('ud_converter.morphosyntax.conversion')
+MODULE_PREFIX = f"ud_converter.{__name__}"
 
 
 def pos_specific_upos(t: Token) -> None:
@@ -29,95 +29,153 @@ def pos_specific_upos(t: Token) -> None:
 
     :param Token t: The token to be converted
     """
+    converter_func = None
     if t.upos == '':
         if t.pos == 'subst':
-            subst(t)
+            converter_func = subst
+            converter_func(t)
         elif t.pos == 'adj':
-            adj(t)
+            converter_func = adj
+            converter_func(t)
         elif t.pos == 'adja':
-            adja(t)
+            converter_func = adja
+            converter_func(t)
         elif t.pos == 'adjb':
-            adjb(t)
+            converter_func = adjb
+            converter_func(t)
         elif t.pos == 'adv':
-            adv(t)
+            converter_func = adv
+            converter_func(t)
         elif t.pos in ['num', 'numcol']:
-            numeral(t)
+            converter_func = numeral
+            converter_func(t)
         elif t.pos == 'adjnum':
-            adjnum(t)
+            converter_func = adjnum
+            converter_func(t)
         elif t.pos == 'advnum':
-            advnum(t)
+            converter_func = advnum
+            converter_func(t)
         elif t.pos == 'fin':
-            fin(t)
+            converter_func = fin
+            converter_func(t)
         elif t.pos == 'bedzie':
-            bedzie(t)
+            converter_func = bedzie
+            converter_func(t)
         elif t.pos == 'praet':
-            praet(t)
+            converter_func = praet
+            converter_func(t)
         elif t.pos == 'impt':
-            impt(t)
+            converter_func = impt
+            converter_func(t)
         elif t.pos == 'imps':
-            imps(t)
+            converter_func = imps
+            converter_func(t)
         elif t.pos == 'inf':
-            inf(t)
+            converter_func = inf
+            converter_func(t)
         elif t.pos == 'ger':
-            ger(t)
+            converter_func = ger
+            converter_func(t)
         elif t.pos == 'pcon':
-            pcon(t)
+            converter_func = pcon
+            converter_func(t)
         elif t.pos == 'pant':
-            pant(t)
+            converter_func = pant
+            converter_func(t)
         elif t.pos == 'pact':
-            pact(t)
+            converter_func = pact
+            converter_func(t)
         elif t.pos == 'pactb':
-            pactb(t)
+            converter_func = pactb
+            converter_func(t)
         elif t.pos == 'ppas':
-            ppas(t)
+            converter_func = ppas
+            converter_func(t)
         elif t.pos == 'ppasb':
-            ppasb(t)
+            converter_func = ppasb
+            converter_func(t)
         elif t.pos == 'ppraet':
-            ppraet(t)
+            converter_func = ppraet
+            converter_func(t)
         elif t.pos == 'fut':
-            fut(t)
+            converter_func = fut
+            converter_func(t)
         elif t.pos == 'plusq':
-            plusq(t)
+            converter_func = plusq
+            converter_func(t)
         elif t.pos in ['aglt', 'agltaor']:
-            aglt(t)
+            converter_func = aglt
+            converter_func(t)
         elif t.pos == 'winien':
-            winien(t)
+            converter_func = winien
+            converter_func(t)
         elif t.pos == 'pred':
-            pred(t)
+            converter_func = pred
+            converter_func(t)
         elif t.pos == 'frag':
-            frag(t)
+            converter_func = frag
+            converter_func(t)
         elif t.pos == 'interj':
-            interj(t)
+            converter_func = interj
+            converter_func(t)
         elif t.pos == 'part':
-            part(t)
+            converter_func = part
+            converter_func(t)
         elif t.pos == 'prep':
-            prep(t)
+            converter_func = prep
+            converter_func(t)
         elif t.pos == 'brev':
-            brev(t)
+            converter_func = brev
+            converter_func(t)
         elif t.pos == 'conj':
-            conj(t)
+            converter_func = conj
+            converter_func(t)
         elif t.pos == 'comp':
-            comp(t)
+            converter_func = comp
+            converter_func(t)
         elif t.pos == 'ppron12':
-            ppron12(t)
+            converter_func = ppron12
+            converter_func(t)
         elif t.pos == 'ppron3':
-            ppron3(t)
+            converter_func = ppron3
+            converter_func(t)
         elif t.pos == 'siebie':
-            siebie(t)
+            converter_func = siebie
+            converter_func(t)
         elif t.pos == 'interp':
-            interp(t)
+            converter_func = interp
+            converter_func(t)
         elif t.pos == 'xxx':
-            xxx(t)
+            converter_func = xxx
+            converter_func(t)
         elif t.pos == 'dig':
-            dig(t)
+            converter_func = dig
+            converter_func(t)
         elif t.pos == 'romandig':
-            romandig(t)
+            converter_func = romandig
+            converter_func(t)
         elif t.pos == 'ign':
-            ign(t)
+            converter_func = ign
+            converter_func(t)
         elif t.pos == 'sym':
-            sym(t)
+            converter_func = sym
+            converter_func(t)
         elif t.pos == 'incert':
-            incert(t)
+            converter_func = incert
+            converter_func(t)
         else:
-            logger.warning("Sentence %s: Unrecognised part of speech >>%s<< of the token >>%s<< in >>%s<<", t.sentence.id, t.pos, t.form, t.sentence.text if t.sentence else 'unknown')
-        logger.debug("Sentence %s: Converted %s to %s", t.sentence.id, t.form, t.upos)
+            # log unrecognised POS under 'conversion' category with padded prefix
+            warning_logger = logging.getLogger(MODULE_PREFIX + '.conversion')
+            warning_logger.warning(
+                "S%-5s T%-5s- Unrecognised part of speech >>%s<< for token >>%s<< in sentence: %s",
+                t.sentence.id, t.id, t.pos, t.form,
+                t.sentence.text if t.sentence else 'unknown'
+            )
+    # after conversion, only log if a specific conversion function ran
+    if converter_func:
+        category = converter_func.__module__.split('.')[-1]
+        category_logger = logging.getLogger(f"{MODULE_PREFIX}.{category}")
+        category_logger.debug(
+            "S%-5s T%-5s- Converted %s to %s",
+            t.sentence.id, t.id, t.form, t.upos
+        )
