@@ -134,7 +134,7 @@ def convert_predicative_other(cop: Token, gov: Token, subj: Token) -> None:
 
         # Attach the subject to the governor
         subj.ugov = gov
-        subj.udep_label = '_'
+        subj.udep_label = cop.udep_label if cop.udep_label != '_' else cl(cop)
 
     # Attach the copula to the subject
     cop.ugov = subj
@@ -179,7 +179,7 @@ def convert_coordinated_copula(cop: Token, gov: Token) -> None:
             if c != pd and c.dep_label not in ['neg', 'cneg', 'conjunct'] and c.lemma != 'nie':
                 # Attach other dependents to the predicative complement
                 c.ugov = pd
-                c.udep_label = '_'
+                c.udep_label = cl(c)
 
 
 def process_copula_dependents(cop: Token, new_head: Token, exclude: Token = None) -> None:
@@ -212,4 +212,4 @@ def process_copula_dependents(cop: Token, new_head: Token, exclude: Token = None
             # Attach the dependent to the new head
             dep.ugov = new_head
             # Keep the original dependency label
-            dep.udep_label = dep.udep_label
+            dep.udep_label = dep.udep_label if dep.udep_label != '_' else cl(dep)

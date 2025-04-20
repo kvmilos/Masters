@@ -142,7 +142,7 @@ class Token:
             self.data['gov'] = None
             self.data['ugov'] = None
             self.data['dep_label'] = columns[7]
-            self.data['udep_label'] = ''
+            self.data['udep_label'] = '_'
             self.data['eud'] = defaultdict(str)
             self.data['sent_id'] = columns[8]
             self.data['misc'] = columns[9]
