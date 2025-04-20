@@ -167,7 +167,7 @@ def pos_specific_upos(t: Token) -> None:
             # log unrecognised POS under 'conversion' category with padded prefix
             warning_logger = logging.getLogger(MODULE_PREFIX + '.conversion')
             warning_logger.warning(
-                "S%-5s T%-5s- Unrecognised part of speech >>%s<< for token >>%s<< in sentence: %s",
+                "S%-5s T%-5s- Unrecognised part of speech '%s' for token '%s' in sentence: %s",
                 t.sentence.id, t.id, t.pos, t.form,
                 t.sentence.text if t.sentence else 'unknown'
             )
@@ -176,6 +176,6 @@ def pos_specific_upos(t: Token) -> None:
         category = converter_func.__module__.split('.')[-1]
         category_logger = logging.getLogger(f"{MODULE_PREFIX}.{category}")
         category_logger.debug(
-            "S%-5s T%-5s- Converted %s to %s",
+            "S%-5s T%-5s- Converted '%s' to %s",
             t.sentence.id, t.id, t.form, t.upos
         )
