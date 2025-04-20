@@ -36,7 +36,7 @@ def convert_numeral(s: Sentence) -> None:
             elif t.super_child_with_label_via_label('ne', 'comp'):
                 ne_numeral(t)
             else:
-                logger.warning("Sentence %s: No conversion for numeral phrase: '%s'", s.id, t.form)
+                logger.warning("S%-5s T%-5s- No conversion for numeral phrase: '%s'", s.id, t.id, t.form)
 
 
 def standard_numeral(t: Token) -> None:
@@ -50,7 +50,7 @@ def standard_numeral(t: Token) -> None:
     """
     comp = t.children_with_label('comp')
     if len(comp) != 1:
-        logger.warning("Sentence %s: Expected 1 comp child, got %d for standard numeral phrase: '%s'", t.sentence.id, len(comp), t.form)
+        logger.warning("S%-5s T%-5s- Expected 1 comp child, got %d for standard numeral phrase: '%s'", t.sentence.id, t.id, len(comp), t.form)
         return
     comp = comp[0]
     if t.gov:
@@ -83,7 +83,7 @@ def coordinated_numeral(t: Token) -> None:
     """
     comp = t.children_with_label('comp')
     if len(comp) != 1:
-        logger.warning("Sentence %s: Expected 1 comp child, got %d for coordinated numeral phrase: '%s'", t.sentence.id, len(comp), t.form)
+        logger.warning("S%-5s T%-5s- Expected 1 comp child, got %d for coordinated numeral phrase: '%s'", t.sentence.id, t.id, len(comp), t.form)
         return
     comp = comp[0]
     if t.gov and t.gov.gov:
@@ -107,7 +107,7 @@ def mwe_numeral(t: Token) -> None:
         mwe.ugov = t.gov
         mwe.udep_label = cl(t)
     if not mwe:
-        logger.warning("Sentence %s: No MWE found for numeral phrase: '%s'", t.sentence.id, t.form)
+        logger.warning("S%-5s T%-5s- No MWE found for numeral phrase: '%s'", t.sentence.id, t.id, t.form)
         return
     t.ugov = mwe
     t.udep_label = numeral_label(t)
@@ -124,9 +124,9 @@ def ne_numeral(t: Token) -> None:
     """
     ne = t.children_with_label('ne')
     if ne != t.super_child_with_label_via_label('ne', 'comp'):
-        logger.warning("Sentence %s: HERE WE PROBABLY HAVE A PROBLEM", t.sentence.id)
+        logger.warning("S%-5s T%-5s- HERE WE PROBABLY HAVE A PROBLEM", t.sentence.id, t.id)
     if len(ne) != 1:
-        logger.warning("Sentence %s: Expected 1 named entity child, got %d for numeral phrase: '%s'", t.sentence.id, len(ne), t.form)
+        logger.warning("S%-5s T%-5s- Expected 1 named entity child, got %d for numeral phrase: '%s'", t.sentence.id, t.id, len(ne), t.form)
         return
     ne = ne[0]
     if t.gov:
@@ -149,5 +149,5 @@ def numeral_label(t: Token) -> str:
     elif not t.udep_label and t.upos == 'DET':
         return 'det'
     else:
-        logger.warning("Sentence %s: No label for numeral phrase: '%s', %s", t.sentence.id, t.form, t.upos)
+        logger.warning("S%-5s T%-5s- No label for numeral phrase: '%s', %s", t.sentence.id, t.id, t.form, t.upos)
         return '_'

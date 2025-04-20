@@ -20,16 +20,24 @@ class ModuleFormatter(logging.Formatter):
         # pad each level to 12 chars
         parts = name.split('.')
         padded = [part.ljust(12) for part in parts]
-        name = '.'.join(padded)
-        record.name = name
+        record.name = '.'.join(padded)
         return super().format(record)
 
+class LevelFilter(logging.Filter):
+    """
+    Allows only records whose levelno is between low and high, inclusive.
+    """
+    def __init__(self, low, high=None):
+        super().__init__()
+        self.low = low
+        self.high = high if high is not None else low
 
-def setup_logging(log_level: int = logging.INFO) -> logging.Logger:
+    def filter(self, record):
+        return self.low <= record.levelno <= self.high
+
+def setup_logging() -> logging.Logger:
     """
     Set up logging configuration for the project.
-
-    :param log_level: The logging level to use for the console (default: logging.INFO)
 
     :return: The configured logger for the ud_converter module
     """
@@ -38,7 +46,7 @@ def setup_logging(log_level: int = logging.INFO) -> logging.Logger:
 
     timestamp = datetime.now().strftime('%y%m%d_%H%M%S')
     debug_log_file = os.path.join(log_dir, f'UD_{timestamp}-DEBUG.log')
-    info_log_file = os.path.join(log_dir, f'UD_{timestamp}-INFO.log')
+    info_log_file = os.path.join(log_dir, f'UD_{timestamp}-WARNINGS.log')
 
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.DEBUG)
@@ -48,23 +56,26 @@ def setup_logging(log_level: int = logging.INFO) -> logging.Logger:
 
     debug_file_handler = logging.FileHandler(debug_log_file, encoding='utf-8')
     debug_file_handler.setLevel(logging.DEBUG)
-    # use ModuleFormatter to pad each module level to 12 chars, then width 40
+    debug_file_handler.addFilter(LevelFilter(logging.DEBUG, logging.WARNING))
     debug_file_handler.setFormatter(ModuleFormatter('%(name)-40s - %(levelname)-8s - %(message)s'))
 
     info_file_handler = logging.FileHandler(info_log_file, encoding='utf-8')
     info_file_handler.setLevel(logging.INFO)
+    info_file_handler.addFilter(LevelFilter(logging.INFO, logging.WARNING))
     info_file_handler.setFormatter(ModuleFormatter('%(name)-40s - %(levelname)-8s - %(message)s'))
 
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(log_level)
-    console_handler.setFormatter(ModuleFormatter('%(name)-40s - %(levelname)-8s - %(message)s'))
+    console_handler.setLevel(logging.INFO)
+    console_handler.addFilter(LevelFilter(logging.INFO))
+    console_handler.setFormatter(ModuleFormatter('%(levelname)s: %(message)s'))
 
     root_logger.addHandler(debug_file_handler)
     root_logger.addHandler(info_file_handler)
     root_logger.addHandler(console_handler)
 
     caller_logger = logging.getLogger('ud_converter')
-    caller_logger.info('Logging system initialized with INFO to console and file, DEBUG to debug file')
+    caller_logger.info('WARNINGS and INFO saved to %s', info_log_file)
+    caller_logger.info('DEBUG saved to %s', debug_log_file)
 
     return caller_logger
 

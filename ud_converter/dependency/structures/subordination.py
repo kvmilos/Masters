@@ -77,7 +77,7 @@ def jako(t: Token) -> None:
     pds = t.children_with_label('pd')
 
     if not pds:
-        logger.warning("Sentence %s: The attributive construction JAKO has no dependents.", t.sentence.id)
+        logger.warning("S%-5s T%-5s- The attributive construction JAKO has no dependents.", t.sentence.id, t.id)
         return
 
     if len(pds) == 1:
@@ -89,13 +89,13 @@ def jako(t: Token) -> None:
             pd.ugov = gov
             pd.udep_label = t.udep_label
         else:
-            logger.warning("Sentence %s: The attributive construction JAKO has no governor.", t.sentence.id)
+            logger.warning("S%-5s T%-5s- The attributive construction JAKO has no governor.", t.sentence.id, t.id)
 
         # Attach 'jako' to the predicative complement
         t.ugov = pd
         t.udep_label = 'mark'
     else:
-        logger.warning("Sentence %s: The attributive construction JAKO has %d dependents pd: %s", t.sentence.id,
+        logger.warning("S%-5s T%-5s- The attributive construction JAKO has %d dependents pd: %s", t.sentence.id, t.id,
                       len(pds), [p.form for p in pds])
 
 
@@ -111,7 +111,7 @@ def complex_subordinating_conjunction(t: Token) -> None:
     :param Token t: The second part of the complex conjunction
     """
     if not t.super_gov_via_label('mwe') and t.gov:
-        logger.warning("Sentence %s: Complex subordinating conjunction has no super-governor: '%s' '%s'", t.sentence.id,
+        logger.warning("S%-5s T%-5s- Complex subordinating conjunction has no super-governor: '%s' '%s'", t.sentence.id, t.id,
                       t.gov.form, t.form)
         return
 
@@ -119,7 +119,7 @@ def complex_subordinating_conjunction(t: Token) -> None:
     super_gov_child = t.super_gov_via_label('mwe')[1] # type: ignore
 
     if not super_gov and t.gov:
-        logger.warning("Sentence %s: Complex subordinating conjunction has no governor: '%s' '%s'", t.sentence.id,
+        logger.warning("S%-5s T%-5s- Complex subordinating conjunction has no governor: '%s' '%s'", t.sentence.id, t.id,
                       t.gov.form, t.form)
         return
 
@@ -128,7 +128,7 @@ def complex_subordinating_conjunction(t: Token) -> None:
 
     if not comp:
         if t.lemma not in ['to']:
-            logger.warning("Sentence %s: Subordinate conjunction '%s' has no dependents.", t.sentence.id, t.lemma)
+            logger.warning("S%-5s T%-5s- Subordinate conjunction '%s' has no dependents.", t.sentence.id, t.id, t.lemma)
             return
         else:
             logger.debug("Sentence %s: Subordinate conjunction '%s' which is a 'to' has no dependents.", t.sentence.id, t.lemma)
@@ -155,7 +155,7 @@ def complex_subordinating_threeword_conjunction(t: Token) -> None:
     :param Token t: The last part of the complex conjunction
     """
     if not t.super_gov_via_label('mwe') and t.gov:
-        logger.warning("Sentence %s: Complex subordinating conjunction has no super-governor: '%s' '%s'", t.sentence.id,
+        logger.warning("S%-5s T%-5s- Complex subordinating conjunction has no super-governor: '%s' '%s'", t.sentence.id, t.id,
                       t.gov.form, t.form)
         return
 
@@ -163,7 +163,7 @@ def complex_subordinating_threeword_conjunction(t: Token) -> None:
     super_gov_child = t.super_gov_via_label('mwe')[1] # type: ignore
 
     if (not super_gov) and t.gov:
-        logger.warning("Sentence %s: Complex subordinating conjunction has no governor: '%s' '%s'", t.sentence.id,
+        logger.warning("S%-5s T%-5s- Complex subordinating conjunction has no governor: '%s' '%s'", t.sentence.id, t.id,
                       t.gov.form, t.form)
         return
 
@@ -175,7 +175,7 @@ def complex_subordinating_threeword_conjunction(t: Token) -> None:
         return
 
     if len(comp) > 1:
-        logger.warning("Sentence %s: Subordinate conjunction '%s' has %d dependents comp_fin: %s", t.sentence.id,
+        logger.warning("S%-5s T%-5s- Subordinate conjunction '%s' has %d dependents comp_fin: %s", t.sentence.id, t.id,
                       t.lemma, len(comp), [c.form for c in comp])
         return
 
@@ -208,7 +208,7 @@ def subordinating_conjunction(t: Token) -> None:
     """
 
     if not t.gov:
-        logger.warning("Sentence %s: Subordinating conjunction has no governor: '%s'", t.sentence.id, t.form)
+        logger.warning("S%-5s T%-5s- Subordinating conjunction has no governor: '%s'", t.sentence.id, t.id, t.form)
         return
 
     # Find the complement of the subordinate clause
@@ -216,7 +216,7 @@ def subordinating_conjunction(t: Token) -> None:
 
     if not comp:
         if t.lemma not in ['to', 'dopóty'] and t.dep_label != 'dep':
-            logger.warning("Sentence %s: Subordinate conjunction '%s' has no dependents.", t.sentence.id, t.lemma)
+            logger.warning("S%-5s T%-5s- Subordinate conjunction '%s' has no dependents.", t.sentence.id, t.id, t.lemma)
         return
 
     # Attach the complement to the governor
@@ -247,32 +247,29 @@ def find_complement(t: Token) -> Optional[Token]:
     # Try to find a finite complement
     comp_fin = t.children_with_label('comp_fin')
     if comp_fin:
-        if len(comp_fin) == 1:
-            return comp_fin[0]
-        else:
-            logger.warning("Sentence %s: Subordinate conjunction '%s' has %d dependents comp_fin: %s", t.sentence.id,
+        if len(comp_fin) != 1:
+            logger.warning("S%-5s T%-5s- Subordinate conjunction '%s' has %d dependents comp_fin: %s", t.sentence.id, t.id,
                           t.lemma, len(comp_fin), [c.form for c in comp_fin])
             return None
+        return comp_fin[0]
 
     # Try to find an infinitive complement
     comp_inf = t.children_with_label('comp_inf')
     if comp_inf:
-        if len(comp_inf) == 1:
-            return comp_inf[0]
-        else:
-            logger.warning("Sentence %s: Subordinate conjunction '%s' has %d dependents comp_inf: %s", t.sentence.id,
+        if len(comp_inf) != 1:
+            logger.warning("S%-5s T%-5s- Subordinate conjunction '%s' has %d dependents comp_inf: %s", t.sentence.id, t.id,
                           t.lemma, len(comp_inf), [c.form for c in comp_inf])
             return None
+        return comp_inf[0]
 
     # Try to find any other complement
     comp = t.children_with_label('comp')
     if comp:
-        if len(comp) == 1:
-            return comp[0]
-        else:
-            logger.warning("Sentence %s: Subordinate conjunction '%s' has %d dependents comp: %s", t.sentence.id,
+        if len(comp) != 1:
+            logger.warning("S%-5s T%-5s- Subordinate conjunction '%s' has %d dependents comp: %s", t.sentence.id, t.id,
                           t.lemma, len(comp), [c.form for c in comp])
             return None
+        return comp[0]
 
     return None
 
@@ -292,4 +289,4 @@ def punctuation_marks(t: Token, comp: Token) -> None:
             punct.ugov = comp
             punct.udep_label = 'punct'
         else:
-            logger.warning("Sentence %s: Punctuation mark '%s' has dependents.", t.sentence.id, punct.form)
+            logger.warning("S%-5s T%-5s- Punctuation mark '%s' has dependents.", t.sentence.id, t.id, punct.form)

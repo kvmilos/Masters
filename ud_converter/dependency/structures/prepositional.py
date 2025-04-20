@@ -25,13 +25,13 @@ def convert_prepositional(s: Sentence) -> None:
             if t.dep_label == 'mwe':
                 # Handle prepositions that are part of multiword expressions
                 if not t.super_gov_via_label('mwe'):
-                    logger.warning("Sentence %s: Super-governor not found for preposition: '%s'", t.sentence.id, t.form)
+                    logger.warning("S%-5s T%-5s- Super-governor not found for preposition: '%s'", t.sentence.id, t.id, t.form)
                     continue
                 super_gov = t.super_gov_via_label('mwe')[0] # type: ignore
                 super_gov_child = t.super_gov_via_label('mwe')[1] # type: ignore
                 if super_gov and super_gov.udep_label == '_' and super_gov.dep_label in ['adjunct_compar', 'adjunct_comment']:
                     # Skip comparative and comment adjuncts
-                    logger.warning("Sentence %s: Skipping comparative or comment adjunct (preposition): '%s'", t.sentence.id, t.form)
+                    logger.warning("S%-5s T%-5s- Skipping comparative or comment adjunct (preposition): '%s'", t.sentence.id, t.id, t.form)
                 else:
                     # Convert the prepositional phrase
                     convert_pp(super_gov_child, super_gov, t)
@@ -68,7 +68,7 @@ def convert_pp(prep: Token, gov: Token, t: Token) -> None:
                         # Handle orphaned obliques
                         prep.udep_label = 'obl:orphan'
                     else:
-                        logger.warning("Sentence %s: The preposition '%s' has no complements", t.sentence.id, prep.form)
+                        logger.warning("S%-5s T%-5s- The preposition '%s' has no complements", t.sentence.id, t.id, prep.form)
                 else:
                     if len(conj_comp) == 1:
                         # Attach the complement to the super-governor
@@ -81,10 +81,10 @@ def convert_pp(prep: Token, gov: Token, t: Token) -> None:
                             gov.ugov = conj_comp[0]
                             gov.udep_label = '_'
                     else:
-                        logger.warning("Sentence %s: The preposition '%s' has %d complements: %s", t.sentence.id,
+                        logger.warning("S%-5s T%-5s- The preposition '%s' has %d complements: %s", t.sentence.id, t.id,
                                       prep.form, len(conj_comp), [c.form for c in conj_comp])
             else:
-                logger.warning("Sentence %s: The preposition '%s' has no complements", t.sentence.id, prep.form)
+                logger.warning("S%-5s T%-5s- The preposition '%s' has no complements", t.sentence.id, t.id, prep.form)
         else:
             # Skip special case for "podczas gdy"
             if prep.lemma == 'podczas' and prep.next and prep.next.lemma == 'gdy':
@@ -114,7 +114,7 @@ def convert_pp(prep: Token, gov: Token, t: Token) -> None:
             # Process other dependents of the preposition
             convert_prep_dependents(prep, comp[0])
         else:
-            logger.warning("Sentence %s: The preposition '%s' has %d complements: %s", t.sentence.id,
+            logger.warning("S%-5s T%-5s- The preposition '%s' has %d complements: %s", t.sentence.id, t.id,
                           prep.form, len(comp), [c.form for c in comp])
 
 

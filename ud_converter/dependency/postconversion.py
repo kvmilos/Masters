@@ -98,7 +98,7 @@ def look_for_clause_type(t: Token, visited: set = None) -> str:
 
     # If we've already visited this token, we have a cycle
     if t.id in visited:
-        logger.warning("Sentence %s: Cycle detected in pronoun resolution for token '%s'", t.sentence.id, t.form)
+        logger.warning("S%-5s T%-5s- Cycle detected in pronoun resolution for token '%s'", t.sentence.id, t.id, t.form)
         return ''
 
     visited.add(t.id)
@@ -112,8 +112,8 @@ def look_for_clause_type(t: Token, visited: set = None) -> str:
         elif t.udep_label == 'fixed':
             return 'Mwe'
         else:
-            print(t.to_string(form='mpdt'), t.to_string(form='ud'))
+            # print(t.to_string(form='mpdt'), t.to_string(form='ud'))
             return look_for_clause_type(gov, visited)
     else:
-        logger.warning("Sentence %s: No governor found for pronoun: '%s'", t.sentence.id, t.form)
+        logger.warning("S%-5s T%-5s- No governor found for pronoun: '%s'", t.sentence.id, t.id, t.form)
         return ''

@@ -19,7 +19,7 @@ from morphosyntax.morphosyntax import convert_to_upos
 from dependency.conversion import main as convert_dependencies
 
 setup_logging()
-logger = logging.getLogger('ud_converter.converter')
+logger = logging.getLogger('ud_converter')
 
 
 def main() -> None:
