@@ -81,7 +81,7 @@ def pronouns_disambiguation(s: Sentence) -> None:
                 t.ufeats.pop('PronType', None)
 
 
-def look_for_clause_type(t: Token) -> str:
+def look_for_clause_type(t: Token, visited: set = None) -> str:
     """
     Determines the clause type for a pronoun based on its syntactic context.
 
@@ -93,16 +93,27 @@ def look_for_clause_type(t: Token) -> str:
     :return: The clause type ('Rel', 'Int', 'Mwe', or '')
     :rtype: str
     """
-    gov = t.ugov
+    if visited is None:
+        visited = set()
+
+    # If we've already visited this token, we have a cycle
+    if t.id in visited:
+        logger.warning("Sentence %s: Cycle detected in pronoun resolution for token '%s'", t.sentence.id, t.form)
+        return ''
+
+    visited.add(t.id)
+    gov = t.ugov or t.gov
+
     if gov:
         if t.udep_label == 'acl:relcl':
             return 'Rel'
-        if t.udep_label.startswith('ccomp') or t.udep_label.startswith('xcomp') or t.udep_label.startswith('advcl') or t.udep_label == 'root':
+        elif t.udep_label.startswith('ccomp') or t.udep_label.startswith('xcomp') or t.udep_label.startswith('advcl') or t.udep_label == 'root':
             return 'Int'
-        if t.udep_label == 'fixed':
+        elif t.udep_label == 'fixed':
             return 'Mwe'
-        print(t.to_string(form='mpdt'), t.to_string(form='ud'))
-        return look_for_clause_type(gov)
+        else:
+            print(t.to_string(form='mpdt'), t.to_string(form='ud'))
+            return look_for_clause_type(gov, visited)
     else:
         logger.warning("Sentence %s: No governor found for pronoun: '%s'", t.sentence.id, t.form)
         return ''
