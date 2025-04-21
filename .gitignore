@@ -22,3 +22,9 @@ data/
 
 # macOS system files
 .DS_Store
+
+# Flake8
+.flake8
+
+# MyPy cache
+.mypy_cache/
