@@ -11,7 +11,6 @@ Universal Dependencies guidelines, including:
 These corrections ensure that the final dependency graph adheres to
 Universal Dependencies constraints on which nodes can have dependents.
 """
-from typing import List, Optional
 from utils.logger import ChangeCollector
 from utils.classes import Sentence, Token
 
@@ -58,7 +57,7 @@ def remove_dependents_of_auxiliary(s: Sentence) -> None:
                         ChangeCollector.record(t.sentence.id, dep.id, f"Reattached dependent '{dep.form}' from auxiliary '{t.form}' to '{sgov.form}'", module="edges.auxiliary")
 
 
-def find_semantic_governor(t: Token) -> Optional[Token]:
+def find_semantic_governor(t: Token) -> Token | None:
     """
     Finds the semantic governor of a token.
 
@@ -115,7 +114,7 @@ def remove_dependents_of_fixed(s: Sentence) -> None:
                 continue
 
 
-def collect_fixed_tokens(t: Token) -> List[Token]:
+def collect_fixed_tokens(t: Token) -> list[Token]:
     """
     Collects all tokens that are part of a fixed expression.
 

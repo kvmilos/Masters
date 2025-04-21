@@ -6,14 +6,13 @@ This module orchestrates the conversion process through three steps:
 2. Core conversion - POS-specific conversion rules
 3. Postconversion - Final adjustments and sentence-level conversions
 """
-from typing import Dict
 from utils.classes import Sentence
 from morphosyntax.preconversion import lemma_based_upos as preconversion
 from morphosyntax.conversion import pos_specific_upos as conversion
 from morphosyntax.postconversion import post_conversion as postconversion
 
 
-def convert_to_upos(s: Sentence, meta: Dict[str, str]) -> None:
+def convert_to_upos(s: Sentence, meta: dict[str, str]) -> None:
     """
     Converts tokens in a sentence to UPOS tags and features.
     

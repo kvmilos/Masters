@@ -13,7 +13,6 @@ the head of the coordination structure and attaching coordinating conjunctions t
 the immediately succeeding conjunct.
 """
 import re
-from typing import List, Optional
 from utils.logger import ChangeCollector
 from utils.classes import Sentence, Token
 from dependency.labels import convert_label as cl
@@ -64,7 +63,7 @@ def convert_coordination(s: Sentence) -> None:
                     ChangeCollector.record(t.sentence.id, t.id, f"No conversion for coordination structure: '{t.form}'", module="structures.coordination", level='WARNING')
 
 
-def coordination(t: Token, punct_conj: bool, ud_label: str = None) -> None:
+def coordination(t: Token, punct_conj: bool, ud_label: str | None = None) -> None:
     """
     Converts a coordination structure to UD format.
 
@@ -145,7 +144,7 @@ def coordination(t: Token, punct_conj: bool, ud_label: str = None) -> None:
     process_other(other, conjuncts, main_c, t)
 
 
-def find_next_token(tokens: List[Token], t: Token) -> Optional[Token]:
+def find_next_token(tokens: list[Token], t: Token) -> Token | None:
     """
     Finds the next token from the given list after the specified token.
 
@@ -165,7 +164,7 @@ def find_next_token(tokens: List[Token], t: Token) -> Optional[Token]:
     return None
 
 
-def process_conjuncts(conjuncts: List[Token], main_c: Token, t: Token) -> None:
+def process_conjuncts(conjuncts: list[Token], main_c: Token, t: Token) -> None:
     """
     Processes the conjuncts in a coordination structure.
 
@@ -214,7 +213,7 @@ def process_conjuncts(conjuncts: List[Token], main_c: Token, t: Token) -> None:
                         c.eud = {t.gov.id: cl(t)}
 
 
-def process_puncts(puncts: List[Token], conjuncts: List[Token]) -> None:
+def process_puncts(puncts: list[Token], conjuncts: list[Token]) -> None:
     """
     Processes punctuation marks in a coordination structure.
 
@@ -229,7 +228,7 @@ def process_puncts(puncts: List[Token], conjuncts: List[Token]) -> None:
         p.udep_label = 'punct'
 
 
-def process_precoords(pre_coords: List[Token], conjuncts: List[Token]) -> None:
+def process_precoords(pre_coords: list[Token], conjuncts: list[Token]) -> None:
     """
     Processes pre-conjunctions in a coordination structure, e.g., the first "albo" in "albo ... albo ...".
 
@@ -246,7 +245,7 @@ def process_precoords(pre_coords: List[Token], conjuncts: List[Token]) -> None:
             pre.udep_label = 'cc:preconj'
 
 
-def process_shared(shared: List[Token], conjuncts: List[Token], main_c: Token) -> None:
+def process_shared(shared: list[Token], conjuncts: list[Token], main_c: Token) -> None:
     """
     Processes shared dependents in a coordination structure.
 
@@ -264,7 +263,7 @@ def process_shared(shared: List[Token], conjuncts: List[Token], main_c: Token) -
             s.eud = {con.id: cl(s)}
 
 
-def process_other(other: List[Token], conjuncts: List[Token], main_c: Token, t: Token) -> None:
+def process_other(other: list[Token], conjuncts: list[Token], main_c: Token, t: Token) -> None:
     """
     Processes other dependents in a coordination structure.
 

@@ -7,13 +7,12 @@ loading metadata from JSON files.
 """
 import logging
 import json
-from typing import List, Dict
 from utils.classes import Sentence, Token
 
 logger = logging.getLogger('ud_converter.io')
 
 
-def read_conll(filepath: str, meta: Dict[str, Dict[str, str]] = None) -> List[Sentence]:
+def read_conll(filepath: str, meta: dict[str, dict[str, str]] | None = None) -> list[Sentence]:
     """
     Reads a .conll file and returns a list of Sentence objects.
 
@@ -25,11 +24,11 @@ def read_conll(filepath: str, meta: Dict[str, Dict[str, str]] = None) -> List[Se
     :return: List of Sentence objects containing the parsed sentences
     :rtype: List[Sentence]
     """
-    sentences = []
-    current_lines = []
+    sentences: list[Sentence] = []
+    current_lines: list[str] = []
     sent_count = 0
 
-    with open(filepath, 'r', encoding='utf-8') as f:
+    with open(filepath, encoding='utf-8') as f:
         for line in f:
             line = line.rstrip('\n')
             if line.startswith('#'):
@@ -57,7 +56,7 @@ def read_conll(filepath: str, meta: Dict[str, Dict[str, str]] = None) -> List[Se
 
     return sentences
 
-def write_ud_conll(sentences: List[Sentence], outfile_path: str, meta = None, form = 'ud') -> None:
+def write_ud_conll(sentences: list[Sentence], outfile_path: str, meta = None, form = 'ud') -> None:
     """
     Writes the converted sentences in UD CONLL-U format.
 
@@ -86,7 +85,7 @@ def load_meta(meta_path: str):
     :return: Dictionary containing the metadata
     """
     try:
-        with open(meta_path, 'r', encoding='utf-8') as f:
+        with open(meta_path, encoding='utf-8') as f:
             return json.load(f)
     except Exception as e:
         logger.warning('Could not load metadata from %s: %s', meta_path, e, exc_info=True)

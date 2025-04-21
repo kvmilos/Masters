@@ -68,7 +68,7 @@ def process_conll_file(file_path: str, output_dir: str, test: bool = False) -> N
     """
     print(f'Processing file: {file_path}')
     corrected_lines = []
-    with open(file_path, 'r', encoding='utf-8') as infile:
+    with open(file_path, encoding='utf-8') as infile:
         for line in infile:
             if line.strip() == "":
                 corrected_lines.append("\n")

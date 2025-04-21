@@ -4,11 +4,10 @@ Module for post-processing after the main tag conversion.
 This module handles tasks that need to be performed after the main POS and feature
 conversion, such as handling multiword expressions and space-after annotations.
 """
-from typing import Dict, Optional
 from utils.classes import Sentence, Token
 
 
-def post_conversion(s: Sentence, meta: Dict[str, str]) -> None:
+def post_conversion(s: Sentence, meta: dict[str, str]) -> None:
     """
     Handles post-processing tasks after the main tag conversion.
 
@@ -23,7 +22,7 @@ def post_conversion(s: Sentence, meta: Dict[str, str]) -> None:
     add_no_space_misc(s, text)
 
 
-def add_mwe(s: Sentence, text: Optional[str]) -> None:
+def add_mwe(s: Sentence, text: str | None) -> None:
     """
     Adds multiword tokens (MWEs) to the sentence.
 
@@ -77,7 +76,7 @@ def add_mwe(s: Sentence, text: Optional[str]) -> None:
     s.dict_by_id = {token.id: token for token in new_tokens}
 
 
-def add_no_space_misc(s: Sentence, text: Optional[str]) -> None:
+def add_no_space_misc(s: Sentence, text: str | None) -> None:
     """
     Adds SpaceAfter=No to UD misc for tokens that are not followed by a space.
 

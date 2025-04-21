@@ -1,18 +1,17 @@
 """
 Tests for the corrector module.
 
-This module contains validation tests for CoNLL files to ensure they follow 
+This module contains validation tests for CoNLL files to ensure they follow
 the expected format and constraints. The tests verify:
   - The POS (column 4) is a known POS tag
   - Each feature in the FEATS column (column 6) is in feats_dict
   - The features listed in the POS_FEATS column (column 5, after the first element)
     (via feats_dict mapping) are allowed for that POS
 """
-from typing import List
 from utils.constants import feats_dict, feats_of_pos
 
 
-def test_pos(lines: List[str]) -> None:
+def test_pos(lines: list[str]) -> None:
     """
     Validates that every POS tag in the input is in the allowed set.
     
@@ -27,7 +26,7 @@ def test_pos(lines: List[str]) -> None:
         assert pos in feats_of_pos, f"POS {pos} is not in the allowed list: {list(feats_of_pos.keys())}"
     print("test_pos passed")
 
-def test_feats(lines: List[str]) -> None:
+def test_feats(lines: list[str]) -> None:
     """
     Validates that every feature in the FEATS column is in the allowed set.
     
@@ -46,7 +45,7 @@ def test_feats(lines: List[str]) -> None:
                     assert feat in feats_dict, f"Feature {feat} is not in feats_dict."
     print("test_feats passed")
 
-def test_feats_pos_combination(lines: List[str]) -> None:
+def test_feats_pos_combination(lines: list[str]) -> None:
     """
     Validates that features from POS_FEATS are allowed for the given POS.
     

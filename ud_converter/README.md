@@ -8,7 +8,7 @@ This project provides utilities for converting dependency trees from traditional
 
 - POS tag conversion (MPDT → UD)
 - Morphological feature conversion
-- Dependency relation conversion 
+- Dependency relation conversion
 
 ## Project Structure
 

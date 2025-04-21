@@ -3,10 +3,10 @@ Script to join two JSON files containing metadata for MPDT sentences.
 """
 import json
 
-with open('../data/meta/MPDT_1.json', 'r', encoding='utf-8') as f1:
+with open('../data/meta/MPDT_1.json', encoding='utf-8') as f1:
     mpdt1 = json.load(f1)
 
-with open('../data/meta/MPDT_2.json', 'r', encoding='utf-8') as f2:
+with open('../data/meta/MPDT_2.json', encoding='utf-8') as f2:
     mpdt2 = json.load(f2)
 
 max_id_mpdt1 = max(int(key) for key in mpdt1.keys())

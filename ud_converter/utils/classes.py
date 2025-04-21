@@ -7,7 +7,6 @@ converted Universal Dependencies properties.
 """
 import re
 from collections import defaultdict
-from typing import Dict, List, Tuple, Optional
 from utils.constants import feats_dict, MULTIWORD_EXPRESSIONS as MWE
 from utils.logger import LoggingDict
 
@@ -21,21 +20,21 @@ class Sentence:
     accessing the sentence text, and managing sentence-level metadata.
     """
 
-    def __init__(self, tokens: List['Token']) -> None:
+    def __init__(self, tokens: list['Token']) -> None:
         """
         Initialize a Sentence object.
 
         :param List[Token] tokens: List of Token objects that make up the sentence
         """
-        self.tokens: List['Token'] = tokens
-        self.dict_by_id: Dict[str, 'Token'] = {token.id: token for token in tokens}
-        self.metadata = defaultdict(str)
-        self.id = None
+        self.tokens: list['Token'] = tokens
+        self.dict_by_id: dict[str, 'Token'] = {token.id: token for token in tokens}
+        self.metadata: dict[str, str] = defaultdict(str)
+        self.id: str | None = None
 
         for token in tokens:
             token.sentence = self
 
-    def get_root(self) -> Optional['Token']:
+    def get_root(self) -> 'Token | None':
         """
         Returns the root token of the sentence.
 
@@ -65,7 +64,7 @@ class Sentence:
         return " ".join(token.form for token in self.tokens)
 
     @property
-    def meta(self) -> Dict[str, str]:
+    def meta(self) -> dict[str, str]:
         """
         Returns the metadata of the sentence.
 
@@ -74,7 +73,7 @@ class Sentence:
         return self.metadata
 
     @meta.setter
-    def meta(self, value: Dict[str, str]) -> None:
+    def meta(self, value: dict[str, str]) -> None:
         """
         Sets the metadata of the sentence.
 
@@ -126,7 +125,7 @@ class Token:
 
         self.data = LoggingDict(self)
         if line != 'mwe':
-            columns: List[str] = line.split("\t")
+            columns: list[str] = line.split("\t")
             self.data['id'] = columns[0]
             self.data['form'] = columns[1]
             self.data['lemma'] = MWE.get(columns[2], columns[2])
@@ -251,12 +250,12 @@ class Token:
         self.data['pos_feats'] = value
 
     @property
-    def feats(self) -> Dict[str, str]:
+    def feats(self) -> dict[str, str]:
         """Returns a dictionary of feats for the token."""
         return self.data['feats']
 
     @feats.setter
-    def feats(self, value: Dict[str, str]) -> None:
+    def feats(self, value: dict[str, str]) -> None:
         """Sets the dictionary of feats for the token."""
         self.data['feats'] = value
         self.data['feats_raw'] = "|".join(value.values())
@@ -292,12 +291,12 @@ class Token:
         self.data['dep_label'] = value
 
     @property
-    def eud(self) -> Dict[str, str]:
+    def eud(self) -> dict[str, str]:
         """Returns the enhanced dependencies of the token."""
         return self.data['eud']
 
     @eud.setter
-    def eud(self, value: Dict[str, str]) -> None:
+    def eud(self, value: dict[str, str]) -> None:
         """Updates the eud of the token."""
         self.data['eud'].update(value)
 
@@ -322,12 +321,12 @@ class Token:
         self.data['misc'] = value
 
     @property
-    def umisc(self) -> Dict[str, str]:
+    def umisc(self) -> dict[str, str]:
         """Returns the UD misc of the token."""
         return self.data['umisc']
 
     @umisc.setter
-    def umisc(self, value: Dict[str, str]) -> None:
+    def umisc(self, value: dict[str, str]) -> None:
         """Updates the UD misc of the token."""
         self.data['umisc'].update(value)
 
@@ -353,12 +352,12 @@ class Token:
         self.data['upos'] = value
 
     @property
-    def ufeats(self) -> Dict[str, str]:
+    def ufeats(self) -> dict[str, str]:
         """Returns the ufeats of the token."""
         return self.data['ufeats']
 
     @ufeats.setter
-    def ufeats(self, value: Dict[str, str]) -> None:
+    def ufeats(self, value: dict[str, str]) -> None:
         """Updates the ufeats of the token."""
         self.data['ufeats'].update(value)
 
@@ -416,14 +415,14 @@ class Token:
         ])
 
     @property
-    def gov(self) -> Optional['Token']:
+    def gov(self) -> 'Token | None':
         """Returns the governor Token, or None if it's the root or something is missing."""
         if self.gov_id == '0':
             return None
         return self.sentence.dict_by_id.get(self.gov_id)
 
     @property
-    def ugov(self) -> Optional['Token']:
+    def ugov(self) -> 'Token | None':
         """Returns the governor Token, or None if it's the root or something is missing."""
         if self.ugov_id == '0':
             return None
@@ -435,7 +434,7 @@ class Token:
         self.ugov_id = value.id
 
     @property
-    def children(self) -> List['Token']:
+    def children(self) -> list['Token']:
         """
         Returns a list of tokens for which this token is the governor.
         If there are no children, returns an empty list.
@@ -446,7 +445,7 @@ class Token:
         ]
 
     @property
-    def uchildren(self) -> List['Token']:
+    def uchildren(self) -> list['Token']:
         """
         Returns a list of tokens for which this token is the governor.
         If there are no children, returns an empty list.
@@ -457,16 +456,16 @@ class Token:
         ]
 
     @property
-    def prev(self) -> Optional['Token']:
+    def prev(self) -> 'Token | None':
         """Returns the previous token in the sentence."""
         return self.sentence.dict_by_id.get(str(int(self.id) - 1), None)
 
     @property
-    def next(self) -> Optional['Token']:
+    def next(self) -> 'Token | None':
         """Returns the next token in the sentence."""
         return self.sentence.dict_by_id.get(str(int(self.id) + 1), None)
 
-    def children_with_label(self, label: str) -> List['Token']:
+    def children_with_label(self, label: str) -> list['Token']:
         """
         Returns a list of children of the token with the given dependency label.
 
@@ -479,28 +478,28 @@ class Token:
             if n.dep_label == label
         ]
 
-    def children_with_ud_label(self, label: str) -> List['Token']:
+    def children_with_ud_label(self, label: str) -> list['Token']:
         """Returns a list of children of the token with the given dependency label in UD format."""
         return [
             n for n in self.children
             if n.udep_label == label
         ]
 
-    def children_with_re_label(self, label: str) -> List['Token']:
+    def children_with_re_label(self, label: str) -> list['Token']:
         """Returns a list of children of the token with the given dependency label in regex format."""
         return [
             n for n in self.children
             if re.search(label, n.dep_label)
         ]
 
-    def children_with_lemma(self, lemma: str) -> List['Token']:
+    def children_with_lemma(self, lemma: str) -> list['Token']:
         """Returns a list of children of the token with the given lemma."""
         return [
             n for n in self.children
             if n.lemma == lemma
         ]
 
-    def super_gov_via_label(self, label: str) -> Optional[Tuple['Token', 'Token']]:
+    def super_gov_via_label(self, label: str) -> tuple['Token', 'Token'] | None:
         """
         Recursively finds a governing token via a specific dependency path.
 
@@ -521,7 +520,7 @@ class Token:
                 return self.gov.super_gov_via_label(label)
         return None
 
-    def super_child_with_label_via_label(self, target_label: str, label: str) -> Optional['Token']:
+    def super_child_with_label_via_label(self, target_label: str, label: str) -> 'Token | None':
         """
         Recursively finds a child token with a specific label following a path.
 

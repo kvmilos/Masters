@@ -82,7 +82,7 @@ def pronouns_disambiguation(s: Sentence) -> None:
                 t.ufeats.pop('PronType', None)
 
 
-def look_for_clause_type(t: Token, visited: set = None) -> str:
+def look_for_clause_type(t: Token, visited: set | None = None) -> str:
     """
     Determines the clause type for a pronoun based on its syntactic context.
 

@@ -11,7 +11,6 @@ The conversion follows Universal Dependencies guidelines, making the predicate
 of the subordinate clause the head and attaching the subordinating conjunction
 to it with a 'mark' relation.
 """
-from typing import Optional
 from utils.classes import Sentence, Token
 from utils.logger import ChangeCollector
 
@@ -228,7 +227,7 @@ def subordinating_conjunction(t: Token) -> None:
     punctuation_marks(t, comp)
 
 
-def find_complement(t: Token) -> Optional[Token]:
+def find_complement(t: Token) -> Token | None:
     """
     Finds the complement of a subordinate clause.
 
