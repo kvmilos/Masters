@@ -4,6 +4,7 @@ A script to collect unique MPDT dependencies from all CoNLL files in a specified
 import os
 import glob
 
+
 def collect_mpdt_tags(folder_path: str) -> dict[str, int]:
     """Collect unique MPDT dependencies from all CoNLL files in the specified folder."""
     dep_counts: dict[str, int] = {}
@@ -25,6 +26,7 @@ def collect_mpdt_tags(folder_path: str) -> dict[str, int]:
                 if dep:
                     dep_counts[dep] = dep_counts.get(dep, 0) + 1
     return dep_counts
+
 
 def main() -> None:
     """Main function to execute the script."""
@@ -48,6 +50,7 @@ def main() -> None:
         for dep, count in sorted_deps:
             f.write(f"{dep:<35}{count}\n")
     print(f"\nUnique dependencies along with their counts have been saved to the file: {output_file}")
+
 
 if __name__ == "__main__":
     main()

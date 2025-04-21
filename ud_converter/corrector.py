@@ -89,6 +89,7 @@ def process_conll_file(file_path: str, output_dir: str, test: bool = False) -> N
         outfile.writelines(corrected_lines)
     print(f'Corrected file saved as: {output_path}')
 
+
 def main() -> None:
     """Main function."""
     if len(sys.argv) not in {3, 4}:
@@ -112,6 +113,7 @@ def main() -> None:
                 process_conll_file(file_path, output_path, test)
     else:
         process_conll_file(input_path, output_path, test)
+
 
 if __name__ == '__main__':
     main()

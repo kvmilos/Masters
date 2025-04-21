@@ -98,17 +98,17 @@ def remove_dependents_of_fixed(s: Sentence) -> None:
             # Find the head of the fixed expression
             fixed_head = t.super_gov_via_label('fixed')
             if fixed_head:
-                fixed_head = fixed_head[0]
+                fixed_head_t = fixed_head[0]
 
                 # Find all tokens in the fixed expression
-                fixed_tokens = collect_fixed_tokens(fixed_head)
+                fixed_tokens = collect_fixed_tokens(fixed_head_t)
 
                 # Reattach dependents of fixed expression components to the head
                 for fixed_token in fixed_tokens:
                     for dep in fixed_token.children:
-                        if dep.ugov != fixed_head:
-                            dep.ugov = fixed_head
-                            ChangeCollector.record(t.sentence.id, dep.id, f"Reattached dependent '{dep.form}' from fixed token '{fixed_token.form}' to '{fixed_head.form}'", module="edges.fixed")
+                        if dep.ugov != fixed_head_t:
+                            dep.ugov = fixed_head_t
+                            ChangeCollector.record(t.sentence.id, dep.id, f"Reattached dependent '{dep.form}' from fixed token '{fixed_token.form}' to '{fixed_head_t.form}'", module="edges.fixed")
             else:
                 ChangeCollector.record(t.sentence.id, t.id, f"Fixed token '{t.form}' has no super-governor.", module="edges.fixed", level="WARNING")
                 continue
@@ -178,8 +178,10 @@ def remove_dependents_of_mark_case_cc(s: Sentence) -> None:
             # Iterate through all dependents of the token, UD and non-UD
             for c in list(set(t.children + t.uchildren)):
                 # Check if the dependent should be reattached
-                if (c.udep_label in ['punct', 'advmod', 'list', 'cop', 'obl', 'aux:clitic', 'advcl', 'mark', 'orphan'] and
-                    c.dep_label != 'abbrev_punct'):
+                if (
+                    c.udep_label in ['punct', 'advmod', 'list', 'cop', 'obl', 'aux:clitic', 'advcl', 'mark', 'orphan']
+                    and c.dep_label != 'abbrev_punct'
+                ):
                     # Reattach the dependent to the governor
                     c.ugov = t.ugov
                     ChangeCollector.record(t.sentence.id, c.id, f"Reattached dependent '{c.form}' from {t.udep_label} '{t.form}' to '{t.ugov.form}'", module="edges.mark_case_cc")

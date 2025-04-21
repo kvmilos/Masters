@@ -89,5 +89,6 @@ def main() -> None:
     write_ud_conll(sentences, output_file, meta_data, form)
     logger.info('Conversion completed.')
 
+
 if __name__ == '__main__':
     main()

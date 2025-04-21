@@ -36,7 +36,7 @@ def read_conll(filepath: str, meta: dict[str, dict[str, str]] | None = None) -> 
             if line.strip() == '':
                 if current_lines:
                     sent_count += 1
-                    tokens = [Token(l) for l in current_lines]
+                    tokens = [Token(cur_line) for cur_line in current_lines]
                     sentence = Sentence(tokens)
                     if meta:
                         sent_meta = meta.get(str(sent_count), {'sent_id': str(sent_count)})
@@ -47,7 +47,7 @@ def read_conll(filepath: str, meta: dict[str, dict[str, str]] | None = None) -> 
                 current_lines.append(line)
         if current_lines:
             sent_count += 1
-            tokens = [Token(l) for l in current_lines]
+            tokens = [Token(cur_line) for cur_line in current_lines]
             sentence = Sentence(tokens)
             if meta:
                 sent_meta = meta.get(str(sent_count), {'sent_id': str(sent_count)})
@@ -56,7 +56,8 @@ def read_conll(filepath: str, meta: dict[str, dict[str, str]] | None = None) -> 
 
     return sentences
 
-def write_ud_conll(sentences: list[Sentence], outfile_path: str, meta = None, form = 'ud') -> None:
+
+def write_ud_conll(sentences: list[Sentence], outfile_path: str, meta: dict[str, dict[str, str]] | None = None, form='ud') -> None:
     """
     Writes the converted sentences in UD CONLL-U format.
 

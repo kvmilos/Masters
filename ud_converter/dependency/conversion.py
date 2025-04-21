@@ -20,10 +20,10 @@ from dependency.postconversion import postconversion
 def main(s: Sentence) -> None:
     """
     Main function for the conversion of dependencies to Universal Dependencies format.
-    
+
     This function orchestrates the complete dependency conversion pipeline,
     including preconversion, structure conversion, and label conversion.
-    
+
     :param Sentence s: The sentence to convert
     """
     preconversion(s)
@@ -36,11 +36,11 @@ def main(s: Sentence) -> None:
 def structure_conversion(s: Sentence) -> None:
     """
     Converts the sentence structure according to Universal Dependencies guidelines.
-    
+
     This function applies a series of structure transformations to convert
     specific syntactic constructions, including numerals, prepositional phrases,
     copula constructions, subordinate clauses, and coordination structures.
-    
+
     :param Sentence s: The sentence to convert
     """
     convert_numeral(s)

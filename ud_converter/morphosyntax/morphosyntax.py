@@ -15,10 +15,10 @@ from morphosyntax.postconversion import post_conversion as postconversion
 def convert_to_upos(s: Sentence, meta: dict[str, str]) -> None:
     """
     Converts tokens in a sentence to UPOS tags and features.
-    
+
     This function processes all tokens in the given sentence through the complete
     conversion pipeline: preconversion, core conversion, and postconversion stages.
-    
+
     :param Sentence s: The sentence containing tokens to be converted
     :param meta: Metadata dictionary with additional information for the conversion
     """

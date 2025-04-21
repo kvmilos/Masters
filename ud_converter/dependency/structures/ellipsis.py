@@ -36,9 +36,10 @@ def convert_ellipsis(s: Sentence) -> None:
     for t in s.tokens:
         if t.upos == 'PUNCT' and t.gov:
             # Check if this punctuation mark is a potential ellipsis marker
-            if (t.dep_label not in ['punct', 'abbrev_punct', 'item'] and
-                not t.children_with_label('conjunct')):
-
+            if (
+                t.dep_label not in ['punct', 'abbrev_punct', 'item']
+                and not t.children_with_label('conjunct')
+            ):
                 # Try to find a suitable head for the elliptical structure
                 subj = t.children_with_label('subj')
                 if len(subj) == 1:

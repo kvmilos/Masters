@@ -4,9 +4,10 @@ A script to collect unique MPDT tags from all CoNLL files in a specified folder.
 import os
 import glob
 
+
 def collect_mpdt_tags(folder_path: str) -> dict[str, int]:
     """Collect unique MPDT tags from all CoNLL files in the specified folder."""
-    tag_counts : dict[str, int] = {}
+    tag_counts: dict[str, int] = {}
     # Find all .conll files in the specified folder (non-recursive)
     files = glob.glob(os.path.join(folder_path, "*.conll")) if os.path.isdir(folder_path) else [folder_path]
     for file_path in files:
@@ -25,6 +26,7 @@ def collect_mpdt_tags(folder_path: str) -> dict[str, int]:
                 if tag:
                     tag_counts[tag] = tag_counts.get(tag, 0) + 1
     return tag_counts
+
 
 def main() -> None:
     """Main function to execute the script."""
@@ -48,6 +50,7 @@ def main() -> None:
         for tag, count in sorted_tags:
             f.write(f"{tag:<35}{count}\n")
     print(f"\nUnique tags along with their counts have been saved to the file: {output_file}")
+
 
 if __name__ == "__main__":
     main()

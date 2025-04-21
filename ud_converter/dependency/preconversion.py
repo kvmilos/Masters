@@ -23,32 +23,34 @@ def preconversion(s: Sentence) -> None:
     :param Sentence s: The sentence containing tokens to preprocess
     """
     for t in s.tokens:
-        if (t.gov and t.upos == 'SCONJ' and
-            t.lemma in ['jak', 'jakby'] and
-            t.dep_label == 'adjunct_compar'):
+        if (
+            t.gov and t.upos == 'SCONJ'
+            and t.lemma in ['jak', 'jakby']
+            and t.dep_label == 'adjunct_compar'
+        ):
             old_feats = t.ufeats.copy() if hasattr(t, 'ufeats') else None
             t.ufeats = {'ConjType': 'Comp'}
             ChangeCollector.record(t.sentence.id, t.id, f"ufeats changed from {old_feats} to {t.ufeats}", module="preconversion")
 
-        elif (t.upos == 'AUX' and t.pos not in ['aglt', 'cond'] and
-              t.dep_label != 'aux' and t.lemma not in ['to', 'by'] and
-              len(t.children) > 0 and not t.children_with_label('pd')):
+        elif (t.upos == 'AUX' and t.pos not in ['aglt', 'cond']
+              and t.dep_label != 'aux' and t.lemma not in ['to', 'by']
+              and len(t.children) > 0 and not t.children_with_label('pd')):
             old_upos = t.upos
             t.upos = 'VERB'
             ChangeCollector.record(t.sentence.id, t.id, f"upos changed from {old_upos} to {t.upos}", module="preconversion")
 
-        elif (t.upos == 'AUX' and t.pos not in ['aglt', 'cond'] and
-              not t.children and t.lemma == 'być' and
-              t.dep_label not in ['aux', 'aglt', 'conjunct']):
+        elif (t.upos == 'AUX' and t.pos not in ['aglt', 'cond']
+              and not t.children and t.lemma == 'być'
+              and t.dep_label not in ['aux', 'aglt', 'conjunct']):
             old_upos = t.upos
             t.upos = 'VERB'
             ChangeCollector.record(t.sentence.id, t.id, f"upos changed from {old_upos} to {t.upos}", module="preconversion")
 
-        elif (t.upos == 'AUX' and t.pos not in ['aglt', 'cond'] and
-              not t.children and t.lemma == 'być' and
-              t.dep_label not in ['aux', 'aglt'] and
-              t.super_gov_via_label('conjunct') and
-              t.super_gov_via_label('conjunct')[0].dep_label != 'aux' and t.gov and not t.gov.children_with_label('pd')): # type: ignore
+        elif (t.upos == 'AUX' and t.pos not in ['aglt', 'cond']
+              and not t.children and t.lemma == 'być'
+              and t.dep_label not in ['aux', 'aglt']
+              and t.super_gov_via_label('conjunct')
+              and t.super_gov_via_label('conjunct')[0].dep_label != 'aux' and t.gov and not t.gov.children_with_label('pd')):  # type: ignore
             old_upos = t.upos
             t.upos = 'VERB'
             ChangeCollector.record(t.sentence.id, t.id, f"upos changed from {old_upos} to {t.upos}", module="preconversion")

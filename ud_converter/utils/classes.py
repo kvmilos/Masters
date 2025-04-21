@@ -132,7 +132,7 @@ class Token:
             self.data['pos'] = columns[3]
             self.data['upos'] = ''
             self.data['pos_feats'] = columns[4]
-            self.data['feats_raw'] = columns[5] if columns[5]  != '' else '_'
+            self.data['feats_raw'] = columns[5] if columns[5] != '' else '_'
             self.data['feats'] = defaultdict(str)
             if self.data['feats_raw'] != "_":
                 self.data['feats'] = {feats_dict[feat]: feat for feat in self.data['feats_raw'].split("|")}

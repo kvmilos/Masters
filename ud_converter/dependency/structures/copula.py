@@ -149,27 +149,27 @@ def convert_coordinated_copula(cop: Token, gov: Token) -> None:
 
     Examples: "Sztab Generalny jest i będzie czysty",
         "potęgą przemysłowo-gospodarczą owo państwo nie jest i nie było"
-    
+
     :param Token cop: The copula token
     :param Token gov: The governor of the copula
     """
     pd = cop.children_with_label('pd')
 
     if pd:
-        pd = pd[0]
+        pd_t = pd[0]
         subj = cop.children_with_label('subj')
 
         if subj:
             # Attach the subject to the predicative complement
-            subj[0].ugov = pd
+            subj[0].ugov = pd_t
             subj[0].udep_label = cl(subj[0])
 
             # Attach the predicative complement to the governor
-            pd.ugov = gov
-            pd.udep_label = cop.udep_label
+            pd_t.ugov = gov
+            pd_t.udep_label = cop.udep_label
 
             # Attach the copula to the predicative complement
-            cop.ugov = pd
+            cop.ugov = pd_t
             cop.udep_label = 'cop'
 
         for c in cop.children:
@@ -177,11 +177,11 @@ def convert_coordinated_copula(cop: Token, gov: Token) -> None:
                 continue
             if c != pd and c.dep_label not in ['neg', 'cneg', 'conjunct'] and c.lemma != 'nie':
                 # Attach other dependents to the predicative complement
-                c.ugov = pd
+                c.ugov = pd_t
                 c.udep_label = cl(c)
 
 
-def process_copula_dependents(cop: Token, new_head: Token, exclude: Token = None) -> None:
+def process_copula_dependents(cop: Token, new_head: Token, exclude: Token | None = None) -> None:
     """
     Processes the dependents of a copula verb.
 

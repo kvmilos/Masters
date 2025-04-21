@@ -24,6 +24,7 @@ class ModuleFormatter(logging.Formatter):
         record.name = '.'.join(padded)
         return super().format(record)
 
+
 class LevelFilter(logging.Filter):
     """
     Allows only records whose levelno is between low and high, inclusive.
@@ -35,6 +36,7 @@ class LevelFilter(logging.Filter):
 
     def filter(self, record):
         return self.low <= record.levelno <= self.high
+
 
 def setup_logging() -> logging.Logger:
     """
@@ -79,6 +81,7 @@ def setup_logging() -> logging.Logger:
     caller_logger.info('DEBUG, WARNINGs, and INFO are being saved to %s', debug_log_file)
 
     return caller_logger
+
 
 logging.getLogger().propagate = False
 

@@ -15,13 +15,13 @@ logger = logging.getLogger('ud_converter.morphosyntax.helpers')
 def update_gender_number(t: Token) -> None:
     """
     Updates the gender and number features of a token to UD format.
-    
+
     This function maps Middle Polish gender and number features to their Universal
     Dependencies equivalents. It handles special cases such as:
     - Masculine animate vs inanimate distinctions
     - Pluralia tantum nouns
     - Gender-specific number agreement
-    
+
     :param Token t: The token whose gender and number features to update
     """
     gender = t.feats.get('gender', None)

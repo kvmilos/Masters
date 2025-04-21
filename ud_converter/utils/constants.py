@@ -212,12 +212,12 @@ MULTIWORD_EXPRESSIONS = {
 
 # List of particles
 PARTICLES = ['a', 'aby', 'akurat', 'ale', 'ani', 'azaliż', 'aż', 'ba', 'blisko', 'bodaj', 'bodajże', 'byle', 'chociaż', 'choć',
-            'choćby', 'chociażby', 'chyba', 'coraz', 'czyli', 'dopiero', 'doprawdy', 'dość', 'dosyć', 'gdzieś', 'głównie', 'i',
-            'jak', 'jakby', 'jakoby', 'jednak', 'jednakowoż', 'jednakże', 'jedynie', 'jeszcze', 'już', 'może', 'nadto', 'najwidoczniej',
-            'najwyraźniej', 'najwyżej', 'naprawdę', 'nawet', 'niby', 'nie', 'niejako', 'niemal', 'niemalże', 'niespełna', 'niestety',
-            'niemniej', 'oczywiście', 'około', 'ot', 'oto', 'otóż', 'pewnie', 'podobnież', 'podobno', 'ponad', 'ponadto',
-            'poniekąd', 'ponoć', 'prawie', 'przecie', 'przecież', 'przeszło', 'przynajmniej', 'raczej', 'raptem', 'również',
-            'skądinąd', 'szczególnie', 'tak', 'także', 'to', 'toż', 'trochę', 'tylko', 'też', 'tuż', 'widać', 'widocznie',
-            'więc', 'właśnie', 'wprawdzie', 'wprost', 'wręcz', 'wreszcie', 'wszak', 'wszakże', 'wszelako', 'z', 'za', 'zaledwie',
-            'zapewne', 'zaraz', 'zarazem', 'zaś', 'zbyt', 'zgoła', 'znacznie', 'znowu', 'znowuż', 'znów', 'zresztą', 'zwłaszcza',
-            'że', 'szczególnie', 'istotnie', 'praktycznie']
+             'choćby', 'chociażby', 'chyba', 'coraz', 'czyli', 'dopiero', 'doprawdy', 'dość', 'dosyć', 'gdzieś', 'głównie', 'i',
+             'jak', 'jakby', 'jakoby', 'jednak', 'jednakowoż', 'jednakże', 'jedynie', 'jeszcze', 'już', 'może', 'nadto', 'najwidoczniej',
+             'najwyraźniej', 'najwyżej', 'naprawdę', 'nawet', 'niby', 'nie', 'niejako', 'niemal', 'niemalże', 'niespełna', 'niestety',
+             'niemniej', 'oczywiście', 'około', 'ot', 'oto', 'otóż', 'pewnie', 'podobnież', 'podobno', 'ponad', 'ponadto',
+             'poniekąd', 'ponoć', 'prawie', 'przecie', 'przecież', 'przeszło', 'przynajmniej', 'raczej', 'raptem', 'również',
+             'skądinąd', 'szczególnie', 'tak', 'także', 'to', 'toż', 'trochę', 'tylko', 'też', 'tuż', 'widać', 'widocznie',
+             'więc', 'właśnie', 'wprawdzie', 'wprost', 'wręcz', 'wreszcie', 'wszak', 'wszakże', 'wszelako', 'z', 'za', 'zaledwie',
+             'zapewne', 'zaraz', 'zarazem', 'zaś', 'zbyt', 'zgoła', 'znacznie', 'znowu', 'znowuż', 'znów', 'zresztą', 'zwłaszcza',
+             'że', 'szczególnie', 'istotnie', 'praktycznie']

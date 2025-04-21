@@ -54,23 +54,28 @@ def standard_numeral(t: Token) -> None:
     if len(comp) != 1:
         ChangeCollector.record(t.sentence.id, t.id, f"Expected 1 comp child, got {len(comp)} for standard numeral phrase: '{t.form}'", module="structures.numeral", level='WARNING')
         return
-    comp = comp[0]
+    comp_t = comp[0]
     if t.gov:
-        comp.ugov = t.gov
-        comp.udep_label = '_'
-    t.ugov = comp
+        comp_t.ugov = t.gov
+        comp_t.udep_label = '_'
+    t.ugov = comp_t
     t.udep_label = numeral_label(t)
     for c in t.children:
         if c != comp and c.dep_label not in ['mwe', 'adjunct_compar']:
-            if (c.lemma in ['ani', 'aż', 'blisko', 'bodaj', 'co', 'dopiero', 'jedynie', 'jeszcze', 'chociaż', 'coraz', 'jak',
-                            'już', 'najwyżej', 'naprawdę', 'nawet', 'niemal', 'niespełna', 'około', 'ponad', 'prawie', 'przeszło',
-                            'przynajmniej', 'raptem', 'tak', 'tylko', 'z', 'za', 'zaledwie', 'zapewne', 'zbyt', 'znacznie']
-            and c.upos in ['PART', 'X'] and c.dep_label in ['adjunct', 'adjunct_emph']):
+            if (
+                c.lemma in [
+                    'ani', 'aż', 'blisko', 'bodaj', 'co', 'dopiero', 'jedynie', 'jeszcze', 'chociaż', 'coraz', 'jak',
+                    'już', 'najwyżej', 'naprawdę', 'nawet', 'niemal', 'niespełna', 'około', 'ponad', 'prawie', 'przeszło',
+                    'przynajmniej', 'raptem', 'tak', 'tylko', 'z', 'za', 'zaledwie', 'zapewne', 'zbyt', 'znacznie'
+                ]
+                and c.upos in ['PART', 'X']
+                and c.dep_label in ['adjunct', 'adjunct_emph']
+            ):
                 pass
             elif (c.lemma in ['jakiś', 'jaki', 'ten', 'wszystek'] and c.upos == 'DET' and c.dep_label == 'adjunct'):
                 pass
             else:
-                c.ugov = comp
+                c.ugov = comp_t
                 c.udep_label = cl(c)
 
 
@@ -87,15 +92,14 @@ def coordinated_numeral(t: Token) -> None:
     if len(comp) != 1:
         ChangeCollector.record(t.sentence.id, t.id, f"Expected 1 comp child, got {len(comp)} for coordinated numeral phrase: '{t.form}'", module="structures.numeral", level='WARNING')
         return
-    comp = comp[0]
+    comp_t = comp[0]
     if t.gov and t.gov.gov:
-        comp.ugov = t.gov.gov
-        comp.udep_label = cl(t.gov)
-        t.gov.ugov = comp
+        comp_t.ugov = t.gov.gov
+        comp_t.udep_label = cl(t.gov)
+        t.gov.ugov = comp_t
         t.gov.udep_label = numeral_label(t.gov)
     else:
         ChangeCollector.record(t.sentence.id, t.id, f"No governor for coordinated numeral phrase: '{t.form}'", module="structures.numeral", level='WARNING')
-
 
 
 def mwe_numeral(t: Token) -> None:
@@ -133,11 +137,11 @@ def ne_numeral(t: Token) -> None:
     if len(ne) != 1:
         ChangeCollector.record(t.sentence.id, t.id, f"Expected 1 named entity child, got {len(ne)} for numeral phrase: '{t.form}'", module="structures.numeral", level='WARNING')
         return
-    ne = ne[0]
+    ne_t = ne[0]
     if t.gov:
-        ne.ugov = t.gov
-        ne.udep_label = cl(t)
-    t.ugov = ne
+        ne_t.ugov = t.gov
+        ne_t.udep_label = cl(t)
+    t.ugov = ne_t
     t.udep_label = 'nummod:flat'
 
 

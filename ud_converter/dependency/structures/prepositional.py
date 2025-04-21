@@ -25,8 +25,8 @@ def convert_prepositional(s: Sentence) -> None:
                 if not t.super_gov_via_label('mwe'):
                     ChangeCollector.record(t.sentence.id, t.id, f"Super-governor not found for preposition: '{t.form}'", module="structures.prepositional", level='WARNING')
                     continue
-                super_gov = t.super_gov_via_label('mwe')[0] # type: ignore
-                super_gov_child = t.super_gov_via_label('mwe')[1] # type: ignore
+                super_gov = t.super_gov_via_label('mwe')[0]  # type: ignore
+                super_gov_child = t.super_gov_via_label('mwe')[1]  # type: ignore
                 if super_gov and super_gov.udep_label == '_' and super_gov.dep_label in ['adjunct_compar', 'adjunct_comment']:
                     # Skip comparative and comment adjuncts
                     ChangeCollector.record(t.sentence.id, t.id, f"Skipping comparative or comment adjunct (preposition): '{t.form}'", module="structures.prepositional", level='WARNING')

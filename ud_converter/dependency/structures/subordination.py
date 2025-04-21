@@ -33,21 +33,27 @@ def convert_subordination(s: Sentence) -> None:
                 ChangeCollector.record(t.sentence.id, t.id, f"Converted attributive construction: '{t.form}'", module="structures.subordination")
 
             # Handle complex subordinating conjunctions like 'jako że', 'podczas gdy', etc.
-            elif t.dep_label == 'mwe' and (
-                (t.lemma == 'że' and t.gov.lemma == 'jako') or
-                (t.lemma == 'gdyby' and t.gov.lemma == 'jak') or
-                (t.lemma == 'gdy' and t.gov.lemma == 'podczas') or
-                (t.lemma in ['że', 'iż'] and t.gov.lemma in ['pomimo', 'mimo']) or
-                (t.lemma == 'więc' and t.gov.lemma == 'tak')
+            elif (
+                t.dep_label == 'mwe'
+                and (
+                    (t.lemma == 'że' and t.gov.lemma == 'jako')
+                    or (t.lemma == 'gdyby' and t.gov.lemma == 'jak')
+                    or (t.lemma == 'gdy' and t.gov.lemma == 'podczas')
+                    or (t.lemma in ['że', 'iż'] and t.gov.lemma in ['pomimo', 'mimo'])
+                    or (t.lemma == 'więc' and t.gov.lemma == 'tak')
+                )
             ):
                 if t.gov.gov:
                     complex_subordinating_conjunction(t)
                     ChangeCollector.record(t.sentence.id, t.id, f"Converted complex subordinating conjunction: '{t.form}'", module="structures.subordination")
 
             # Handle special multiword expressions like 'w miarę jak', 'w przypadku gdy', etc.
-            elif t.dep_label == 'mwe' and (
-                (t.lemma == 'jak' and t.gov.lemma == 'miara') or
-                (t.lemma in ['gdy', 'gdyby', 'kiedy', 'jak'] and t.gov.lemma in ['przypadek', 'wypadek'])
+            elif (
+                t.dep_label == 'mwe'
+                and (
+                    (t.lemma == 'jak' and t.gov.lemma == 'miara')
+                    or (t.lemma in ['gdy', 'gdyby', 'kiedy', 'jak'] and t.gov.lemma in ['przypadek', 'wypadek'])
+                )
             ):
                 complex_subordinating_threeword_conjunction(t)
                 ChangeCollector.record(t.sentence.id, t.id, f"Converted complex subordinating conjunction: '{t.form}'", module="structures.subordination")
@@ -115,8 +121,8 @@ def complex_subordinating_conjunction(t: Token) -> None:
         ChangeCollector.record(t.sentence.id, t.id, f"Complex subordinating conjunction has no super-governor: '{t.gov.form}' '{t.form}'", module="structures.subordination", level="WARNING")
         return
 
-    super_gov = t.super_gov_via_label('mwe')[0] # type: ignore
-    super_gov_child = t.super_gov_via_label('mwe')[1] # type: ignore
+    super_gov = t.super_gov_via_label('mwe')[0]  # type: ignore
+    super_gov_child = t.super_gov_via_label('mwe')[1]  # type: ignore
 
     if not super_gov and t.gov:
         ChangeCollector.record(t.sentence.id, t.id, f"Complex subordinating conjunction has no governor: '{t.gov.form}' '{t.form}'", module="structures.subordination", level="WARNING")
@@ -157,8 +163,8 @@ def complex_subordinating_threeword_conjunction(t: Token) -> None:
         ChangeCollector.record(t.sentence.id, t.id, f"Complex subordinating conjunction has no super-governor: '{t.gov.form}' '{t.form}'", module="structures.subordination", level="WARNING")
         return
 
-    super_gov = t.super_gov_via_label('mwe')[0] # type: ignore
-    super_gov_child = t.super_gov_via_label('mwe')[1] # type: ignore
+    super_gov = t.super_gov_via_label('mwe')[0]  # type: ignore
+    super_gov_child = t.super_gov_via_label('mwe')[1]  # type: ignore
 
     if (not super_gov) and t.gov:
         ChangeCollector.record(t.sentence.id, t.id, f"Complex subordinating conjunction has no governor: '{t.gov.form}' '{t.form}'", module="structures.subordination", level="WARNING")
@@ -175,19 +181,19 @@ def complex_subordinating_threeword_conjunction(t: Token) -> None:
         ChangeCollector.record(t.sentence.id, t.id, f"Subordinate conjunction '{t.lemma}' has %d dependents comp_fin: %s", module="structures.subordination", level="WARNING")
         return
 
-    comp = comp[0]
+    comp_t = comp[0]
 
     # Attach the complement to the super-governor
-    comp.ugov = super_gov
-    comp.udep_label = super_gov_child.udep_label
+    comp_t.ugov = super_gov
+    comp_t.udep_label = super_gov_child.udep_label
 
     # Attach the first part of the conjunction to the complement
-    super_gov_child.ugov = comp
+    super_gov_child.ugov = comp_t
     super_gov_child.udep_label = 'mark'
 
     # Process punctuation marks
     for punct in [c for c in super_gov_child.children if c.upos == 'PUNCT']:
-        punct.ugov = comp
+        punct.ugov = comp_t
         punct.udep_label = 'punct'
 
 
