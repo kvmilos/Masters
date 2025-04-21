@@ -138,7 +138,7 @@ class Token:
                 self.data['feats'] = {feats_dict[feat]: feat for feat in self.data['feats_raw'].split("|")}
             self.data['ufeats'] = defaultdict(str)
             self.data['gov_id'] = columns[6]
-            self.data['ugov_id'] = None
+            self.data['ugov_id'] = '_'
             self.data['gov'] = None
             self.data['ugov'] = None
             self.data['dep_label'] = columns[7]
@@ -159,8 +159,8 @@ class Token:
             self.data['feats_raw'] = '_'
             self.data['feats'] = defaultdict(str)
             self.data['ufeats'] = defaultdict(str)
-            self.data['gov_id'] = '0'
-            self.data['ugov_id'] = None
+            self.data['gov_id'] = '_'
+            self.data['ugov_id'] = '_'
             self.data['gov'] = None
             self.data['ugov'] = None
             self.data['dep_label'] = '_'
@@ -394,7 +394,7 @@ class Token:
         elif form == 'ud':
             upos_str = self.data['upos']
             feats_str = '|'.join([f'{k}={v}' for k, v in sorted(self.data['ufeats'].items())]) if self.data['ufeats'] else '_'
-            gov_str = self.data['ugov_id'] if self.data['ugov_id'] else '_'
+            gov_str = self.data['ugov_id'] if self.data['ugov_id'] else self.data['gov_id']
             dep_str = self.data['udep_label'] if self.data['udep_label'] else '_'
             sent_str = '|'.join([f'{gov_id}:{label}' for gov_id, label in sorted(self.data['eud'].items())]) if self.data['eud'] else '_'
             misc_str = '|'.join([f'{k}={v}' for k, v in sorted(self.data['umisc'].items())]) if self.data['umisc'] else '_'
