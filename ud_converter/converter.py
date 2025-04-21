@@ -89,6 +89,32 @@ def main() -> None:
     write_ud_conll(sentences, output_file, meta_data, form)
     logger.info('Conversion completed.')
 
+    # -------------------------------------------------------
+    # to be deleted later
+    logger.info('Creating second file with adequate changes.')
+    with open(output_file, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
+
+
+    for i, line in enumerate(lines):
+        if line.strip() and not line.startswith('#'):
+            fields = line.strip().split('\t')
+            upos_feats = fields[4]  # 5th column
+            morph_feats = fields[5]  # 6th column
+
+            if any(upos_feats.startswith(prefix) for prefix in ('praet', 'ppas', 'pact')):
+                morph_feats = morph_feats.replace('|Degree=Pos', '')
+            morph_feats = morph_feats.replace('Number=Ptan', 'Number=Plur')
+
+            fields[5] = morph_feats
+            lines[i] = '\t'.join(fields) + '\n'
+
+    with open(output_file.replace('.conllu', '-degree-number.conllu'), 'w', encoding='utf-8') as f:
+        f.writelines(lines)
+
+    logger.info('Wrote output to %s', output_file.replace('.conllu', '-degree-number.conllu'))
+    # -------------------------------------------------------
+
 
 if __name__ == '__main__':
     main()
