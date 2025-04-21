@@ -14,14 +14,7 @@ class ModuleFormatter(logging.Formatter):
     Custom formatter to include module name in log records.
     """
     def format(self, record):
-        name = record.name
-        # strip top-level package prefix
-        if name.startswith('ud_converter.'):
-            name = name[len('ud_converter.'):]
-        # pad each level to 12 chars
-        parts = name.split('.')
-        padded = [part.ljust(12) for part in parts]
-        record.name = '.'.join(padded)
+        record.name = record.name.removeprefix('ud_converter.')
         return super().format(record)
 
 
