@@ -83,7 +83,7 @@ class ChangeCollector:
     """
     Collects all change events for tokens during dependency conversion.
     """
-    events: list[tuple[int, int, str, str, str]] = []
+    events: list[tuple[int, str, str, str, str]] = []
 
     @classmethod
     def clear(cls):
