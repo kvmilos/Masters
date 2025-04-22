@@ -58,7 +58,7 @@ def default_label_conversion(s: Sentence) -> None:
     :param Sentence s: The sentence to process
     """
     for t in s.tokens:
-        if t.udep_label == '_':
+        if t.udep_label == '_' and '-' not in t.id:
             if t.dep_label == 'conjunct':
                 t.udep_label = 'case' if t.upos == 'ADP' else 'conj'
                 ChangeCollector.record(t.sentence.id, t.id, f"Converting conjunct label to '{t.udep_label}' for token: '{t.form}'", module="postconversion")
