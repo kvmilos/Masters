@@ -281,7 +281,7 @@ def convert_label(t: Token) -> str:
         return 'parataxis:restart'
     elif t.dep_label == 'dep':
         return 'dep'
-    return t.dep_label
+    return t.udep_label
 
 
 def verb_complement(t: Token, cleft: bool = False) -> str:
