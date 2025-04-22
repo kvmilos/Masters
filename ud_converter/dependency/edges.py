@@ -53,8 +53,8 @@ def remove_dependents_of_auxiliary(s: Sentence) -> None:
                 for dep in t.children:
                     if dep.lemma != 'nie' and dep.dep_label != 'neg' and dep.udep_label != 'conj':
                         if dep != sgov:
+                            ChangeCollector.record(t.sentence.id, dep.id, f"Reattached dependent '{dep.form}' from auxiliary '{t.form}' ({t.id}) to '{sgov.form}' ({sgov.id})", module="edges.auxiliary")
                             dep.ugov = sgov
-                        ChangeCollector.record(t.sentence.id, dep.id, f"Reattached dependent '{dep.form}' from auxiliary '{t.form}' to '{sgov.form}'", module="edges.auxiliary")
 
 
 def find_semantic_governor(t: Token) -> Token | None:
@@ -108,7 +108,7 @@ def remove_dependents_of_fixed(s: Sentence) -> None:
                     for dep in fixed_token.children:
                         if dep.ugov != fixed_head_t:
                             dep.ugov = fixed_head_t
-                            ChangeCollector.record(t.sentence.id, dep.id, f"Reattached dependent '{dep.form}' from fixed token '{fixed_token.form}' to '{fixed_head_t.form}'", module="edges.fixed")
+                            ChangeCollector.record(t.sentence.id, dep.id, f"Reattached dependent '{dep.form}' from fixed token '{fixed_token.form}' ({fixed_token.id}) to '{fixed_head_t.form}' ({fixed_head_t.id})", module="edges.fixed")
             else:
                 ChangeCollector.record(t.sentence.id, t.id, f"Fixed token '{t.form}' has no super-governor.", module="edges.fixed", level="WARNING")
                 continue
@@ -183,5 +183,5 @@ def remove_dependents_of_mark_case_cc(s: Sentence) -> None:
                     and c.dep_label != 'abbrev_punct'
                 ):
                     # Reattach the dependent to the governor
+                    ChangeCollector.record(t.sentence.id, c.id, f"Reattached dependent '{c.form}' from {t.udep_label} '{t.form}' ({t.id}) to '{t.ugov.form}' ({t.ugov.id})", module="edges.mark_case_cc")
                     c.ugov = t.ugov
-                    ChangeCollector.record(t.sentence.id, c.id, f"Reattached dependent '{c.form}' from {t.udep_label} '{t.form}' to '{t.ugov.form}'", module="edges.mark_case_cc")

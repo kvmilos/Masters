@@ -33,7 +33,7 @@ def complete_eud(s: Sentence) -> None:
             if t.ugov_id == '_':
                 # If the enhanced governor ID is '_', set it to the basic governor ID
                 t.ugov_id = t.gov_id
-                ChangeCollector.record(t.sentence.id, t.id, f"Setting gov -> ugov for token: '{t.form}'", module="postconversion")
+                ChangeCollector.record(t.sentence.id, t.id, f"Setting gov -> ugov ({t.gov_id}) for token: '{t.form}'", module="postconversion")
             # Add the basic dependency to the enhanced dependencies
             t.eud = {t.ugov_id: t.udep_label}
 
