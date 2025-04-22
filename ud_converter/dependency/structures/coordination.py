@@ -48,7 +48,7 @@ def convert_coordination(s: Sentence) -> None:
             ChangeCollector.record(t.sentence.id, t.id, f"Converted coordination structure: '{t.form}'", module="structures.coordinatio2")
 
         # Coordination with a punctuation mark used as a conjunction, e.g. "Siedzi, czyta."
-        elif t.upos == 'PUNCT' and t.children_with_label('conjunct') and t.gov:
+        elif t.upos == 'PUNCT' and t.children_with_label('conjunct') and t.ugov_id:
             conjuncts = t.children_with_label('conjunct')
             if t.udep_label != 'conj' and conjuncts and conjuncts[0].udep_label not in ['punct', 'cc']:
                 coordination(t, True)
@@ -75,7 +75,7 @@ def coordination(t: Token, punct_conj: bool, ud_label: str | None = None) -> Non
     :param str ud_label: Optional specific UD label to use for the coordination
     """
     # Split the dependents of the conjunction token
-    children = t.children
+    children = t.uchildren + [c for c in t.children if c.ugov_id == '_']
     # conjuncts (coordinated elements)
     conjuncts = [c for c in children if c.udep_label == '_' and c.dep_label == 'conjunct']
     # pre-conjunctions (e.g., the first 'albo' in 'albo ... albo ...')
@@ -86,7 +86,7 @@ def coordination(t: Token, punct_conj: bool, ud_label: str | None = None) -> Non
     shared = [c for c in children if (c not in conjuncts + pre_coords + puncts
               and c.udep_label != 'fixed'
               and (RE_SHARED.search(c.dep_label)
-                   or RE_SHARED2.search(c.udep_label)
+                   or (RE_SHARED2.search(c.udep_label) if c.udep_label != '_' else RE_SHARED2.search(c.dep_label))
                    or (c.dep_label == 'mwe' and c.pos == 'brev')
                    or (c.dep_label == 'mwe' and c.pos == 'subst' and c.form != 'czym')))]
     # Other dependents
