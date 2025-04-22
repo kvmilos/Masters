@@ -23,21 +23,21 @@ def convert_prepositional(s: Sentence) -> None:
             if t.dep_label == 'mwe':
                 # Handle prepositions that are part of multiword expressions
                 if not t.super_gov_via_label('mwe'):
-                    ChangeCollector.record(t.sentence.id, t.id, f"Super-governor not found for preposition: '{t.form}'", module="structures.prepositional", level='WARNING')
+                    ChangeCollector.record(t.sentence.id, t.id, f"Super-governor not found for preposition: '{t.form}'", module="structures.prepositional1", level='WARNING')
                     continue
                 super_gov = t.super_gov_via_label('mwe')[0]  # type: ignore
                 super_gov_child = t.super_gov_via_label('mwe')[1]  # type: ignore
                 if super_gov and super_gov.udep_label == '_' and super_gov.dep_label in ['adjunct_compar', 'adjunct_comment']:
                     # Skip comparative and comment adjuncts
-                    ChangeCollector.record(t.sentence.id, t.id, f"Skipping comparative or comment adjunct (preposition): '{t.form}'", module="structures.prepositional", level='WARNING')
+                    ChangeCollector.record(t.sentence.id, t.id, f"Skipping comparative or comment adjunct (preposition): '{t.form}'", module="structures.prepositional2", level='WARNING')
                 else:
                     # Convert the prepositional phrase
                     convert_pp(super_gov_child, super_gov, t)
-                    ChangeCollector.record(t.sentence.id, t.id, f"Converted prepositional phrase: '{t.form}'", module="structures.prepositional")
+                    ChangeCollector.record(t.sentence.id, t.id, f"Converted prepositional phrase: '{t.form}'", module="structures.prepositional3")
             else:
                 # Convert standard prepositional phrases
                 convert_pp(t, t.gov, t)
-                ChangeCollector.record(t.sentence.id, t.id, f"Converted prepositional phrase: '{t.form}'", module="structures.prepositional")
+                ChangeCollector.record(t.sentence.id, t.id, f"Converted prepositional phrase: '{t.form}'", module="structures.prepositional4")
 
 
 def convert_pp(prep: Token, gov: Token, t: Token) -> None:
@@ -68,32 +68,36 @@ def convert_pp(prep: Token, gov: Token, t: Token) -> None:
                         # Handle orphaned obliques
                         prep.udep_label = 'obl:orphan'
                     else:
-                        ChangeCollector.record(t.sentence.id, t.id, f"The preposition '{prep.form}' has no complements", module="structures.prepositional", level='WARNING')
+                        ChangeCollector.record(t.sentence.id, t.id, f"The preposition '{prep.form}' has no complements", module="structures.prepositional5", level='WARNING')
                 else:
                     if len(conj_comp) == 1:
                         # Attach the complement to the super-governor
                         super_gov = gov.gov
                         if super_gov:
+                            ChangeCollector.record(t.sentence.id, t.id, f"Converting preposition '{prep.form}' with complement '{conj_comp[0].form}'", module="structures.prepositional6")
                             conj_comp[0].ugov = super_gov
                             conj_comp[0].udep_label = gov.udep_label
 
                             # Attach the conjunction to the complement
+                            ChangeCollector.record(t.sentence.id, t.id, f"Converting preposition '{prep.form}' with complement '{conj_comp[0].form}'", module="structures.prepositiona7")
                             gov.ugov = conj_comp[0]
                             gov.udep_label = '_'
                     else:
-                        ChangeCollector.record(t.sentence.id, t.id, f"The preposition '{prep.form}' has {len(conj_comp)} complements: {[c.form for c in conj_comp]}", module="structures.prepositional", level='WARNING')
+                        ChangeCollector.record(t.sentence.id, t.id, f"The preposition '{prep.form}' has {len(conj_comp)} complements: {[c.form for c in conj_comp]}", module="structures.prepositional8", level='WARNING')
             else:
-                ChangeCollector.record(t.sentence.id, t.id, f"The preposition '{prep.form}' has no complements", module="structures.prepositional", level='WARNING')
+                ChangeCollector.record(t.sentence.id, t.id, f"The preposition '{prep.form}' has no complements", module="structures.prepositional88", level='WARNING')
         else:
             # Skip special case for "podczas gdy"
             if prep.lemma == 'podczas' and prep.next and prep.next.lemma == 'gdy':
                 pass
             else:
                 # Attach the MWE complement to the governor
+                ChangeCollector.record(t.sentence.id, t.id, f"Converting preposition '{prep.form}' with MWE complement '{mwe_comp.form}'", module="structures.prepositional9")
                 mwe_comp.ugov = gov
                 mwe_comp.udep_label = prep.udep_label
 
                 # Attach the preposition to the complement
+                ChangeCollector.record(t.sentence.id, t.id, f"Converting preposition '{prep.form}' with MWE complement '{mwe_comp.form}'", module="structures.prepositional10")
                 prep.ugov = mwe_comp
                 prep.udep_label = 'case'
 
@@ -103,6 +107,7 @@ def convert_pp(prep: Token, gov: Token, t: Token) -> None:
         if len(comp) == 1:
             # Standard case: one complement
             # Attach the complement to the governor
+            ChangeCollector.record(t.sentence.id, t.id, f"Converting preposition '{prep.form}' with complement '{comp[0].form}'", module="structures.prepositional11")
             comp[0].ugov = gov
             comp[0].udep_label = prep.udep_label
 
@@ -113,7 +118,7 @@ def convert_pp(prep: Token, gov: Token, t: Token) -> None:
             # Process other dependents of the preposition
             convert_prep_dependents(prep, comp[0])
         else:
-            ChangeCollector.record(t.sentence.id, t.id, f"The preposition '{prep.form}' has {len(comp)} complements: {[c.form for c in comp]}", module="structures.prepositional", level='WARNING')
+            ChangeCollector.record(t.sentence.id, t.id, f"The preposition '{prep.form}' has {len(comp)} complements: {[c.form for c in comp]}", module="structures.prepositional13", level='WARNING')
 
 
 def convert_prep_dependents(t: Token, comp: Token) -> None:
