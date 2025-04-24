@@ -147,5 +147,3 @@ def convert_prep_dependents(t: Token, comp: Token) -> None:
     for d in dependents:
         ChangeCollector.record(t.sentence.id, t.id, f"Converting dependent '{d.form}' of preposition '{t.form}'", module="structures.prepositional14")
         d.ugov = comp
-        d.udep_label = t.udep_label
-        d.dep_label = t.dep_label

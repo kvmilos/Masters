@@ -176,7 +176,7 @@ def remove_dependents_of_mark_case_cc(s: Sentence) -> None:
     for t in s.tokens:
         if t.ugov and t.udep_label in ['mark', 'case', 'cc', 'cc:preconj']:
             # Iterate through all dependents of the token, UD and non-UD
-            for c in list(set(t.children + t.uchildren)):
+            for c in t.uchildren:
                 # Check if the dependent should be reattached
                 if (
                     c.udep_label in ['punct', 'advmod', 'list', 'cop', 'obl', 'aux:clitic', 'advcl', 'mark', 'orphan']
@@ -185,3 +185,6 @@ def remove_dependents_of_mark_case_cc(s: Sentence) -> None:
                     # Reattach the dependent to the governor
                     ChangeCollector.record(t.sentence.id, c.id, f"Reattached dependent '{c.form}' from {t.udep_label} '{t.form}' ({t.id}) to '{t.ugov.form}' ({t.ugov.id})", module="edges.mark_case_cc")
                     c.ugov = t.ugov
+                    c.udep_label = t.udep_label
+                    c.dep_label = t.dep_label
+                    c.gov = t.ugov
