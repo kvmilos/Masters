@@ -143,7 +143,7 @@ class Token:
             self.data['ugov'] = None
             self.data['dep_label'] = columns[7]
             self.data['udep_label'] = '_'
-            self.data['eud'] = defaultdict(str)
+            self.data['eud'] = LoggingDict(self)
             self.data['sent_id'] = columns[8]
             self.data['misc'] = columns[9]
             self.data['umisc'] = defaultdict(str)
@@ -424,6 +424,11 @@ class Token:
         if self.gov_id == '0':
             return None
         return self.sentence.dict_by_id.get(self.gov_id)
+
+    @gov.setter
+    def gov(self, value: 'Token | None') -> None:
+        """Sets the governor Token."""
+        self.gov_id = value.id if value else '-1'
 
     @property
     def ugov(self) -> 'Token | None':
