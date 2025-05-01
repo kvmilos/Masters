@@ -91,10 +91,14 @@ def main() -> None:
 
     # -------------------------------------------------------
     # to be deleted later
-    logger.info('Creating second file with adequate changes.')
     with open(output_file, 'r', encoding='utf-8') as f:
         lines = f.readlines()
 
+    if tags_only:
+        logger.info('Tags-only mode: skipping additional processing.')
+        return
+
+    logger.info('Processing lines for additional changes.')
     for i, line in enumerate(lines):
         if line.strip() and not line.startswith('#'):
             fields = line.strip().split('\t')
