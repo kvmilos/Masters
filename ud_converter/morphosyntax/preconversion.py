@@ -30,7 +30,7 @@ def lemma_based_upos(t: Token) -> None:
         t.upos = 'SCONJ'
         t.ufeats = {'ConjType': 'Comp'}
         logger.debug("S%-5s T%-5s- Converted '%s' to %s", t.sentence.id, t.id, t.form, t.upos)
-    elif t.lemma == 'jak' and (t.pos not in ['subst', 'conj', 'adv'] or t.pos == 'adv' and t.dep_label == 'adjunct_compar'):
+    elif t.lemma == 'jak' and t.pos not in ['subst', 'conj', 'adv']:
         t.upos = 'SCONJ'
         t.ufeats = {'ConjType': 'Comp'}
     elif t.lemma == 'temu':

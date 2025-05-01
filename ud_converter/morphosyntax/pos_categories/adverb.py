@@ -8,7 +8,13 @@ from utils.constants import FEATS_UPDATE as FU
 def adv(t: Token) -> None:
     """Converts an adv."""
     t.upos = 'ADV'
-    if 'degree' in t.feats:
+    if (t.lemma == 'jak'
+        and t.dep_label == 'adjunct_compar'
+        and t.children_with_pos('fin')
+    ):
+        t.upos = 'SCONJ'
+        t.ufeats = {'ConjType': 'Comp'}
+    elif 'degree' in t.feats:
         t.ufeats = {'Degree': FU[t.feats['degree']]}
     if t.lemma in ['kiedy', 'gdzie']:
         if t.prev and t.prev.lemma == 'rzadko':

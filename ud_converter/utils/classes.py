@@ -508,6 +508,13 @@ class Token:
             if n.lemma == lemma
         ]
 
+    def children_with_pos(self, pos: str) -> list['Token']:
+        """Returns a list of children of the token with the given POS."""
+        return [
+            n for n in self.children
+            if n.pos == pos
+        ]
+
     def super_gov_via_label(self, label: str) -> tuple['Token', 'Token'] | None:
         """
         Recursively finds a governing token via a specific dependency path.
