@@ -24,7 +24,7 @@ def bedzie(t: Token) -> None:
     """Converts a bedzie."""
     t.upos = 'VERB'
     t.ufeats = {'Aspect': FU[t.feats['aspect']], 'VerbForm': 'Fin', 'Number': FU[t.feats['number']],
-                'Person': FU[t.feats['person']], 'Mood': 'Ind', 'Tense': 'Fut'}
+                'Person': FU[t.feats['person']], 'Mood': 'Ind', 'Tense': 'Fut', 'Voice': 'Act'}
 
 
 def praet(t: Token) -> None:
