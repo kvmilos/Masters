@@ -95,7 +95,6 @@ def main() -> None:
     with open(output_file, 'r', encoding='utf-8') as f:
         lines = f.readlines()
 
-
     for i, line in enumerate(lines):
         if line.strip() and not line.startswith('#'):
             fields = line.strip().split('\t')
