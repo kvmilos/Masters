@@ -123,9 +123,9 @@ def coordination(t: Token, punct_conj: bool, ud_label: str | None = None) -> Non
     # Conversion of coordination structures with conjunctions
     else:
         # Attach the first conjunct to the governor
-        if t.gov:
+        if t.ugov:
             ChangeCollector.record(t.sentence.id, t.id, f"Converting conjunction '{t.form}' with conjunct '{main_c.form}'", module="structures.coordination7")
-            main_c.ugov = t.gov
+            main_c.ugov = t.ugov
             main_c.udep_label = ud_label if ud_label else t.udep_label
             t.udep_label = 'cc'
 
