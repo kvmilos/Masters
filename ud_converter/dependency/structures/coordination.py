@@ -112,8 +112,10 @@ def coordination(t: Token, punct_conj: bool, ud_label: str | None = None) -> Non
         if t.dep_label == 'conjunct':
             # Add enhanced dependency from the super-governor to the main conjunct
             if t.gov and t.gov.gov and len(t.gov.gov.children_with_label('conjunct')) == 0:
+                ChangeCollector.record(t.sentence.id, main_c.id, f"Adding eud {t.gov.gov.id}: {cl(t.gov)} to '{main_c.form}'", module="structures.coordination-eud1")
                 main_c.eud = {t.gov.gov.id: cl(t.gov)}
         elif t.gov and t.gov.id not in main_c.eud and t.gov.pos != 'conj':
+            ChangeCollector.record(t.sentence.id, main_c.id, f"Adding eud {t.gov.id}: {cl(t.gov)} to '{main_c.form}'", module="structures.coordination-eud2")
             main_c.eud = {t.gov.id: cl(t.gov)}
 
         puncts.append(t)
@@ -140,6 +142,7 @@ def coordination(t: Token, punct_conj: bool, ud_label: str | None = None) -> Non
 
             # Handle enhanced dependencies
             if t.gov and t.dep_label != 'conjunct' and cl(main_c) != '_' and t.gov.id not in main_c.eud:
+                ChangeCollector.record(t.sentence.id, main_c.id, f"Adding eud {t.gov.id}: {cl(t.gov)} to '{main_c.form}'", module="structures.coordination-eud3")
                 main_c.eud = {t.gov.id: cl(main_c)}
 
     # Process other elements of the coordination structure
@@ -187,16 +190,20 @@ def process_conjuncts(conjuncts: list[Token], main_c: Token, t: Token) -> None:
             c.udep_label = 'conj'
             if c.pos == 'conj' and [cc for cc in c.children_with_label('conjunct') if cc.udep_label == '_']:
                 min_cc = min([cc for cc in c.children_with_label('conjunct') if cc.udep_label == '_'], key=lambda x: int(x.id))
+                ChangeCollector.record(t.sentence.id, min_cc.id, f"Adding eud {main_c.id}: 'conj' to '{min_cc.form}'", module="structures.coordination-eud4")
                 min_cc.eud = {main_c.id: 'conj'}
             else:
+                ChangeCollector.record(t.sentence.id, c.id, f"Adding eud {main_c.id}: 'conj' to '{c.form}'", module="structures.coordination-eud5")
                 c.eud = {main_c.id: 'conj'}
             if t.dep_label == 'conjunct' and t.udep_label == '_' and t.gov:
                 temp_c = min([cc for cc in t.gov.children_with_label('conjunct') if cc.udep_label == '_'], key=lambda x: int(x.id))
                 temp_successors = [cc for cc in temp_c.children_with_label('conjunct') if cc.udep_label == '_']
                 if temp_successors:
                     temp2 = min(temp_successors, key=lambda x: int(x.id))
+                    ChangeCollector.record(t.sentence.id, temp2.id, f"Adding eud {temp_c.id}: 'conj' to '{temp2.form}'", module="structures.coordination-eud6")
                     c.eud = {temp2.id: 'conj'}
                 else:
+                    ChangeCollector.record(t.sentence.id, temp_c.id, f"Adding eud {temp_c.id}: 'conj' to '{temp_c.form}'", module="structures.coordination-eud7")
                     c.eud = {temp_c.id: 'conj'}
             else:
                 # shared argument, eg. "ministrowie i generałowie" - here is the conversion of the second conjunct, i.e. "generałowie"
@@ -211,13 +218,16 @@ def process_conjuncts(conjuncts: list[Token], main_c: Token, t: Token) -> None:
                                 enhanced_conjuncts.append(govc)
                     if enhanced_conjuncts:
                         for ec in enhanced_conjuncts:
+                            ChangeCollector.record(t.sentence.id, ec.id, f"Adding eud {ec.id}: '{cl(t)}' to '{c.form}'", module="structures.coordination-eud8")
                             c.eud = {ec.id: cl(t)}
                 else:
                     if c.pos == 'conj' and [cc for cc in c.children_with_label('conjunct') if cc.udep_label == '_']:
                         min_cc = min([cc for cc in c.children_with_label('conjunct') if cc.udep_label == '_'], key=lambda x: int(x.id))
+                        ChangeCollector.record(t.sentence.id, min_cc.id, f"Adding eud {min_cc.id}: '{cl(t)}' to '{min_cc.form}'", module="structures.coordination-eud9")
                         c.eud = {min_cc.id: cl(t)}
                     elif t.gov:
-                        c.eud = {t.gov.id: cl(t)}
+                        ChangeCollector.record(t.sentence.id, c.id, f"Adding eud {t.gov.id}: '{cl(main_c)}' to '{c.form}'", module="structures.coordination-eud10")
+                        c.eud = {t.gov.id: cl(main_c)}
 
 
 def process_puncts(puncts: list[Token], conjuncts: list[Token]) -> None:
@@ -270,6 +280,7 @@ def process_shared(shared: list[Token], conjuncts: list[Token], main_c: Token) -
 
         # Enhanced dependencies for shared dependents
         for con in conjuncts:
+            ChangeCollector.record(s.sentence.id, con.id, f"Adding eud {con.id}: {cl(s)} to '{s.form}'", module="structures.coordination-eud11")
             s.eud = {con.id: cl(s)}
 
 
@@ -292,6 +303,7 @@ def process_other(other: list[Token], conjuncts: list[Token], main_c: Token, t: 
             ChangeCollector.record(o.sentence.id, o.id, f"Converting coordinating conjunction '{o.form}' with conjunct '{main_c.form}'", module="structures.coordination14")
             o.ugov = main_c
             o.udep_label = 'cc'
+            ChangeCollector.record(o.sentence.id, main_c.id, f"Adding eud {main_c.id}: 'cc' to '{o.form}'", module="structures.coordination-eud12")
             o.eud = {main_c.id: 'cc'}
 
         # Punctuation with special handling
@@ -307,6 +319,7 @@ def process_other(other: list[Token], conjuncts: list[Token], main_c: Token, t: 
             o.ugov = main_c
             o.udep_label = 'mark'
             for con in conjuncts:
+                ChangeCollector.record(o.sentence.id, con.id, f"Adding eud {con.id}: 'mark' to '{o.form}'", module="structures.coordination-eud13")
                 o.eud = {con.id: 'mark'}
 
         # Default case
