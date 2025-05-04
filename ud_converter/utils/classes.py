@@ -399,7 +399,7 @@ class Token:
             # feats_str = '|'.join([f'{k}={v}' for k, v in sorted(self.data['ufeats'].items())]) if self.data['ufeats'] else '_'
             gov_str = self.data['ugov_id'] if (self.data['ugov_id'] and self.data['ugov_id'] != '_') else self.data['gov_id']
             dep_str = self.data['udep_label'] if self.data['udep_label'] else '_'
-            sent_str = '|'.join([f'{gov_id}:{label}' for gov_id, label in sorted(self.data['eud'].items())]) if self.data['eud'] else '_'
+            sent_str = '|'.join([f'{gov_id}:{label}' for gov_id, label in sorted(self.data['eud'].items(), key=lambda s: int(s[0]))]) if self.data['eud'] else '_'
             misc_str = '|'.join([f'{k}={v}' for k, v in sorted(self.data['umisc'].items(), key=lambda s: s[0].lower())]) if self.data['umisc'] else '_'
             # misc_str = '|'.join([f'{k}={v}' for k, v in sorted(self.data['umisc'].items())]) if self.data['umisc'] else '_'
         else:
