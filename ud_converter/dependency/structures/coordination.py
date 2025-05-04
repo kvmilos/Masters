@@ -102,7 +102,7 @@ def coordination(t: Token, punct_conj: bool, ud_label: str | None = None) -> Non
     if punct_conj:
         # Attach the first conjunct to the governor
         if t.gov:
-            ChangeCollector.record(t.sentence.id, t.id, f"Converting punctuation '{t.form}' with conjunct '{main_c.form}'", module="structures.coordination6")
+            ChangeCollector.record(t.sentence.id, main_c.id, f"Converting punctuation '{t.form}' with conjunct '{main_c.form}'", module="structures.coordination6")
             main_c.ugov = t.gov
             main_c.gov = t.gov
             main_c.udep_label = ud_label if ud_label else t.udep_label
@@ -124,7 +124,7 @@ def coordination(t: Token, punct_conj: bool, ud_label: str | None = None) -> Non
     else:
         # Attach the first conjunct to the governor
         if t.ugov:
-            ChangeCollector.record(t.sentence.id, t.id, f"Converting conjunction '{t.form}' with conjunct '{main_c.form}'", module="structures.coordination7")
+            ChangeCollector.record(t.sentence.id, main_c.id, f"Converting conjunction '{t.form}' with conjunct '{main_c.form}'", module="structures.coordination7")
             main_c.ugov = t.ugov
             main_c.udep_label = ud_label if ud_label else t.udep_label
             t.udep_label = 'cc'
@@ -185,7 +185,7 @@ def process_conjuncts(conjuncts: list[Token], main_c: Token, t: Token) -> None:
     for c in conjuncts:
         if c != main_c:
             # Attach other conjuncts to the main conjunct with 'conj' relation
-            ChangeCollector.record(t.sentence.id, t.id, f"Converting conjunct '{c.form}' with main conjunct '{main_c.form}'", module="structures.coordination10")
+            ChangeCollector.record(t.sentence.id, c.id, f"Converting conjunct '{c.form}' with main conjunct '{main_c.form}'", module="structures.coordination10")
             c.ugov = main_c
             c.udep_label = 'conj'
             if c.pos == 'conj' and [cc for cc in c.children_with_label('conjunct') if cc.udep_label == '_']:
@@ -200,10 +200,10 @@ def process_conjuncts(conjuncts: list[Token], main_c: Token, t: Token) -> None:
                 temp_successors = [cc for cc in temp_c.children_with_label('conjunct') if cc.udep_label == '_']
                 if temp_successors:
                     temp2 = min(temp_successors, key=lambda x: int(x.id))
-                    ChangeCollector.record(t.sentence.id, temp2.id, f"Adding eud {temp_c.id}: 'conj' to '{temp2.form}'", module="structures.coordination-eud6")
+                    ChangeCollector.record(t.sentence.id, c.id, f"Adding eud {temp_c.id}: 'conj' to '{temp2.form}'", module="structures.coordination-eud6")
                     c.eud = {temp2.id: 'conj'}
                 else:
-                    ChangeCollector.record(t.sentence.id, temp_c.id, f"Adding eud {temp_c.id}: 'conj' to '{temp_c.form}'", module="structures.coordination-eud7")
+                    ChangeCollector.record(t.sentence.id, c.id, f"Adding eud {temp_c.id}: 'conj' to '{temp_c.form}'", module="structures.coordination-eud7")
                     c.eud = {temp_c.id: 'conj'}
             else:
                 # shared argument, eg. "ministrowie i generałowie" - here is the conversion of the second conjunct, i.e. "generałowie"
@@ -218,12 +218,12 @@ def process_conjuncts(conjuncts: list[Token], main_c: Token, t: Token) -> None:
                                 enhanced_conjuncts.append(govc)
                     if enhanced_conjuncts:
                         for ec in enhanced_conjuncts:
-                            ChangeCollector.record(t.sentence.id, ec.id, f"Adding eud {ec.id}: '{cl(t)}' to '{c.form}'", module="structures.coordination-eud8")
+                            ChangeCollector.record(t.sentence.id, c.id, f"Adding eud {ec.id}: '{cl(t)}' to '{c.form}'", module="structures.coordination-eud8")
                             c.eud = {ec.id: cl(t)}
                 else:
                     if c.pos == 'conj' and [cc for cc in c.children_with_label('conjunct') if cc.udep_label == '_']:
                         min_cc = min([cc for cc in c.children_with_label('conjunct') if cc.udep_label == '_'], key=lambda x: int(x.id))
-                        ChangeCollector.record(t.sentence.id, min_cc.id, f"Adding eud {min_cc.id}: '{cl(t)}' to '{min_cc.form}'", module="structures.coordination-eud9")
+                        ChangeCollector.record(t.sentence.id, c.id, f"Adding eud {min_cc.id}: '{cl(t)}' to '{min_cc.form}'", module="structures.coordination-eud9")
                         c.eud = {min_cc.id: cl(t)}
                     elif t.gov:
                         ChangeCollector.record(t.sentence.id, c.id, f"Adding eud {t.gov.id}: '{cl(main_c)}' to '{c.form}'", module="structures.coordination-eud10")
@@ -280,7 +280,7 @@ def process_shared(shared: list[Token], conjuncts: list[Token], main_c: Token) -
 
         # Enhanced dependencies for shared dependents
         for con in conjuncts:
-            ChangeCollector.record(s.sentence.id, con.id, f"Adding eud {con.id}: {cl(s)} to '{s.form}'", module="structures.coordination-eud11")
+            ChangeCollector.record(s.sentence.id, s.id, f"Adding eud {con.id}: {cl(s)} to '{s.form}'", module="structures.coordination-eud11")
             s.eud = {con.id: cl(s)}
 
 
@@ -303,7 +303,7 @@ def process_other(other: list[Token], conjuncts: list[Token], main_c: Token, t: 
             ChangeCollector.record(o.sentence.id, o.id, f"Converting coordinating conjunction '{o.form}' with conjunct '{main_c.form}'", module="structures.coordination14")
             o.ugov = main_c
             o.udep_label = 'cc'
-            ChangeCollector.record(o.sentence.id, main_c.id, f"Adding eud {main_c.id}: 'cc' to '{o.form}'", module="structures.coordination-eud12")
+            ChangeCollector.record(o.sentence.id, o.id, f"Adding eud {main_c.id}: 'cc' to '{o.form}'", module="structures.coordination-eud12")
             o.eud = {main_c.id: 'cc'}
 
         # Punctuation with special handling
@@ -319,7 +319,7 @@ def process_other(other: list[Token], conjuncts: list[Token], main_c: Token, t: 
             o.ugov = main_c
             o.udep_label = 'mark'
             for con in conjuncts:
-                ChangeCollector.record(o.sentence.id, con.id, f"Adding eud {con.id}: 'mark' to '{o.form}'", module="structures.coordination-eud13")
+                ChangeCollector.record(o.sentence.id, o.id, f"Adding eud {con.id}: 'mark' to '{o.form}'", module="structures.coordination-eud13")
                 o.eud = {con.id: 'mark'}
 
         # Default case
