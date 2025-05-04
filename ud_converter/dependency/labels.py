@@ -122,7 +122,6 @@ def convert_label(t: Token, t2: Token | None = None) -> str:
     elif t.dep_label == 'comp':
         mark = t.children_with_ud_label('mark')
         gov = t2 if t2 else t.gov
-        print(f"gov: {gov.form}, t2: {t2}, mark: {mark}")
         if gov and gov.upos in ['PROPN', 'NOUN', 'X', 'NUM', 'SYM']:
             if (
                 gov.pos.startswith('ger')
