@@ -279,7 +279,7 @@ def process_shared(shared: list[Token], conjuncts: list[Token], main_c: Token) -
         # Attach shared dependent to the main conjunct
         ChangeCollector.record(s.sentence.id, s.id, f"Converting shared dependent '{s.form}' with main conjunct '{main_c.form}'", module="structures.coordination13")
         s.ugov = main_c
-        s.udep_label = cl(s)
+        s.udep_label = cl(s, main_c)
 
         # Enhanced dependencies for shared dependents
         for con in conjuncts:

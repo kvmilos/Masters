@@ -25,7 +25,7 @@ def labels_conversion(s: Sentence) -> None:
         t.udep_label = convert_label(t)
 
 
-def convert_label(t: Token) -> str:
+def convert_label(t: Token, t2: Token | None = None) -> str:
     """
     Converts a dependency label from MPDT format to Universal Dependencies format.
 
@@ -34,6 +34,7 @@ def convert_label(t: Token) -> str:
     and original dependency label in the MPDT format.
 
     :param Token t: The token for which to convert the dependency label
+    :param Token t2: An optional second token for additional context
     :return: The converted Universal Dependencies dependency label
     :rtype: str
     """
@@ -120,24 +121,25 @@ def convert_label(t: Token) -> str:
     # clausal complement
     elif t.dep_label == 'comp':
         mark = t.children_with_ud_label('mark')
-
-        if t.gov and t.gov.upos in ['PROPN', 'NOUN', 'X', 'NUM', 'SYM']:
+        gov = t2 if t2 else t.gov
+        print(f"gov: {gov.form}, t2: {t2}, mark: {mark}")
+        if gov and gov.upos in ['PROPN', 'NOUN', 'X', 'NUM', 'SYM']:
             if (
-                t.gov.pos.startswith('ger')
+                gov.pos.startswith('ger')
                 or t.upos == 'VERB' and mark
                 or t.upos == 'ADJ' and mark and (t.children_with_label('aux') or t.children_with_ud_label('cop'))
             ):
                 return verb_complement(t)
             elif t.upos == 'ADJ' and not mark:
                 return 'nmod:arg'
-            elif t.gov.upos == 'ADV' and mark:
+            elif gov.upos == 'ADV' and mark:
                 return verb_complement(t)
             elif t.upos in ['PROPN', 'NOUN', 'PRON', 'X', 'ADJ', 'DET', 'NUM', 'SYM']:
                 if mark:
                     return verb_complement(t)
                 else:
                     return 'nmod:arg'
-        elif t.gov and t.gov.upos == 'ADJ':
+        elif gov and gov.upos == 'ADJ':
             if t.upos in ['PROPN', 'NOUN', 'PRON', 'X', 'ADJ', 'DET', 'NUM', 'SYM']:
                 if mark:
                     return verb_complement(t)
@@ -145,13 +147,13 @@ def convert_label(t: Token) -> str:
                     return 'obl:arg'
             elif t.upos == 'VERB' and mark:
                 return verb_complement(t)
-        elif t.gov and (t.gov.upos in ['VERB', 'ADV']
-                        or t.gov.upos == 'PART' and t.gov.lemma in ['tak', 'chyba', 'prawie', 'pewnie', 'zwłaszcza']
-                        or t.gov.upos == 'DET' and t.gov.lemma in ['ten', 'taki']
-                        or t.gov.upos == 'INTJ'):
+        elif gov and (gov.upos in ['VERB', 'ADV']
+                        or gov.upos == 'PART' and gov.lemma in ['tak', 'chyba', 'prawie', 'pewnie', 'zwłaszcza']
+                        or gov.upos == 'DET' and gov.lemma in ['ten', 'taki']
+                        or gov.upos == 'INTJ'):
             return verb_complement(t)
-        elif t.gov and t.gov.upos == 'PRON':
-            if t.gov.lemma == 'to':
+        elif gov and gov.upos == 'PRON':
+            if gov.lemma == 'to':
                 return verb_complement(t, cleft=True)
             else:
                 return 'nmod:arg'
