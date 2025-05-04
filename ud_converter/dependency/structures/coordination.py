@@ -35,7 +35,7 @@ def convert_coordination(s: Sentence) -> None:
     # Process tokens in post-order to handle nested structures correctly
     for t in s.tokens:
         # Coordination with a coordinating conjunction, e.g. "Siedzi i czyta."
-        if t.upos == 'CCONJ' and t.children_with_label('conjunct') and t.gov:
+        if t.upos == 'CCONJ' and t.children_with_label('conjunct') and t.gov_id:
             coordination(t, False)
             ChangeCollector.record(t.sentence.id, t.id, f"Converted coordination structure: '{t.form}'", module="structures.coordination1")
 
@@ -123,10 +123,10 @@ def coordination(t: Token, punct_conj: bool, ud_label: str | None = None) -> Non
     # Conversion of coordination structures with conjunctions
     else:
         # Attach the first conjunct to the governor
-        if t.ugov:
+        if t.gov_id:
             ChangeCollector.record(t.sentence.id, main_c.id, f"Converting conjunction '{t.form}' with conjunct '{main_c.form}'", module="structures.coordination7")
-            main_c.ugov = t.ugov
-            main_c.udep_label = ud_label if ud_label else t.udep_label
+            main_c.ugov_id = t.gov_id
+            main_c.dep_label = ud_label if ud_label else t.dep_label
             t.udep_label = 'cc'
 
         # Find the next conjunct after the conjunction
