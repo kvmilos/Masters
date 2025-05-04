@@ -164,6 +164,9 @@ def find_next_token(tokens: list[Token], t: Token) -> Token | None:
     """
     # Sort tokens by ID
     sorted_tokens = sorted(tokens, key=lambda x: int(x.id))
+    if int(t.id) < int(sorted_tokens[0].id) or int(t.id) > int(sorted_tokens[-1].id):
+        # If the token is before the first token in the list, return the first token
+        return sorted_tokens[0]
 
     # Find the first token (in the list) that comes after the specified token
     for c in sorted_tokens:
