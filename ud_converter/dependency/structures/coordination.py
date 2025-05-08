@@ -125,12 +125,13 @@ def coordination(t: Token, punct_conj: bool, ud_label: str | None = None) -> Non
         # Attach the first conjunct to the governor
         if t.gov_id:
             ChangeCollector.record(t.sentence.id, main_c.id, f"Converting conjunction '{t.form}' with conjunct '{main_c.form}'", module="structures.coordination7")
-            main_c.ugov_id = t.gov_id
-            main_c.dep_label = ud_label if ud_label else t.dep_label
+            main_c.ugov_id = t.gov2_id
+            main_c.udep_label = ud_label if ud_label else t.udep_label
+            main_c.dep_label =  t.dep_label
             t.udep_label = 'cc'
 
         # Find the next conjunct after the conjunction
-        next_conjunct = find_next_token(conjuncts, t)
+        next_conjunct = find_gov(conjuncts, t)
         if next_conjunct:
             # Attach the conjunction to the next conjunct (UD v2 guideline)
             ChangeCollector.record(t.sentence.id, t.id, f"Converting conjunction '{t.form}' with conjunct '{next_conjunct.form}'", module="structures.coordination8")
