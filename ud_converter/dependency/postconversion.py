@@ -77,7 +77,8 @@ def pronouns_disambiguation(s: Sentence) -> None:
     """
     for t in s.tokens:
         if t.upos == 'PRON' and 'PronType' in t.ufeats and t.ufeats['PronType'] == 'Int,Rel':
-            pronoun_type = look_for_clause_type(t)
+            visited: set = set()
+            pronoun_type = look_for_clause_type(t, visited)
             if pronoun_type == 'Rel':
                 t.ufeats['PronType'] = 'Rel'
             elif pronoun_type == 'Int':
@@ -86,7 +87,7 @@ def pronouns_disambiguation(s: Sentence) -> None:
                 t.ufeats.pop('PronType', None)
 
 
-def look_for_clause_type(t: Token, visited: set | None = None) -> str:
+def look_for_clause_type(t: Token | None, visited: set) -> str:
     """
     Determines the clause type for a pronoun based on its syntactic context.
 
@@ -98,27 +99,26 @@ def look_for_clause_type(t: Token, visited: set | None = None) -> str:
     :return: The clause type ('Rel', 'Int', 'Mwe', or '')
     :rtype: str
     """
-    if visited is None:
-        visited = set()
 
-    # If we've already visited this token, we have a cycle
-    if t.id in visited:
-        ChangeCollector.record(t.sentence.id, t.id, f"Cycle detected in pronoun resolution for token '{t.form}'", module="postconversion", level='WARNING')
-        return ''
+    if isinstance(t, Token):
+        # If we've already visited this token, we have a cycle
+        if t.id in visited:
+            ChangeCollector.record(t.sentence.id, t.id, f"Cycle detected in pronoun resolution for token '{t.form}'", module="postconversion", level='WARNING')
+            return ''
 
-    visited.add(t.id)
-    gov = t.ugov or t.gov
+        visited.add(t.id)
 
-    if gov:
-        if t.udep_label == 'acl:relcl':
-            return 'Rel'
-        elif t.udep_label.startswith('ccomp') or t.udep_label.startswith('xcomp') or t.udep_label.startswith('advcl') or t.udep_label == 'root':
-            return 'Int'
-        elif t.udep_label == 'fixed':
-            return 'Mwe'
+        if t.gov2_id:
+            if t.udep_label == 'acl:relcl':
+                return 'Rel'
+            elif t.udep_label.startswith('ccomp') or t.udep_label.startswith('xcomp') or t.udep_label.startswith('advcl') or t.udep_label == 'root':
+                return 'Int'
+            elif t.udep_label == 'fixed':
+                return 'Mwe'
+            else:
+                # print(t.to_string(form='mpdt'), t.to_string(form='ud'))
+                return look_for_clause_type(t.gov2, visited)
         else:
-            # print(t.to_string(form='mpdt'), t.to_string(form='ud'))
-            return look_for_clause_type(gov, visited)
-    else:
-        ChangeCollector.record(t.sentence.id, t.id, f"No governor found for pronoun: '{t.form}'", module="postconversion", level='WARNING')
-        return ''
+            ChangeCollector.record(t.sentence.id, t.id, f"No governor found for pronoun: '{t.form}'", module="postconversion", level='WARNING')
+            return ''
+    return ''

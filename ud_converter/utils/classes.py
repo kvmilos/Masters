@@ -433,7 +433,7 @@ class Token:
     @property
     def ugov(self) -> 'Token | None':
         """Returns the governor Token, or None if it's the root or something is missing."""
-        if self.ugov_id == '0':
+        if self.ugov_id == '0' or self.ugov_id == '_':
             return None
         return self.sentence.dict_by_id.get(self.ugov_id)
 
