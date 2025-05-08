@@ -231,7 +231,9 @@ def subordinating_conjunction(t: Token) -> None:
     # Attach the complement to the governor
     ChangeCollector.record(t.sentence.id, t.id, f"Changed governor of '{comp.form}' from '{comp.ugov_id}' to '{t.gov.id}, {t.gov.form}'", module="structures.subordination26", level="DEBUG")
     comp.ugov = t.gov
+    comp.gov = t.gov
     comp.udep_label = t.udep_label
+    comp.dep_label = t.dep_label
 
     # Attach the conjunction to the complement
     ChangeCollector.record(t.sentence.id, t.id, f"Changed governor of '{t.form}' from '{t.ugov_id}' to '{comp.id}, {comp.form}'", module="structures.subordination27", level="DEBUG")

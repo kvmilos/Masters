@@ -443,6 +443,24 @@ class Token:
         self.ugov_id = value.id
 
     @property
+    def gov2(self) -> 'Token | None':
+        """
+        If ugov exists, returns it. Otherwise, returns the gov.
+        """
+        if self.ugov_id != '_':
+            return self.ugov
+        return self.gov
+
+    @property
+    def gov2_id(self) -> str:
+        """
+        If ugov exists, returns its id. Otherwise, returns the gov_id.
+        """
+        if self.ugov_id != '_':
+            return self.ugov_id
+        return self.gov_id
+
+    @property
     def children(self) -> list['Token']:
         """
         Returns a list of tokens for which this token is the governor.

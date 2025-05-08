@@ -151,15 +151,13 @@ def coordination(t: Token, punct_conj: bool, ud_label: str | None = None) -> Non
     process_precoords(pre_coords, conjuncts)
     process_shared(shared, conjuncts, main_c)
     process_other(other, conjuncts, main_c, t)
-
-
-def find_next_token(tokens: list[Token], t: Token) -> Token | None:
+def find_gov(tokens: list[Token], t: Token) -> Token | None:
     """
-    Finds the next token from the given list after the specified token.
+    Finds the governor token from the given list.
 
     :param List[Token] tokens: List of tokens
     :param Token t: The token
-    :return: The next token from the given list after the specified token, or None if not found
+    :return: The governor token from the given list, or None if not found
     :rtype: Token | None
     """
     # Sort tokens by ID
