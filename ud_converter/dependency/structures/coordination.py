@@ -152,6 +152,8 @@ def coordination(t: Token, punct_conj: bool, ud_label: str | None = None) -> Non
     process_precoords(pre_coords, conjuncts)
     process_shared(shared, conjuncts, main_c)
     process_other(other, conjuncts, main_c, t)
+
+
 def find_gov(tokens: list[Token], t: Token) -> Token | None:
     """
     Finds the governor token from the given list.
