@@ -240,7 +240,7 @@ def process_puncts(puncts: list[Token], conjuncts: list[Token]) -> None:
     """
     for p in puncts:
         # Find the nearest conjunct after the punctuation
-        next_token = find_next_token(conjuncts, p)
+        next_token = find_gov(conjuncts, p)
         if next_token:
             ChangeCollector.record(p.sentence.id, p.id, f"Converting punctuation '{p.form}' with conjunct '{next_token.form}'", module="structures.coordination11")
             p.ugov = next_token
