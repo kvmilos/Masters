@@ -10,8 +10,6 @@ from utils.classes import Sentence, Token
 from utils.constants import PARTICLES
 from utils.logger import ChangeCollector
 logger = logging.getLogger('ud_converter.dependency.labels')
-# import sys
-# a = 0
 
 
 def labels_conversion(s: Sentence) -> None:
@@ -40,11 +38,6 @@ def convert_label(t: Token, t2: Token | None = None) -> str:
     :return: The converted Universal Dependencies dependency label
     :rtype: str
     """
-    # global a
-    # a += 1
-    # if a == 76:
-    #     print(f"{t.form} {t.upos} {t.pos} {t.dep_label} {t.gov.form if t.gov else 'None'}")
-    #     sys.exit()
     if t.udep_label != '_':
         return t.udep_label
 
@@ -67,7 +60,7 @@ def convert_label(t: Token, t2: Token | None = None) -> str:
             return 'det'
     # passive auxiliary or auxiliary
     elif t.dep_label == 'aux':
-        if t.gov and t.gov.pos == 'ppas':
+        if t.gov2 and t.gov2.pos == 'ppas':
             return 'aux:pass'
         else:
             return 'aux'
@@ -207,7 +200,7 @@ def convert_label(t: Token, t2: Token | None = None) -> str:
         return 'iobj'
     # nominal modifier predicate or open clausal complement predicate
     elif t.dep_label == 'pd' and t.lemma not in ['być', 'bywać']:
-        if t.upos == 'NOUN' and t.gov and t.gov.lemma in ['być', 'bywać'] and t.gov.upos == 'NOUN':
+        if t.upos == 'NOUN' and t.gov2 and t.gov2.lemma in ['być', 'bywać'] and t.gov2.upos == 'NOUN':
             return 'nmod:pred'
         else:
             return 'xcomp:pred'
@@ -219,7 +212,7 @@ def convert_label(t: Token, t2: Token | None = None) -> str:
         return 'root'
     # subject
     elif t.dep_label == 'subj':
-        if t.gov and t.gov.upos == 'ADJ' and t.gov.ufeats.get('Voice') == 'Pass':
+        if t.gov2 and t.gov2.upos == 'ADJ' and t.gov2.ufeats.get('Voice') == 'Pass':
             if (
                 t.children_with_ud_label('mark')
                 and (
@@ -236,7 +229,7 @@ def convert_label(t: Token, t2: Token | None = None) -> str:
         ):
             return 'csubj'
         elif t.upos in ['PROPN', 'NOUN', 'PRON', 'ADJ', 'NUM', 'X', 'DET'] and not t.children_with_ud_label('case'):
-            if t.gov and t.gov.pos.startswith('ger'):
+            if t.gov2 and t.gov2.pos.startswith('ger'):
                 return 'obl:agent'
             else:
                 return 'nsubj'
@@ -261,11 +254,11 @@ def convert_label(t: Token, t2: Token | None = None) -> str:
         return 'advmod:neg'
     # fixed multiword expressions
     elif t.dep_label == 'mwe':
-        if t.gov and (
-            t.gov.upos == 'NUM'
-            or t.gov.upos == 'DET' and t.gov.pos == 'num' and t.upos != 'ADV'
-            or t.gov.upos == 'NOUN' and t.gov.lemma == 'setka'
-            or t.gov.pos in ['dig', 'brev'] and t.pos == 'dig'
+        if t.gov2 and (
+            t.gov2.upos == 'NUM'
+            or t.gov2.upos == 'DET' and t.gov2.pos == 'num' and t.upos != 'ADV'
+            or t.gov2.upos == 'NOUN' and t.gov2.lemma == 'setka'
+            or t.gov2.pos in ['dig', 'brev'] and t.pos == 'dig'
         ):
             return 'flat'
         elif t.upos == 'PUNCT':
@@ -428,7 +421,7 @@ def modifier(t: Token) -> str:
                     return adverbial(t)
                 else:
                     return 'acl'
-            elif t.dep_label.startswith('adjunct_') and t.gov and t.gov.children_with_ud_label('cop'):
+            elif t.dep_label.startswith('adjunct_') and t.gov2 and t.gov2.children_with_ud_label('cop'):
                 return adverbial(t)
             else:
                 return 'nmod'
@@ -494,7 +487,7 @@ def modifier(t: Token) -> str:
 
         return adverbial(t)
 
-    elif t.gov and t.gov.upos == 'DET' and t.gov.pos in ['num', 'adj']:
+    elif t.gov2 and t.gov2.upos == 'DET' and t.gov2.pos in ['num', 'adj']:
 
         if t.upos == 'ADJ':
             if t.pos in ['ppas', 'pact']:
@@ -526,10 +519,10 @@ def modifier(t: Token) -> str:
         else:
             return adverbial(t)
 
-    elif t.gov and t.gov.upos == 'ADJ':
+    elif t.gov2 and t.gov2.upos == 'ADJ':
 
-        if t.gov and t.gov.pos in ['ppas', 'pact']:
-            if t.upos == 'ADJ' and int(t.id) < int(t.gov.id) and not case and not mark and not t.gov.children_with_label('aux'):
+        if t.gov2 and t.gov2.pos in ['ppas', 'pact']:
+            if t.upos == 'ADJ' and int(t.id) < int(t.gov2.id) and not case and not mark and not t.gov2.children_with_label('aux'):
                 return 'amod'
             else:
                 return adverbial(t)
@@ -551,17 +544,17 @@ def modifier(t: Token) -> str:
             else:
                 return adverbial(t)
 
-    elif t.gov and t.gov.upos in ['VERB', 'ADV', 'PART', 'INTJ', 'SCONJ']:
+    elif t.gov2 and t.gov2.upos in ['VERB', 'ADV', 'PART', 'INTJ', 'SCONJ']:
         return adverbial(t)
 
-    elif t.gov and t.gov.upos == 'ADP' and t.children_with_label('mwe'):
+    elif t.gov2 and t.gov2.upos == 'ADP' and t.children_with_label('mwe'):
         if t.upos == 'ADP':
             return 'advmod'
         elif t.upos == 'ADV':
             return adverbial(t)
         elif t.upos == 'PART' and t.lemma in PARTICLES and not mark:
             return 'advmod:emph'
-        elif t.upos == 'CCONJ' and not t.gov.children_with_label('conjunct'):
+        elif t.upos == 'CCONJ' and not t.gov2.children_with_label('conjunct'):
             return 'cc'
 
     return adverbial(t)
