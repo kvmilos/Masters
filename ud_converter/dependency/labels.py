@@ -10,6 +10,8 @@ from utils.classes import Sentence, Token
 from utils.constants import PARTICLES
 from utils.logger import ChangeCollector
 logger = logging.getLogger('ud_converter.dependency.labels')
+# import sys
+# a = 0
 
 
 def labels_conversion(s: Sentence) -> None:
@@ -38,6 +40,11 @@ def convert_label(t: Token, t2: Token | None = None) -> str:
     :return: The converted Universal Dependencies dependency label
     :rtype: str
     """
+    # global a
+    # a += 1
+    # if a == 76:
+    #     print(f"{t.form} {t.upos} {t.pos} {t.dep_label} {t.gov.form if t.gov else 'None'}")
+    #     sys.exit()
     if t.udep_label != '_':
         return t.udep_label
 
@@ -382,7 +389,7 @@ def modifier(t: Token) -> str:
     mark = t.children_with_ud_label('mark')
     case = t.children_with_ud_label('case')
 
-    if t.gov and t.gov.upos in ['PROPN', 'NOUN', 'PRON', 'X', 'NUM', 'SYM']:
+    if t.gov2 and t.gov2.upos in ['PROPN', 'NOUN', 'PRON', 'X', 'NUM', 'SYM']:
 
         if t.upos == 'ADJ':
             if t.pos in ['ppas', 'pact']:
@@ -406,7 +413,7 @@ def modifier(t: Token) -> str:
                     if len(mark) > 1:
                         ChangeCollector.record(t.sentence.id, t.id, f"Multiple 'mark'-children for '{t.form}': {[m.form for m in mark]}", module="labels", level="WARNING")
                     mark_t = mark[0]
-                    if mark_t.lemma == 'jako' and mark_t.ufeats.get('ConjType') and t.gov.pos != 'ger' and t.dep_label == 'adjunct_attrib':
+                    if mark_t.lemma == 'jako' and mark_t.ufeats.get('ConjType') and t.gov2.pos != 'ger' and t.dep_label == 'adjunct_attrib':
                         return 'amod'
                     else:
                         return adverbial(t)
