@@ -56,8 +56,10 @@ def standard_numeral(t: Token) -> None:
         return
     comp_t = comp[0]
     if t.gov:
+        ChangeCollector.record(t.sentence.id, comp_t.id, f"Setting ugov of {comp_t.id} to {t.gov.id}.'", module="structures.numeral1", level='DEBUG')
         comp_t.ugov = t.gov
         comp_t.udep_label = '_'
+    ChangeCollector.record(t.sentence.id, t.id, f"Setting ugov of {t.id} to {comp_t.id} with label {numeral_label(t)}", module="structures.numeral2", level='DEBUG')
     t.ugov = comp_t
     t.udep_label = numeral_label(t)
     for c in t.children:
@@ -75,6 +77,7 @@ def standard_numeral(t: Token) -> None:
             elif (c.lemma in ['jakiś', 'jaki', 'ten', 'wszystek'] and c.upos == 'DET' and c.dep_label == 'adjunct'):
                 pass
             else:
+                ChangeCollector.record(t.sentence.id, c.id, f"Setting ugov of {c.id} to {comp_t.id} with label {cl(c)}", module="structures.numeral3", level='DEBUG')
                 c.ugov = comp_t
                 c.udep_label = cl(c)
 
@@ -94,8 +97,10 @@ def coordinated_numeral(t: Token) -> None:
         return
     comp_t = comp[0]
     if t.gov and t.gov.gov:
+        ChangeCollector.record(t.sentence.id, comp_t.id, f"Setting ugov of {comp_t.id} to {t.gov.gov.id}.'", module="structures.numeral4", level='DEBUG')
         comp_t.ugov = t.gov.gov
         comp_t.udep_label = cl(t.gov)
+        ChangeCollector.record(t.sentence.id, t.gov.id, f"Setting ugov of {t.gov.id} to {comp_t.id} with label {numeral_label(t)}", module="structures.numeral5", level='DEBUG')
         t.gov.ugov = comp_t
         t.gov.udep_label = numeral_label(t.gov)
     else:
@@ -113,11 +118,13 @@ def mwe_numeral(t: Token) -> None:
     """
     mwe = t.super_child_with_label_via_label('mwe', 'comp')
     if t.gov and mwe:
+        ChangeCollector.record(t.sentence.id, mwe.id, f"Setting ugov of {mwe.id} to {t.gov.id} with label {cl(t)}", module="structures.numeral6", level='DEBUG')
         mwe.ugov = t.gov
         mwe.udep_label = cl(t)
     if not mwe:
         ChangeCollector.record(t.sentence.id, t.id, f"No MWE found for numeral phrase: '{t.form}'", module="structures.numeral", level='WARNING')
         return
+    ChangeCollector.record(t.sentence.id, t.id, f"Setting ugov of {t.id} to {mwe.id} with label {numeral_label(t)}", module="structures.numeral7", level='DEBUG')
     t.ugov = mwe
     t.udep_label = numeral_label(t)
 
@@ -139,8 +146,10 @@ def ne_numeral(t: Token) -> None:
         return
     ne_t = ne[0]
     if t.gov:
+        ChangeCollector.record(t.sentence.id, ne_t.id, f"Setting ugov of {ne_t.id} to {t.gov.id} with label {cl(t)}", module="structures.numeral8", level='DEBUG')
         ne_t.ugov = t.gov
         ne_t.udep_label = cl(t)
+    ChangeCollector.record(t.sentence.id, t.id, f"Setting ugov of {t.id} to {ne_t.id} with label nummod:flat", module="structures.numeral9", level='DEBUG')
     t.ugov = ne_t
     t.udep_label = 'nummod:flat'
 
