@@ -76,7 +76,7 @@ def pronouns_disambiguation(s: Sentence) -> None:
     :param Sentence s: The sentence to process
     """
     for t in s.tokens:
-        if t.upos == 'PRON' and 'PronType' in t.ufeats and t.ufeats['PronType'] == 'Int,Rel':
+        if 'PronType' in t.ufeats and t.ufeats['PronType'] == 'Int,Rel':
             visited: set = set()
             pronoun_type = look_for_clause_type(t, visited)
             if pronoun_type == 'Rel':
