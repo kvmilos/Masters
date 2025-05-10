@@ -63,7 +63,7 @@ def standard_numeral(t: Token) -> None:
     t.ugov = comp_t
     t.udep_label = numeral_label(t)
     for c in t.children:
-        if c != comp and c.dep_label not in ['mwe', 'adjunct_compar']:
+        if c != comp_t and c.dep_label not in ['mwe', 'adjunct_compar']:
             if (
                 c.lemma in [
                     'ani', 'aż', 'blisko', 'bodaj', 'co', 'dopiero', 'jedynie', 'jeszcze', 'chociaż', 'coraz', 'jak',
@@ -162,10 +162,13 @@ def numeral_label(t: Token) -> str:
     :return: The appropriate UD dependency label ('nummod' for NUM, 'det' for DET)
     :rtype: str
     """
-    if not t.udep_label and t.upos == 'NUM':
-        return 'nummod'
-    elif not t.udep_label and t.upos == 'DET':
-        return 'det'
+    if t.udep_label == '_':
+        if t.upos == 'NUM':
+            return 'nummod'
+        elif t.upos == 'DET':
+            return 'det'
+        else:
+            return t.udep_label
     else:
         ChangeCollector.record(t.sentence.id, t.id, f"No label for numeral phrase: '{t.form}', {t.upos}", module="structures.numeral", level='WARNING')
         return '_'
