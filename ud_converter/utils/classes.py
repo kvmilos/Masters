@@ -106,6 +106,43 @@ class Sentence:
         """
         return "\n".join(token.to_string(form) for token in self.tokens)
 
+    def post_order_tokens(self) -> list['Token']:
+        """
+        Returns a list of tokens in post-order traversal.
+
+        This method is useful for processing the sentence structure in a
+        specific order, such as when applying transformations or analyses.
+
+        :return: List of tokens in post-order
+        :rtype: List[Token]
+        """
+        # gov_id→[child_id,…] map
+        children_map: dict[str, list[str]] = {tid: [] for tid in self.dict_by_id}
+        for tok in self.tokens:
+            gov = tok.gov_id
+            if gov in children_map:
+                children_map[gov].append(tok.id)
+
+        # sort children lists for deterministic order
+        for gov, chs in children_map.items():
+            children_map[gov] = sorted(chs, key=lambda x: int(x))
+
+        # find the root token (gov_id == '0')
+        root = self.get_root()
+        if not root:
+            return list(self.tokens)
+
+        result: list['Token'] = []
+        def dfs(token_id: str):
+            # first recurse into all children
+            for child_id in children_map.get(token_id, []):
+                dfs(child_id)
+            # then visit the token itself
+            result.append(self.dict_by_id[token_id])
+
+        dfs(root.id)
+        return result
+
 
 class Token:
     """

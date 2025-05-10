@@ -33,7 +33,7 @@ def convert_coordination(s: Sentence) -> None:
     :param Sentence s: The sentence to convert
     """
     # Process tokens in post-order to handle nested structures correctly
-    for t in s.tokens:
+    for t in s.post_order_tokens():
         # Coordination with a coordinating conjunction, e.g. "Siedzi i czyta."
         if t.upos == 'CCONJ' and t.children_with_label('conjunct') and t.gov_id:
             coordination(t, False)
