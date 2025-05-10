@@ -56,9 +56,11 @@ def standard_numeral(t: Token) -> None:
         return
     comp_t = comp[0]
     if t.gov:
-        ChangeCollector.record(t.sentence.id, comp_t.id, f"Setting ugov of {comp_t.id} to {t.gov.id}.'", module="structures.numeral1", level='DEBUG')
+        ChangeCollector.record(t.sentence.id, comp_t.id, f"Setting ugov of {comp_t.id} to {t.gov.id} and the non-UD label to '{t.dep_label}'", module="structures.numeral1", level='DEBUG')
         comp_t.ugov = t.gov
         comp_t.udep_label = '_'
+        comp_t.dep_label = t.dep_label
+
     ChangeCollector.record(t.sentence.id, t.id, f"Setting ugov of {t.id} to {comp_t.id} with label {numeral_label(t)}", module="structures.numeral2", level='DEBUG')
     t.ugov = comp_t
     t.udep_label = numeral_label(t)
