@@ -223,7 +223,7 @@ def process_conjuncts(conjuncts: list[Token], main_c: Token, t: Token) -> None:
                     if enhanced_conjuncts:
                         for ec in enhanced_conjuncts:
                             ChangeCollector.record(t.sentence.id, c.id, f"Adding eud {ec.id}: '{cl(t)}' to '{c.form}'", module="structures.coordination-eud8")
-                            c.eud = {ec.id: cl(t)}
+                            c.eud = {ec.id: cl(t, t3=main_c)}
                 else:
                     if c.pos == 'conj' and [cc for cc in c.children_with_label('conjunct') if cc.udep_label == '_']:
                         min_cc = min([cc for cc in c.children_with_label('conjunct') if cc.udep_label == '_'], key=lambda x: int(x.id))
@@ -280,7 +280,7 @@ def process_shared(shared: list[Token], conjuncts: list[Token], main_c: Token) -
         # Attach shared dependent to the main conjunct
         ChangeCollector.record(s.sentence.id, s.id, f"Converting shared dependent '{s.form}' with main conjunct '{main_c.form}'", module="structures.coordination13")
         s.ugov = main_c
-        s.udep_label = cl(s, main_c)
+        s.udep_label = cl(s, t2=main_c)
 
         # Enhanced dependencies for shared dependents
         for con in conjuncts:
