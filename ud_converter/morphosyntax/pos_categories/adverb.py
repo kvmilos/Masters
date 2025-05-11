@@ -8,7 +8,8 @@ from utils.constants import FEATS_UPDATE as FU
 def adv(t: Token) -> None:
     """Converts an adv."""
     t.upos = 'ADV'
-    if (t.lemma == 'jak'
+    if (
+        t.lemma == 'jak'
         and t.dep_label == 'adjunct_compar'
         and t.children_with_pos('fin')
     ):

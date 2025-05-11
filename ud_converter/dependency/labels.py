@@ -151,9 +151,9 @@ def convert_label(t: Token, gov: Token | None = None, n: Token | None = None, re
             elif n.upos == 'VERB' and mark:
                 return verb_complement(t, n)
         elif gov and (gov.upos in ['VERB', 'ADV']
-                        or gov.upos == 'PART' and gov.lemma in ['tak', 'chyba', 'prawie', 'pewnie', 'zwłaszcza']
-                        or gov.upos == 'DET' and gov.lemma in ['ten', 'taki']
-                        or gov.upos == 'INTJ'):
+                      or gov.upos == 'PART' and gov.lemma in ['tak', 'chyba', 'prawie', 'pewnie', 'zwłaszcza']
+                      or gov.upos == 'DET' and gov.lemma in ['ten', 'taki']
+                      or gov.upos == 'INTJ'):
             return verb_complement(t, n)
         elif gov and gov.upos == 'PRON':
             if gov.lemma == 'to':

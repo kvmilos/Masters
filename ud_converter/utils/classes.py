@@ -125,7 +125,7 @@ class Sentence:
 
         # sort children lists for deterministic order
         for gov, chs in children_map.items():
-            children_map[gov] = sorted(chs, key=lambda x: int(x))
+            children_map[gov] = sorted(chs, key=int)
 
         # find the root token (gov_id == '0')
         root = self.get_root()
@@ -133,6 +133,7 @@ class Sentence:
             return list(self.tokens)
 
         result: list['Token'] = []
+
         def dfs(token_id: str):
             # first recurse into all children
             for child_id in children_map.get(token_id, []):

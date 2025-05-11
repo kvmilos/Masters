@@ -127,7 +127,7 @@ def coordination(t: Token, punct_conj: bool = False, ud_label: str | None = None
             ChangeCollector.record(t.sentence.id, main_c.id, f"Converting conjunction '{t.form}' with conjunct '{main_c.form}'", module="structures.coordination7")
             main_c.ugov_id = t.gov2_id
             main_c.udep_label = ud_label if ud_label else t.udep_label
-            main_c.dep_label =  t.dep_label
+            main_c.dep_label = t.dep_label
             t.udep_label = 'cc'
 
         # Find the next conjunct after the conjunction
