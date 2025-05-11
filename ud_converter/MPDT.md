@@ -594,25 +594,6 @@ nie ma w danych
 - `AUX` && !aglt && !cond && !children(n) && być && edge(gov(n), n) != `aux` && edge(gov(n), n) != `aglt` && edge(gov(same_dep_branches_leaf(n)),same_dep_branches_leaf(n)) != `aux` && !children(n, `pd`) &rArr `VERB`
 - `VERB` && edge(gov(n), n) == `aux` &rArr; `AUX`
 
-#### conversion of <pos> = num
-- children(n, `comp`) 
-
-- 
-
 ## 3. Pytania / problemy
 
 - NumType=Sets poczytać
-
-- przy 'bedzie' wcześniej było Tense=Fut, ale w nowym kodzie jest zamiast tego Voice=Act (wygląda na błędne użycie impt zamiast 'bedzie' ale może to celowo?) - tu jest ok - dodaje sie tense tam gdzie ma byc
-
-- czym są cneg, obj_factor, obj_purp? - nie ma ich w instrukcji do anotacji PDB - cneg to negacja do fraz ktore sa nieczasownikowe
-
-- xpos = comp do korektora (czy na pewno?)
-
-################################################
-
-- _complete_enhanced w eud.py - robi coś moim zdaniem bezsensownego, tj. sprawdza czy nadrzędnikiem tokenu jest on sam (???)
-
-- też w eud.py _complete_enhanced_dictionary - o co chodzi z mark_rel -> mark ?
-
-- subordination.py - _convert_punctuation_marks ustawia ud_label na samo siebie
