@@ -545,7 +545,7 @@ class Token:
     def children_with_ud_label(self, label: str) -> list['Token']:
         """Returns a list of children of the token with the given dependency label in UD format."""
         return [
-            n for n in self.children
+            n for n in self.uchildren
             if n.udep_label == label
         ]
 

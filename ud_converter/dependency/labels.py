@@ -93,7 +93,7 @@ def convert_label(t: Token, gov: Token | None = None, n: Token | None = None, re
         return 'parataxis:insert'
     # relative clause modifier of the matrix clause or relative clause modifier of a noun
     elif t.dep_label == 'adjunct_rc':
-        if n.upos == 'VERB':
+        if gov and gov.upos == 'VERB':
             return 'advcl:relcl'
         else:
             return 'acl:relcl'
