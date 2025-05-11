@@ -40,7 +40,7 @@ def convert_label(t: Token, gov: Token | None = None, n: Token | None = None, re
     :rtype: str
     """
     n = n or t
-    gov = gov or t.gov
+    gov = gov or t.gov2
     relation_gov = relation_gov or t.gov2
 
     if relation_gov == t.ugov and t.udep_label != '_':

@@ -50,10 +50,10 @@ def remove_dependents_of_auxiliary(s: Sentence) -> None:
 
             if sgov and int(sgov.id) != 0:
                 # Reattach dependents to the semantic governor
-                for dep in t.children:
+                for dep in t.uchildren:
                     if dep.lemma != 'nie' and dep.dep_label != 'neg' and dep.udep_label != 'conj':
                         if dep != sgov:
-                            ChangeCollector.record(t.sentence.id, dep.id, f"Reattached dependent '{dep.form}' from auxiliary '{t.form}' ({t.id}) to '{sgov.form}' ({sgov.id})", module="edges.auxiliary")
+                            ChangeCollector.record(t.sentence.id, dep.id, f"Auxiliary: reattached dependent '{dep.form}' from '{dep.ugov_id}' to '{sgov.form}' ({sgov.id})", module="edges.auxiliary")
                             dep.ugov = sgov
 
 

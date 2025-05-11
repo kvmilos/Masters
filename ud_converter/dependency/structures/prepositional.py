@@ -115,6 +115,7 @@ def convert_pp(prep: Token, gov: Token, t: Token) -> None:
             # Attach the complement to the governor
             ChangeCollector.record(t.sentence.id, t.id, f"Converting preposition '{prep.form}' with complement '{comp[0].form}'", module="structures.prepositional11")
             comp[0].ugov = gov
+            comp[0].gov = gov
             comp[0].udep_label = prep.udep_label
             old_dep_label = comp[0].dep_label
             comp[0].dep_label = prep.dep_label
@@ -122,6 +123,7 @@ def convert_pp(prep: Token, gov: Token, t: Token) -> None:
             # Attach the preposition to the complement
             ChangeCollector.record(t.sentence.id, t.id, f"Converting preposition '{prep.form}' with complement '{comp[0].form}'", module="structures.prepositional12")
             prep.ugov = comp[0]
+            prep.gov = comp[0]
             prep.udep_label = 'case'
             prep.dep_label = old_dep_label
 
