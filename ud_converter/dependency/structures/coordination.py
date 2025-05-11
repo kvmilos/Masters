@@ -36,7 +36,7 @@ def convert_coordination(s: Sentence) -> None:
     for t in s.post_order_tokens():
         # Coordination with a coordinating conjunction, e.g. "Siedzi i czyta."
         if t.upos == 'CCONJ' and t.children_with_label('conjunct') and t.gov_id:
-            coordination(t, False)
+            coordination(t)
             ChangeCollector.record(t.sentence.id, t.id, f"Converted coordination structure: '{t.form}'", module="structures.coordination1")
 
         # Coordination with the compound conjunctions "przy czym", "przy tym"
@@ -44,7 +44,7 @@ def convert_coordination(s: Sentence) -> None:
             # Mark the compound conjunction as fixed
             if t.next and t.next.gov == t and t.next.dep_label == 'mwe':
                 t.next.udep_label = 'fixed'
-            coordination(t, False)
+            coordination(t)
             ChangeCollector.record(t.sentence.id, t.id, f"Converted coordination structure: '{t.form}'", module="structures.coordinatio2")
 
         # Coordination with a punctuation mark used as a conjunction, e.g. "Siedzi, czyta."
@@ -63,7 +63,7 @@ def convert_coordination(s: Sentence) -> None:
                     ChangeCollector.record(t.sentence.id, t.id, f"No conversion for coordination structure: '{t.form}'", module="structures.coordination5", level='WARNING')
 
 
-def coordination(t: Token, punct_conj: bool, ud_label: str | None = None) -> None:
+def coordination(t: Token, punct_conj: bool = False, ud_label: str | None = None) -> None:
     """
     Converts a coordination structure to UD format.
 
@@ -101,22 +101,22 @@ def coordination(t: Token, punct_conj: bool, ud_label: str | None = None) -> Non
     # Conversion of coordination structures with punctuation marks
     if punct_conj:
         # Attach the first conjunct to the governor
-        if t.gov:
+        if t.gov_id:
             ChangeCollector.record(t.sentence.id, main_c.id, f"Converting punctuation '{t.form}' with conjunct '{main_c.form}'", module="structures.coordination6")
-            main_c.ugov = t.gov
-            main_c.gov = t.gov
+            main_c.ugov_id = t.gov_id
+            main_c.gov_id = t.gov_id
             main_c.udep_label = ud_label if ud_label else t.udep_label
             main_c.dep_label = t.dep_label
 
         # Handle enhanced dependencies
         if t.dep_label == 'conjunct':
             # Add enhanced dependency from the super-governor to the main conjunct
-            if t.gov and t.gov.gov and len(t.gov.gov.children_with_label('conjunct')) == 0:
-                ChangeCollector.record(t.sentence.id, main_c.id, f"Adding eud {t.gov.gov.id}: {cl(t.gov)} to '{main_c.form}'", module="structures.coordination-eud1")
-                main_c.eud = {t.gov.gov.id: cl(t.gov)}
-        elif t.gov and t.gov.id not in main_c.eud and t.gov.pos != 'conj':
-            ChangeCollector.record(t.sentence.id, main_c.id, f"Adding eud {t.gov.id}: {cl(t.gov)} to '{main_c.form}'", module="structures.coordination-eud2")
-            main_c.eud = {t.gov.id: cl(t.gov)}
+            if t.gov and t.gov.gov_id and (not t.gov.gov or len(t.gov.gov.children_with_label('conjunct')) == 0):
+                ChangeCollector.record(t.sentence.id, main_c.id, f"Adding eud {t.gov.gov_id}: {cl(t.gov)} to '{main_c.form}'", module="structures.coordination-eud1")
+                main_c.eud = {t.gov.gov_id: cl(t.gov)}
+        elif t.gov_id and t.gov_id not in main_c.eud and (not t.gov or t.gov.pos != 'conj'):
+            ChangeCollector.record(t.sentence.id, main_c.id, f"Adding eud {t.gov_id}: {cl(t.gov) if t.gov else 'root'} to '{main_c.form}'", module="structures.coordination-eud2")
+            main_c.eud = {t.gov_id: cl(t.gov) if t.gov else 'root'}
 
         puncts.append(t)
 
@@ -142,9 +142,9 @@ def coordination(t: Token, punct_conj: bool, ud_label: str | None = None) -> Non
             t.ugov = main_c
 
             # Handle enhanced dependencies
-            if t.gov and t.dep_label != 'conjunct' and cl(main_c) != '_' and t.gov.id not in main_c.eud:
-                ChangeCollector.record(t.sentence.id, main_c.id, f"Adding eud {t.gov.id}: {cl(t.gov)} to '{main_c.form}'", module="structures.coordination-eud3")
-                main_c.eud = {t.gov.id: cl(main_c)}
+            if t.gov_id and t.dep_label != 'conjunct' and cl(main_c) != '_' and t.gov_id not in main_c.eud:
+                ChangeCollector.record(t.sentence.id, main_c.id, f"Adding eud {t.gov_id}: {cl(main_c)} to '{main_c.form}'", module="structures.coordination-eud3")
+                main_c.eud = {t.gov_id: cl(main_c)}
 
     # Process other elements of the coordination structure
     process_puncts(puncts, conjuncts)
@@ -229,9 +229,9 @@ def process_conjuncts(conjuncts: list[Token], main_c: Token, t: Token) -> None:
                         min_cc = min([cc for cc in c.children_with_label('conjunct') if cc.udep_label == '_'], key=lambda x: int(x.id))
                         ChangeCollector.record(t.sentence.id, c.id, f"Adding eud {min_cc.id}: '{cl(t)}' to '{min_cc.form}'", module="structures.coordination-eud9")
                         c.eud = {min_cc.id: cl(t)}
-                    elif t.gov:
-                        ChangeCollector.record(t.sentence.id, c.id, f"Adding eud {t.gov.id}: '{cl(main_c)}' to '{c.form}'", module="structures.coordination-eud10")
-                        c.eud = {t.gov.id: cl(main_c)}
+                    elif t.gov_id:
+                        ChangeCollector.record(t.sentence.id, c.id, f"Adding eud {t.gov_id}: '{cl(main_c)}' to '{c.form}'", module="structures.coordination-eud10")
+                        c.eud = {t.gov_id: cl(main_c)}
 
 
 def process_puncts(puncts: list[Token], conjuncts: list[Token]) -> None:
