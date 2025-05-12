@@ -121,7 +121,7 @@ class LoggingDict(dict):
     def __setitem__(self, key, value):
         old = self.get(key)
         super().__setitem__(key, value)
-        if old != value:
+        if self.token.id != '0' and old != value:
             # Only record after token has been placed in a sentence
             if not hasattr(self.token, 'sentence') or self.token.sentence is None:
                 return

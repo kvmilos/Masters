@@ -158,36 +158,39 @@ class Token:
     the converted UD information for a single token.
     """
 
-    def __init__(self, line: str | None = None) -> None:
+    def __init__(self, line: str | None = None, sentence: 'Sentence | None' = None) -> None:
         """
         Initialize a Token object.
 
         :param str line: Line from the input file representing the token
+        :param Sentence sentence: The sentence to which the token belongs
         """
         self.sentence: 'Sentence'
+        if sentence is not None:
+            self.sentence = sentence
         self.data = LoggingDict(self)
         # Initialize empty token when no line provided
         if line is None:
             self.data = LoggingDict(self)
             # Set default values for empty token
             self.data['id'] = '0'
-            self.data['form'] = ''
-            self.data['lemma'] = ''
-            self.data['pos'] = ''
-            self.data['upos'] = ''
-            self.data['pos_feats'] = ''
-            self.data['feats_raw'] = ''
+            self.data['form'] = '_'
+            self.data['lemma'] = '_'
+            self.data['pos'] = '_'
+            self.data['upos'] = '_'
+            self.data['pos_feats'] = '_'
+            self.data['feats_raw'] = '_'
             self.data['feats'] = defaultdict(str)
             self.data['ufeats'] = defaultdict(str)
-            self.data['gov_id'] = ''
-            self.data['ugov_id'] = ''
+            self.data['gov_id'] = '_'
+            self.data['ugov_id'] = '_'
             self.data['gov'] = None
             self.data['ugov'] = None
-            self.data['dep_label'] = ''
-            self.data['udep_label'] = ''
+            self.data['dep_label'] = '_'
+            self.data['udep_label'] = '_'
             self.data['eud'] = LoggingDict(self)
-            self.data['sent_id'] = ''
-            self.data['misc'] = ''
+            self.data['sent_id'] = '_'
+            self.data['misc'] = '_'
             self.data['umisc'] = defaultdict(str)
             return
         # Regular initialization for non-empty token
@@ -489,7 +492,9 @@ class Token:
     def gov(self) -> 'Token | None':
         """Returns the governor Token."""
         if self.gov_id == '0':
-            return Token()
+            return Token(sentence=self.sentence)
+        if self.id == '0':
+            return None
         return self.sentence.dict_by_id.get(self.gov_id)
 
     @gov.setter
@@ -500,10 +505,10 @@ class Token:
     @property
     def ugov(self) -> 'Token | None':
         """Returns the governor Token, or None if it's the root or something is missing."""
-        if self.ugov_id == '_':
+        if self.ugov_id == '_' or self.id == '0':
             return None
         if self.ugov_id == '0':
-            return Token()
+            return Token(sentence=self.sentence)
         return self.sentence.dict_by_id.get(self.ugov_id)
 
     @ugov.setter
