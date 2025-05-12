@@ -87,16 +87,21 @@ def convert_predicative_adj(cop: Token, gov_id: str) -> None:
             # Attach the subject to the predicative complement
             ChangeCollector.record(cop.sentence.id, subj[0].id, f"Subject '{subj[0].form}' attached to predicative complement '{pd.form}'", module="structures.copula1")
             subj[0].ugov = pd
+            subj[0].gov = pd
             subj[0].udep_label = cl(subj[0])
+            subj[0].dep_label = 'subj'
 
         # Attach the predicative complement to the governor
         ChangeCollector.record(cop.sentence.id, pd.id, f"Predicative complement '{pd.form}' attached to governor '{gov_id}'", module="structures.copula2")
         pd.ugov_id = gov_id
+        pd.gov_id = gov_id
         pd.udep_label = cop.udep_label if cop.udep_label != '_' else cl(cop)
+        pd.dep_label = cop.dep_label
 
         # Attach the copula to the predicative complement
         ChangeCollector.record(cop.sentence.id, cop.id, f"Copula '{cop.form}' attached to predicative complement '{pd.form}'", module="structures.copula3")
         cop.ugov = pd
+        cop.gov = pd
         cop.udep_label = 'cop'
 
         # Process other dependents of the copula
@@ -126,12 +131,16 @@ def convert_predicative_other(cop: Token, gov: Token, subj: Token) -> None:
         # Attach the subject to the governor
         ChangeCollector.record(cop.sentence.id, subj.id, f"Subject '{subj.form}' attached to governor '{gov.form}'", module="structures.copula4")
         subj.ugov = gov
+        subj.gov = gov
         subj.udep_label = cop.udep_label
+        subj.dep_label = cop.dep_label
 
         # Attach the predicative complement to the subject
         ChangeCollector.record(cop.sentence.id, pd[0].id, f"Predicative complement '{pd[0].form}' attached to subject '{subj.form}'", module="structures.copula5")
         pd[0].ugov = subj
-        pd[0].udep_label = cl(pd[0])
+        pd[0].gov = subj
+        pd[0].udep_label = cl(subj)
+        pd[0].dep_label = 'subj'
 
     else:
         # Example: "To jest miłość"
@@ -139,11 +148,14 @@ def convert_predicative_other(cop: Token, gov: Token, subj: Token) -> None:
         # Attach the subject to the governor
         ChangeCollector.record(cop.sentence.id, subj.id, f"Subject '{subj.form}' attached to governor '{gov.form}'", module="structures.copula6")
         subj.ugov = gov
-        subj.udep_label = cop.udep_label if cop.udep_label != '_' else cl(cop)
+        subj.gov = gov
+        subj.udep_label = '_'
+        subj.dep_label = cop.dep_label
 
     # Attach the copula to the subject
     ChangeCollector.record(cop.sentence.id, cop.id, f"Copula '{cop.form}' attached to subject '{subj.form}'", module="structures.copula7")
     cop.ugov = subj
+    cop.gov = subj
     cop.udep_label = 'cop'
 
     # Process other dependents of the copula
