@@ -104,7 +104,12 @@ class Sentence:
         :return: String representation of the sentence
         :rtype: str
         """
-        return "\n".join(token.to_string(form) for token in self.tokens)
+        # Exclude empty tokens (id '0') from output
+        return "\n".join(
+            token.to_string(form)
+            for token in self.tokens
+            if token.id != '0'
+        )
 
     def post_order_tokens(self) -> list['Token']:
         """
@@ -153,16 +158,40 @@ class Token:
     the converted UD information for a single token.
     """
 
-    def __init__(self, line: str) -> None:
+    def __init__(self, line: str | None = None) -> None:
         """
         Initialize a Token object.
 
         :param str line: Line from the input file representing the token
         """
         self.sentence: 'Sentence'
-
         self.data = LoggingDict(self)
-        if line != 'mwe':
+        # Initialize empty token when no line provided
+        if line is None:
+            self.data = LoggingDict(self)
+            # Set default values for empty token
+            self.data['id'] = '0'
+            self.data['form'] = ''
+            self.data['lemma'] = ''
+            self.data['pos'] = ''
+            self.data['upos'] = ''
+            self.data['pos_feats'] = ''
+            self.data['feats_raw'] = ''
+            self.data['feats'] = defaultdict(str)
+            self.data['ufeats'] = defaultdict(str)
+            self.data['gov_id'] = ''
+            self.data['ugov_id'] = ''
+            self.data['gov'] = None
+            self.data['ugov'] = None
+            self.data['dep_label'] = ''
+            self.data['udep_label'] = ''
+            self.data['eud'] = LoggingDict(self)
+            self.data['sent_id'] = ''
+            self.data['misc'] = ''
+            self.data['umisc'] = defaultdict(str)
+            return
+        # Regular initialization for non-empty token
+        elif line != 'mwe':
             columns: list[str] = line.split("\t")
             self.data['id'] = columns[0]
             self.data['form'] = columns[1]
@@ -458,21 +487,23 @@ class Token:
 
     @property
     def gov(self) -> 'Token | None':
-        """Returns the governor Token, or None if it's the root or something is missing."""
+        """Returns the governor Token."""
         if self.gov_id == '0':
-            return None
+            return Token()
         return self.sentence.dict_by_id.get(self.gov_id)
 
     @gov.setter
-    def gov(self, value: 'Token | None') -> None:
+    def gov(self, value: 'Token') -> None:
         """Sets the governor Token."""
-        self.gov_id = value.id if value else '-1'
+        self.gov_id = value.id
 
     @property
     def ugov(self) -> 'Token | None':
         """Returns the governor Token, or None if it's the root or something is missing."""
-        if self.ugov_id == '0' or self.ugov_id == '_':
+        if self.ugov_id == '_':
             return None
+        if self.ugov_id == '0':
+            return Token()
         return self.sentence.dict_by_id.get(self.ugov_id)
 
     @ugov.setter
