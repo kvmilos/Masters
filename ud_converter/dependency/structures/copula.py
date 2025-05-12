@@ -85,14 +85,17 @@ def convert_predicative_adj(cop: Token, gov_id: str) -> None:
         if subj:
             # Example: "Widok to niezapomniany"
             # Attach the subject to the predicative complement
+            ChangeCollector.record(cop.sentence.id, subj[0].id, f"Subject '{subj[0].form}' attached to predicative complement '{pd.form}'", module="structures.copula1")
             subj[0].ugov = pd
             subj[0].udep_label = cl(subj[0])
 
         # Attach the predicative complement to the governor
+        ChangeCollector.record(cop.sentence.id, pd.id, f"Predicative complement '{pd.form}' attached to governor '{gov_id}'", module="structures.copula2")
         pd.ugov_id = gov_id
         pd.udep_label = cop.udep_label if cop.udep_label != '_' else cl(cop)
 
         # Attach the copula to the predicative complement
+        ChangeCollector.record(cop.sentence.id, cop.id, f"Copula '{cop.form}' attached to predicative complement '{pd.form}'", module="structures.copula3")
         cop.ugov = pd
         cop.udep_label = 'cop'
 
@@ -121,10 +124,12 @@ def convert_predicative_other(cop: Token, gov: Token, subj: Token) -> None:
         # Example: "Druga strefa to świat handlu eleganckiego"
 
         # Attach the subject to the governor
+        ChangeCollector.record(cop.sentence.id, subj.id, f"Subject '{subj.form}' attached to governor '{gov.form}'", module="structures.copula4")
         subj.ugov = gov
         subj.udep_label = cop.udep_label
 
         # Attach the predicative complement to the subject
+        ChangeCollector.record(cop.sentence.id, pd[0].id, f"Predicative complement '{pd[0].form}' attached to subject '{subj.form}'", module="structures.copula5")
         pd[0].ugov = subj
         pd[0].udep_label = cl(pd[0])
 
@@ -132,10 +137,12 @@ def convert_predicative_other(cop: Token, gov: Token, subj: Token) -> None:
         # Example: "To jest miłość"
 
         # Attach the subject to the governor
+        ChangeCollector.record(cop.sentence.id, subj.id, f"Subject '{subj.form}' attached to governor '{gov.form}'", module="structures.copula6")
         subj.ugov = gov
         subj.udep_label = cop.udep_label if cop.udep_label != '_' else cl(cop)
 
     # Attach the copula to the subject
+    ChangeCollector.record(cop.sentence.id, cop.id, f"Copula '{cop.form}' attached to subject '{subj.form}'", module="structures.copula7")
     cop.ugov = subj
     cop.udep_label = 'cop'
 
@@ -161,14 +168,17 @@ def convert_coordinated_copula(cop: Token, gov: Token) -> None:
 
         if subj:
             # Attach the subject to the predicative complement
+            ChangeCollector.record(cop.sentence.id, subj[0].id, f"Subject '{subj[0].form}' attached to predicative complement '{pd_t.form}'", module="structures.copula8")
             subj[0].ugov = pd_t
             subj[0].udep_label = cl(subj[0])
 
             # Attach the predicative complement to the governor
+            ChangeCollector.record(cop.sentence.id, pd_t.id, f"Predicative complement '{pd_t.form}' attached to governor '{gov.form}'", module="structures.copula9")
             pd_t.ugov = gov
             pd_t.udep_label = cop.udep_label
 
             # Attach the copula to the predicative complement
+            ChangeCollector.record(cop.sentence.id, cop.id, f"Copula '{cop.form}' attached to predicative complement '{pd_t.form}'", module="structures.copula10")
             cop.ugov = pd_t
             cop.udep_label = 'cop'
 
@@ -177,6 +187,7 @@ def convert_coordinated_copula(cop: Token, gov: Token) -> None:
                 continue
             if c != pd and c.dep_label not in ['neg', 'cneg', 'conjunct'] and c.lemma != 'nie':
                 # Attach other dependents to the predicative complement
+                ChangeCollector.record(cop.sentence.id, c.id, f"Dependent '{c.form}' attached to predicative complement '{pd_t.form}'", module="structures.copula11")
                 c.ugov = pd_t
                 c.udep_label = cl(c)
 
@@ -209,6 +220,7 @@ def process_copula_dependents(cop: Token, new_head: Token, exclude: Token | None
     for dep in dependents:
         if dep not in exclude_list and dep.dep_label not in ['neg', 'cneg']:
             # Attach the dependent to the new head
+            ChangeCollector.record(cop.sentence.id, dep.id, f"Dependent '{dep.form}' attached to new head '{new_head.form}'", module="structures.copula12")
             dep.ugov = new_head
             # Keep the original dependency label
             dep.udep_label = dep.udep_label if dep.udep_label != '_' else cl(dep)
