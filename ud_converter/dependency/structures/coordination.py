@@ -205,8 +205,8 @@ def process_conjuncts(conjuncts: list[Token], main_c: Token, t: Token, gov: Toke
             else:
                 ChangeCollector.record(t.sentence.id, c.id, f"Adding eud {main_c.id}: 'conj' to '{c.form}'", module="structures.coordination-eud5")
                 c.eud = {main_c.id: 'conj'}
-            if t.dep_label == 'conjunct' and t.gov and (t.udep_label == '_' or t.ugov and t.ugov != t.gov):
-                temp_c = min([cc for cc in t.gov.children_with_label('conjunct') if cc.udep_label == '_' or cc.ugov != cc.gov], key=lambda x: int(x.id))
+            if t.dep_label == 'conjunct' and (gov != t.gov2 or t.udep_label == '_'):
+                temp_c = min([cc for cc in gov.children_with_label('conjunct') if cc.udep_label == '_' or cc.ugov != cc.gov], key=lambda x: int(x.id))
                 temp_successors = [cc for cc in temp_c.children_with_label('conjunct') if cc.udep_label == '_' or cc.ugov != cc.gov]
                 if temp_successors:
                     temp2 = min(temp_successors, key=lambda x: int(x.id))

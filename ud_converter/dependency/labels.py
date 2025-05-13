@@ -58,8 +58,8 @@ def convert_label(t: Token, gov: Token | None = None, n: Token | None = None, re
     elif t.lemma == 'o' and len(t.children_with_lemma('tyle')) > 1:
         ChangeCollector.record(t.sentence.id, t.id, "Multiple 'tyle'-lemma children for o", module="labels", level="WARNING")
     # possessive determiner or determiner
-    elif n.upos == 'DET' and t.pos != 'num' and t.dep_label in ['adjunct', 'poss']:
-        if t.ufeats.get('Poss') == 'Yes':
+    elif n.upos == 'DET' and n.pos != 'num' and t.dep_label in ['adjunct', 'poss']:
+        if n.ufeats.get('Poss') == 'Yes':
             return 'det:poss'
         else:
             return 'det'
