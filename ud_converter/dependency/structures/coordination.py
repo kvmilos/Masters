@@ -229,7 +229,7 @@ def process_conjuncts(conjuncts: list[Token], main_c: Token, t: Token, gov: Toke
                     if enhanced_conjuncts:
                         for ec in enhanced_conjuncts:
                             ChangeCollector.record(t.sentence.id, c.id, f"Adding eud {ec.id}: '{cl(t)}' to '{c.form}'", module="structures.coordination-eud8")
-                            c.eud = {ec.id: cl(t, n=main_c, relation_gov=t.gov)}
+                            c.eud = {ec.id: cl(t, n=main_c, gov=sorted(enhanced_conjuncts, key=lambda x: int(x.id))[0], relation_gov=gov)}
                 else:
                     if c.pos == 'conj' and [cc for cc in c.children_with_label('conjunct') if cc.udep_label == '_']:
                         min_cc = min([cc for cc in c.children_with_label('conjunct') if cc.udep_label == '_'], key=lambda x: int(x.id))
