@@ -107,8 +107,8 @@ def coordination(t: Token, gov: Token, punct_conj: bool = False, ud_label: str |
         # Attach the first conjunct to the governor
         if t.gov_id:
             ChangeCollector.record(t.sentence.id, main_c.id, f"Converting punctuation '{t.form}' with conjunct '{main_c.form}'", module="structures.coordination6")
-            main_c.ugov_id = t.gov_id
-            main_c.gov_id = t.gov_id
+            main_c.ugov_id = gov.id
+            main_c.gov_id = gov.id
             main_c.udep_label = ud_label if ud_label else t.udep_label
             main_c.dep_label = t.dep_label
 
@@ -127,12 +127,12 @@ def coordination(t: Token, gov: Token, punct_conj: bool = False, ud_label: str |
     # Conversion of coordination structures with conjunctions
     else:
         # Attach the first conjunct to the governor
-        if t.gov_id:
-            ChangeCollector.record(t.sentence.id, main_c.id, f"Converting conjunction '{t.form}' with conjunct '{main_c.form}'", module="structures.coordination7")
-            main_c.ugov_id = t.gov2_id
-            main_c.udep_label = ud_label if ud_label else t.udep_label
-            main_c.dep_label = t.dep_label
-            t.udep_label = 'cc'
+        ChangeCollector.record(t.sentence.id, main_c.id, f"Converting conjunction '{t.form}' with conjunct '{main_c.form}'", module="structures.coordination7")
+        main_c.ugov = gov
+        main_c.gov = gov
+        main_c.udep_label = ud_label if ud_label else t.udep_label
+        main_c.dep_label = t.dep_label
+        t.udep_label = 'cc'
 
         # Find the next conjunct after the conjunction
         next_conjunct = find_gov(conjuncts, t)
@@ -140,10 +140,12 @@ def coordination(t: Token, gov: Token, punct_conj: bool = False, ud_label: str |
             # Attach the conjunction to the next conjunct (UD v2 guideline)
             ChangeCollector.record(t.sentence.id, t.id, f"Converting conjunction '{t.form}' with conjunct '{next_conjunct.form}'", module="structures.coordination8")
             t.ugov = next_conjunct
+            t.gov = next_conjunct
         else:
             # If no next conjunct, attach to the main conjunct
             ChangeCollector.record(t.sentence.id, t.id, f"Converting conjunction '{t.form}' with main conjunct '{main_c.form}'", module="structures.coordination9")
             t.ugov = main_c
+            t.gov = main_c
 
             # Handle enhanced dependencies
             if t.gov_id and t.dep_label != 'conjunct' and cl(main_c) != '_' and t.gov_id not in main_c.eud:

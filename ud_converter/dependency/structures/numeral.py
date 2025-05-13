@@ -95,18 +95,25 @@ def coordinated_numeral(t: Token) -> None:
 
     :param Token t: The numeral Token to convert
     """
-    comp = t.children_with_label('comp')
-    if len(comp) != 1:
-        ChangeCollector.record(t.sentence.id, t.id, f"Expected 1 comp child, got {len(comp)} for coordinated numeral phrase: '{t.form}'", module="structures.numeral", level='WARNING')
-        return
-    comp_t = comp[0]
-    if t.gov and t.gov.gov:
-        ChangeCollector.record(t.sentence.id, comp_t.id, f"Setting ugov of {comp_t.id} to {t.gov.gov.id}.'", module="structures.numeral4", level='DEBUG')
-        comp_t.ugov = t.gov.gov
-        comp_t.udep_label = cl(t.gov)
-        ChangeCollector.record(t.sentence.id, t.gov.id, f"Setting ugov of {t.gov.id} to {comp_t.id} with label {numeral_label(t)}", module="structures.numeral5", level='DEBUG')
-        t.gov.ugov = comp_t
-        t.gov.udep_label = numeral_label(t.gov)
+    if t.gov:
+        comp = t.gov.children_with_label('comp')
+        if len(comp) != 1:
+            ChangeCollector.record(t.sentence.id, t.id, f"Expected 1 comp child, got {len(comp)} for coordinated numeral phrase: '{t.form}'", module="structures.numeral", level='WARNING')
+            return
+        comp_t = comp[0]
+        if t.gov.gov:
+            ChangeCollector.record(t.sentence.id, comp_t.id, f"Setting ugov of {comp_t.id} to {t.gov.gov.id} with label {t.gov.dep_label} and ulabel {t.gov.udep_label}", module="structures.numeral4", level='DEBUG')
+            comp_t.ugov = t.gov.gov
+            comp_t.gov = t.gov.gov
+            comp_t.udep_label = t.gov.udep_label
+            comp_t.dep_label = t.gov.dep_label
+            ChangeCollector.record(t.sentence.id, t.gov.id, f"Setting ugov of {t.gov.id} to {comp_t.id} with label {t.dep_label} and ulabel {numeral_label(t)}", module="structures.numeral5", level='DEBUG')
+            t.gov.ugov = comp_t
+            t.gov.gov = comp_t
+            t.gov.udep_label = numeral_label(t.gov)
+            t.gov.dep_label = t.dep_label
+        else:
+            ChangeCollector.record(t.sentence.id, t.id, f"No governor for coordinated numeral phrase: '{t.form}'", module="structures.numeral", level='WARNING')
     else:
         ChangeCollector.record(t.sentence.id, t.id, f"No governor for coordinated numeral phrase: '{t.form}'", module="structures.numeral", level='WARNING')
 
