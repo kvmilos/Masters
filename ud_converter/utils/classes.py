@@ -557,6 +557,17 @@ class Token:
         ]
 
     @property
+    def children2(self) -> list['Token']:
+        """
+        Returns a list of tokens for which this token is the governor.
+        If there are no children, returns an empty list.
+        """
+        return [
+            n for n in self.sentence.tokens
+            if n.gov2_id == self.id
+        ]
+
+    @property
     def prev(self) -> 'Token | None':
         """Returns the previous token in the sentence."""
         return self.sentence.dict_by_id.get(str(int(self.id) - 1), None)
