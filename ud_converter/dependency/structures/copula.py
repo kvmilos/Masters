@@ -234,5 +234,6 @@ def process_copula_dependents(cop: Token, new_head: Token, exclude: Token | None
             # Attach the dependent to the new head
             ChangeCollector.record(cop.sentence.id, dep.id, f"Dependent '{dep.form}' attached to new head '{new_head.form}'", module="structures.copula12")
             dep.ugov = new_head
+            dep.gov = new_head
             # Keep the original dependency label
             dep.udep_label = dep.udep_label if dep.udep_label != '_' else cl(dep)

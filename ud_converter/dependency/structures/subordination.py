@@ -65,8 +65,12 @@ def convert_subordination(s: Sentence) -> None:
 
         # Handle 'o ile' construction
         elif t.lemma == 'o' and any(c.lemma == 'ile' and c.dep_label == 'mwe' for c in t.children):
-            ile_token = next(c for c in t.children if c.lemma == 'ile' and c.dep_label == 'mwe')
-            complex_subordinating_conjunction(ile_token)
+            ile_token = [c for c in t.children if c.lemma == 'ile' and c.dep_label == 'mwe']
+            if len(ile_token) == 1:
+                ile_t = ile_token[0]
+                complex_subordinating_conjunction(ile_t)
+            else:
+                ChangeCollector.record(t.sentence.id, t.id, f"Subordinate conjunction 'o ile' has {len(ile_token)} dependents ile: {[c.form for c in ile_token]}", module="structures.subordination", level="WARNING")
             ChangeCollector.record(t.sentence.id, t.id, f"Converted subordinating conjunction: '{t.form}'", module="structures.subordination5")
 
 

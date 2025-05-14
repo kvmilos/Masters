@@ -76,15 +76,16 @@ def convert_pp(prep: Token, gov: Token, t: Token) -> None:
                         if super_gov:
                             ChangeCollector.record(t.sentence.id, t.id, f"Converting preposition '{prep.form}' with complement '{conj_comp[0].form}'", module="structures.prepositional6")
                             conj_comp[0].ugov = super_gov
+                            conj_comp[0].gov = super_gov
                             conj_comp[0].udep_label = gov.udep_label
-                            old_dep_label = conj_comp[0].dep_label
                             conj_comp[0].dep_label = gov.dep_label
 
                             # Attach the conjunction to the complement
                             ChangeCollector.record(t.sentence.id, t.id, f"Converting preposition '{prep.form}' with complement '{conj_comp[0].form}'", module="structures.prepositiona7")
                             gov.ugov = conj_comp[0]
-                            gov.udep_label = 'case'
-                            gov.dep_label = old_dep_label
+                            gov.gov = conj_comp[0]
+                            gov.udep_label = '_'
+                            gov.dep_label = prep.dep_label
                     else:
                         ChangeCollector.record(t.sentence.id, t.id, f"The preposition '{prep.form}' has {len(conj_comp)} complements: {[c.form for c in conj_comp]}", module="structures.prepositional8", level='WARNING')
             else:
@@ -97,15 +98,15 @@ def convert_pp(prep: Token, gov: Token, t: Token) -> None:
                 # Attach the MWE complement to the governor
                 ChangeCollector.record(t.sentence.id, t.id, f"Converting preposition '{prep.form}' with MWE complement '{mwe_comp.form}'", module="structures.prepositional9")
                 mwe_comp.ugov = gov
+                mwe_comp.gov = gov
                 mwe_comp.udep_label = prep.udep_label
-                old_dep_label = mwe_comp.dep_label
                 mwe_comp.dep_label = prep.dep_label
 
                 # Attach the preposition to the complement
                 ChangeCollector.record(t.sentence.id, t.id, f"Converting preposition '{prep.form}' with MWE complement '{mwe_comp.form}'", module="structures.prepositional10")
                 prep.ugov = mwe_comp
+                prep.gov = mwe_comp
                 prep.udep_label = 'case'
-                prep.dep_label = old_dep_label
 
                 # Process other dependents of the preposition
                 convert_prep_dependents(prep, mwe_comp)
@@ -117,7 +118,6 @@ def convert_pp(prep: Token, gov: Token, t: Token) -> None:
             comp[0].ugov = gov
             comp[0].gov = gov
             comp[0].udep_label = prep.udep_label
-            old_dep_label = comp[0].dep_label
             comp[0].dep_label = prep.dep_label
 
             # Attach the preposition to the complement
@@ -125,7 +125,6 @@ def convert_pp(prep: Token, gov: Token, t: Token) -> None:
             prep.ugov = comp[0]
             prep.gov = comp[0]
             prep.udep_label = 'case'
-            prep.dep_label = old_dep_label
 
             # Process other dependents of the preposition
             convert_prep_dependents(prep, comp[0])
@@ -149,3 +148,4 @@ def convert_prep_dependents(t: Token, comp: Token) -> None:
     for d in dependents:
         ChangeCollector.record(t.sentence.id, t.id, f"Converting dependent '{d.form}' of preposition '{t.form}'", module="structures.prepositional14")
         d.ugov = comp
+        d.gov = comp
