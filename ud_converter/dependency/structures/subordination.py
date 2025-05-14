@@ -100,13 +100,16 @@ def jako(t: Token) -> None:
         if gov:
             ChangeCollector.record(t.sentence.id, t.id, f"Changed governor of '{pd.form}' from '{pd.ugov_id}' to '{gov.id}, {gov.form}'", module="structures.subordination7", level="DEBUG")
             pd.ugov = gov
+            pd.gov = gov
             pd.udep_label = t.udep_label
+            pd.dep_label = t.dep_label
         else:
             ChangeCollector.record(t.sentence.id, t.id, "The attributive construction JAKO has no governor.", module="structures.subordination8", level="WARNING")
 
         # Attach 'jako' to the predicative complement
         ChangeCollector.record(t.sentence.id, t.id, f"Changed governor of '{t.form}' from '{t.ugov_id}' to '{pd.id}, {pd.form}'", module="structures.subordination9", level="DEBUG")
         t.ugov = pd
+        t.gov = pd
         t.udep_label = 'mark'
     else:
         ChangeCollector.record(t.sentence.id, t.id, f"The attributive construction JAKO has {len(pds)} dependents pd: {[p.form for p in pds]}", module="structures.subordination10", level="WARNING")
@@ -148,11 +151,14 @@ def complex_subordinating_conjunction(t: Token) -> None:
     # Attach the complement to the super-governor
     ChangeCollector.record(t.sentence.id, t.id, f"Changed governor of '{comp.form}' from '{comp.ugov_id}' to '{super_gov.id}, {super_gov.form}'", module="structures.subordination15", level="DEBUG")
     comp.ugov = super_gov
+    comp.gov = super_gov
     comp.udep_label = super_gov_child.udep_label
+    comp.dep_label = super_gov_child.dep_label
 
     # Attach the first part of the conjunction to the complement
     ChangeCollector.record(t.sentence.id, t.id, f"Changed governor of '{super_gov_child.form}' from '{super_gov_child.ugov_id}' to '{comp.id}, {comp.form}'", module="structures.subordination16", level="DEBUG")
     super_gov_child.ugov = comp
+    super_gov_child.gov = comp
     super_gov_child.udep_label = 'mark'
 
     # Process punctuation marks
@@ -194,18 +200,23 @@ def complex_subordinating_threeword_conjunction(t: Token) -> None:
     # Attach the complement to the super-governor
     ChangeCollector.record(t.sentence.id, t.id, f"Changed governor of '{comp_t.form}' from '{comp_t.ugov_id}' to '{super_gov.id}, {super_gov.form}'", module="structures.subordination21", level="DEBUG")
     comp_t.ugov = super_gov
+    comp_t.gov = super_gov
     comp_t.udep_label = super_gov_child.udep_label
+    comp_t.dep_label = super_gov_child.dep_label
 
     # Attach the first part of the conjunction to the complement
     ChangeCollector.record(t.sentence.id, t.id, f"Changed governor of '{super_gov_child.form}' from '{super_gov_child.ugov_id}' to '{comp_t.id}, {comp_t.form}'", module="structures.subordination22", level="DEBUG")
     super_gov_child.ugov = comp_t
+    super_gov_child.gov = comp_t
     super_gov_child.udep_label = 'mark'
 
     # Process punctuation marks
     for punct in [c for c in super_gov_child.children if c.upos == 'PUNCT']:
         ChangeCollector.record(t.sentence.id, t.id, f"Changed governor of '{punct.form}' from '{punct.ugov_id}' to '{comp_t.id}, {comp_t.form}'", module="structures.subordination23", level="DEBUG")
         punct.ugov = comp_t
+        punct.gov = comp_t
         punct.udep_label = 'punct'
+        punct.dep_label = 'punct'
 
 
 def subordinating_conjunction(t: Token) -> None:
@@ -242,6 +253,7 @@ def subordinating_conjunction(t: Token) -> None:
     # Attach the conjunction to the complement
     ChangeCollector.record(t.sentence.id, t.id, f"Changed governor of '{t.form}' from '{t.ugov_id}' to '{comp.id}, {comp.form}'", module="structures.subordination27", level="DEBUG")
     t.ugov = comp
+    t.gov = comp
     t.udep_label = 'mark'
 
     # Process punctuation marks
@@ -302,6 +314,6 @@ def punctuation_marks(t: Token, comp: Token) -> None:
         if not punct.children:
             ChangeCollector.record(t.sentence.id, t.id, f"Changed governor of '{punct.form}' from '{punct.ugov_id}' to '{comp.id}, {comp.form}'", module="structures.subordination28", level="DEBUG")
             punct.ugov = comp
-            punct.udep_label = 'punct'
+            punct.gov = comp
         else:
             ChangeCollector.record(t.sentence.id, t.id, f"Punctuation mark '{punct.form}' has dependents.", module="structures.subordination29", level="WARNING")
