@@ -110,8 +110,8 @@ def coordinated_numeral(t: Token) -> None:
             ChangeCollector.record(t.sentence.id, t.gov.id, f"Setting ugov of {t.gov.id} to {comp_t.id} with label {t.dep_label} and ulabel {numeral_label(t)}", module="structures.numeral5", level='DEBUG')
             t.gov.ugov = comp_t
             t.gov.gov = comp_t
-            t.gov.udep_label = numeral_label(t.gov)
-            t.gov.dep_label = t.dep_label
+            t.gov.udep_label = numeral_label(t)
+            t.gov.dep_label = t.gov.dep_label
         else:
             ChangeCollector.record(t.sentence.id, t.id, f"No governor for coordinated numeral phrase: '{t.form}'", module="structures.numeral", level='WARNING')
     else:
