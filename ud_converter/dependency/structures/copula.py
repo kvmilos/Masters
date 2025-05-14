@@ -30,16 +30,13 @@ def convert_copula(s: Sentence) -> None:
     """
     for t in s.tokens:
         # Check for copula verbs with lemma 'to'
-        if t.lemma == 'to' and t.pos == 'pred' and t.gov:
+        if t.lemma == 'to' and t.pos == 'pred' and t.gov_id:
             # Check for different types of predicative expressions
             if t.children_with_label('subj'):
-                if len(t.children_with_label('pd')) == 1:
-                    if t.children_with_label('pd')[0].upos == 'ADJ':
-                        convert_predicative_adj(t, t.gov_id)
-                    else:
-                        convert_predicative_other(t, t.gov, t.children_with_label('subj')[0])
+                if len(t.children_with_label('pd')) == 1 and t.children_with_label('pd')[0].upos == 'ADJ':
+                    convert_predicative_adj(t, t.gov_id)
                 else:
-                    ChangeCollector.record(t.sentence.id, t.id, f"Multiple predicative expressions found for copula: '{t.form}'", module="structures.copula", level='warning')
+                    convert_predicative_other(t, t.gov_id, t.children_with_label('subj')[0])
 
             else:
                 convert_predicative_adj(t, t.gov_id)
@@ -51,7 +48,7 @@ def convert_copula(s: Sentence) -> None:
                 if len(t.children_with_label('pd')) == 1:
                     convert_predicative_adj(t, t.gov_id)
                 else:
-                    ChangeCollector.record(t.sentence.id, t.id, f"Multiple predicative expressions found for copula: '{t.form}'", module="structures.copula", level='warning')
+                    ChangeCollector.record(t.sentence.id, t.id, f"Multiple predicative expressions found for copula: '{t.form}'", module="structures.copula2", level='warning')
 
         # Check for coordinated copula constructions
         elif t.upos == 'CCONJ' and len(t.children_with_label('conjunct')) > 1:
@@ -60,7 +57,7 @@ def convert_copula(s: Sentence) -> None:
                     if len(t.children_with_label('pd')) == 1:
                         convert_coordinated_copula(t, t.gov)
                     else:
-                        ChangeCollector.record(t.sentence.id, t.id, f"Multiple predicative expressions found for copula: '{t.form}'", module="structures.copula", level='warning')
+                        ChangeCollector.record(t.sentence.id, t.id, f"Multiple predicative expressions found for copula: '{t.form}'", module="structures.copula3", level='warning')
 
 
 def convert_predicative_adj(cop: Token, gov_id: str) -> None:
@@ -86,16 +83,16 @@ def convert_predicative_adj(cop: Token, gov_id: str) -> None:
             # Example: "Widok to niezapomniany"
             # Attach the subject to the predicative complement
             ChangeCollector.record(cop.sentence.id, subj[0].id, f"Subject '{subj[0].form}' attached to predicative complement '{pd.form}'", module="structures.copula1")
+            subj[0].udep_label = cl(subj[0])
             subj[0].ugov = pd
             subj[0].gov = pd
-            subj[0].udep_label = cl(subj[0])
             subj[0].dep_label = 'subj'
 
         # Attach the predicative complement to the governor
         ChangeCollector.record(cop.sentence.id, pd.id, f"Predicative complement '{pd.form}' attached to governor '{gov_id}'", module="structures.copula2")
         pd.ugov_id = gov_id
         pd.gov_id = gov_id
-        pd.udep_label = cop.udep_label if cop.udep_label != '_' else cl(cop)
+        pd.udep_label = cop.udep_label
         pd.dep_label = cop.dep_label
 
         # Attach the copula to the predicative complement
@@ -107,10 +104,10 @@ def convert_predicative_adj(cop: Token, gov_id: str) -> None:
         # Process other dependents of the copula
         process_copula_dependents(cop, pd, subj[0] if subj else None)
     elif len(pds) > 1:
-        ChangeCollector.record(cop.sentence.id, cop.id, f"Multiple predicative expressions found for copula: '{cop.form}'", module="structures.copula", level='warning')
+        ChangeCollector.record(cop.sentence.id, cop.id, f"Multiple predicative expressions found for copula: '{cop.form}'", module="structures.copula4", level='warning')
 
 
-def convert_predicative_other(cop: Token, gov: Token, subj: Token) -> None:
+def convert_predicative_other(cop: Token, gov_id: str, subj: Token) -> None:
     """
     Converts a predicative expression without an adjectival predicate.
 
@@ -120,7 +117,7 @@ def convert_predicative_other(cop: Token, gov: Token, subj: Token) -> None:
     Example: "To jest miłość"
 
     :param Token cop: The copula token
-    :param Token gov: The governor of the copula
+    :param str gov_id: The governor ID of the copula
     :param Token subj: The subject token
     """
     pd = cop.children_with_label('pd')
@@ -128,27 +125,27 @@ def convert_predicative_other(cop: Token, gov: Token, subj: Token) -> None:
     if pd:
         # Example: "Druga strefa to świat handlu eleganckiego"
 
-        # Attach the subject to the governor
-        ChangeCollector.record(cop.sentence.id, subj.id, f"Subject '{subj.form}' attached to governor '{gov.form}'", module="structures.copula4")
-        subj.ugov = gov
-        subj.gov = gov
-        subj.udep_label = cop.udep_label
-        subj.dep_label = cop.dep_label
-
         # Attach the predicative complement to the subject
         ChangeCollector.record(cop.sentence.id, pd[0].id, f"Predicative complement '{pd[0].form}' attached to subject '{subj.form}'", module="structures.copula5")
         pd[0].ugov = subj
         pd[0].gov = subj
-        pd[0].udep_label = cl(subj)
+        pd[0].udep_label = cl(subj, n=pd[0], gov=cop)
         pd[0].dep_label = 'subj'
+
+        # Attach the subject to the governor
+        ChangeCollector.record(cop.sentence.id, subj.id, f"Subject '{subj.form}' attached to governor '{gov_id}'", module="structures.copula4")
+        subj.ugov_id = gov_id
+        subj.gov_id = gov_id
+        subj.udep_label = cop.udep_label
+        subj.dep_label = cop.dep_label
 
     else:
         # Example: "To jest miłość"
 
         # Attach the subject to the governor
-        ChangeCollector.record(cop.sentence.id, subj.id, f"Subject '{subj.form}' attached to governor '{gov.form}'", module="structures.copula6")
-        subj.ugov = gov
-        subj.gov = gov
+        ChangeCollector.record(cop.sentence.id, subj.id, f"Subject '{subj.form}' attached to governor '{gov_id}'", module="structures.copula6")
+        subj.ugov_id = gov_id
+        subj.gov_id = gov_id
         subj.udep_label = '_'
         subj.dep_label = cop.dep_label
 
@@ -181,17 +178,23 @@ def convert_coordinated_copula(cop: Token, gov: Token) -> None:
         if subj:
             # Attach the subject to the predicative complement
             ChangeCollector.record(cop.sentence.id, subj[0].id, f"Subject '{subj[0].form}' attached to predicative complement '{pd_t.form}'", module="structures.copula8")
-            subj[0].ugov = pd_t
             subj[0].udep_label = cl(subj[0])
+            subj[0].dep_label = 'subj'
+            subj[0].ugov = pd_t
+            subj[0].gov = pd_t
+            
 
             # Attach the predicative complement to the governor
             ChangeCollector.record(cop.sentence.id, pd_t.id, f"Predicative complement '{pd_t.form}' attached to governor '{gov.form}'", module="structures.copula9")
             pd_t.ugov = gov
+            pd_t.gov = gov
             pd_t.udep_label = cop.udep_label
+            pd_t.dep_label = cop.dep_label
 
             # Attach the copula to the predicative complement
             ChangeCollector.record(cop.sentence.id, cop.id, f"Copula '{cop.form}' attached to predicative complement '{pd_t.form}'", module="structures.copula10")
             cop.ugov = pd_t
+            cop.gov = pd_t
             cop.udep_label = 'cop'
 
         for c in cop.children:
@@ -201,7 +204,8 @@ def convert_coordinated_copula(cop: Token, gov: Token) -> None:
                 # Attach other dependents to the predicative complement
                 ChangeCollector.record(cop.sentence.id, c.id, f"Dependent '{c.form}' attached to predicative complement '{pd_t.form}'", module="structures.copula11")
                 c.ugov = pd_t
-                c.udep_label = cl(c)
+                c.gov = pd_t
+                c.udep_label = '_'
 
 
 def process_copula_dependents(cop: Token, new_head: Token, exclude: Token | None = None) -> None:
@@ -235,5 +239,3 @@ def process_copula_dependents(cop: Token, new_head: Token, exclude: Token | None
             ChangeCollector.record(cop.sentence.id, dep.id, f"Dependent '{dep.form}' attached to new head '{new_head.form}'", module="structures.copula12")
             dep.ugov = new_head
             dep.gov = new_head
-            # Keep the original dependency label
-            dep.udep_label = dep.udep_label if dep.udep_label != '_' else cl(dep)

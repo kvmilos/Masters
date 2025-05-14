@@ -36,6 +36,7 @@ def convert_label(t: Token, gov: Token | None = None, n: Token | None = None, re
     :param Token t: The token for which to convert the dependency label
     :param Token gov: An optional token for additional context (governor)
     :param Token n: An optional token for additional context (current token)
+    :param Token relation_gov: An optional token for additional context (governor of the relation)
     :return: The converted Universal Dependencies dependency label
     :rtype: str
     """
@@ -232,8 +233,8 @@ def convert_label(t: Token, gov: Token | None = None, n: Token | None = None, re
             or n.upos == 'VERB' and t.pos != 'inf'
         ):
             return 'csubj'
-        elif n.upos in ['PROPN', 'NOUN', 'PRON', 'ADJ', 'NUM', 'X', 'DET'] and not t.children_with_ud_label('case'):
-            if t.gov2 and t.gov2.pos.startswith('ger'):
+        elif n.upos in ['PROPN', 'NOUN', 'PRON', 'ADJ', 'NUM', 'X', 'DET'] and not n.children_with_ud_label('case'):
+            if gov and gov.pos.startswith('ger'):
                 return 'obl:agent'
             else:
                 return 'nsubj'
