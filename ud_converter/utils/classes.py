@@ -593,7 +593,7 @@ class Token:
     def children_with_ud_label(self, label: str) -> list['Token']:
         """Returns a list of children of the token with the given dependency label in UD format."""
         return [
-            n for n in self.uchildren
+            n for n in self.children2
             if n.udep_label == label
         ]
 
@@ -637,6 +637,27 @@ class Token:
                 return self.gov, self
             else:
                 return self.gov.super_gov_via_label(label)
+        return None
+
+    def super_gov_via_ulabel(self, label: str) -> tuple['Token', 'Token'] | None:
+        """
+        Recursively finds a governing token via a specific dependency path in UD format.
+
+        This method looks for the first token in the upward dependency path
+        that is connected via the specified label but whose governor is not
+        connected via the same label.
+
+        :param str label: The dependency label to follow in the recursion
+        :return: The found governor Token, or None if not found
+        :rtype: Token | None
+        """
+        if self.udep_label == label:
+            if self.gov2 is None:
+                return None
+            if self.gov2.udep_label != label:
+                return self.gov2, self
+            else:
+                return self.gov2.super_gov_via_ulabel(label)
         return None
 
     def super_child_with_label_via_label(self, target_label: str, label: str) -> 'Token | None':

@@ -55,6 +55,7 @@ def remove_dependents_of_auxiliary(s: Sentence) -> None:
                         if dep != sgov:
                             ChangeCollector.record(t.sentence.id, dep.id, f"Auxiliary: reattached dependent '{dep.form}' from '{dep.ugov_id}' to '{sgov.form}' ({sgov.id})", module="edges.auxiliary")
                             dep.ugov = sgov
+                            dep.gov = sgov
 
 
 def find_semantic_governor(t: Token) -> Token | None:
@@ -96,7 +97,7 @@ def remove_dependents_of_fixed(s: Sentence) -> None:
     for t in s.tokens:
         if t.udep_label == 'fixed':
             # Find the head of the fixed expression
-            fixed_head = t.super_gov_via_label('fixed')
+            fixed_head = t.super_gov_via_ulabel('fixed')
             if fixed_head:
                 fixed_head_t = fixed_head[0]
 
@@ -105,9 +106,10 @@ def remove_dependents_of_fixed(s: Sentence) -> None:
 
                 # Reattach dependents of fixed expression components to the head
                 for fixed_token in fixed_tokens:
-                    for dep in fixed_token.children:
+                    for dep in fixed_token.children_with_ud_label('fixed'):
                         if dep.ugov != fixed_head_t:
                             dep.ugov = fixed_head_t
+                            dep.gov = fixed_head_t
                             ChangeCollector.record(t.sentence.id, dep.id, f"Reattached dependent '{dep.form}' from fixed token '{fixed_token.form}' ({fixed_token.id}) to '{fixed_head_t.form}' ({fixed_head_t.id})", module="edges.fixed")
             else:
                 ChangeCollector.record(t.sentence.id, t.id, f"Fixed token '{t.form}' has no super-governor.", module="edges.fixed", level="WARNING")
@@ -156,7 +158,9 @@ def remove_dependents_of_flat(s: Sentence) -> None:
                 if t.ugov:
                     # swap attachments
                     flat.ugov = t.ugov
+                    flat.gov = t.ugov
                     t.ugov = flat
+                    t.gov = flat
                     ChangeCollector.record(t.sentence.id, flat.id, f"Reordered flat structure: {flat.form} -> {t.form}", module="edges.flat")
                 else:
                     ChangeCollector.record(t.sentence.id, flat.id, f"Flat token '{flat.form}' has no UD governor.", module="edges.flat", level="WARNING")
