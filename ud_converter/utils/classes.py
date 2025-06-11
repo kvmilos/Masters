@@ -673,10 +673,9 @@ class Token:
         :return: The found child Token, or None if not found
         :rtype: Token | None
         """
-        if self.dep_label == label:
-            for child in self.children:
-                if child.dep_label == target_label:
-                    return child
-                else:
-                    return child.super_child_with_label_via_label(target_label, label)
+        for child in self.children2:
+            if child.dep_label == target_label:
+                return child
+            elif child.dep_label == label:
+                return child.super_child_with_label_via_label(target_label, label)
         return None
