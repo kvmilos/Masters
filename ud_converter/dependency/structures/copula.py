@@ -200,7 +200,7 @@ def convert_coordinated_copula(cop: Token, gov: Token) -> None:
         for c in cop.children:
             if subj and c == subj[0]:
                 continue
-            if c != pd and c.dep_label not in ['neg', 'cneg', 'conjunct'] and c.lemma != 'nie':
+            if c != pd_t and c.dep_label not in ['neg', 'cneg', 'conjunct'] and c.lemma != 'nie':
                 # Attach other dependents to the predicative complement
                 ChangeCollector.record(cop.sentence.id, c.id, f"Dependent '{c.form}' attached to predicative complement '{pd_t.form}'", module="structures.copula11")
                 c.ugov = pd_t
