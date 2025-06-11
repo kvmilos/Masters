@@ -36,7 +36,7 @@ def convert_prepositional(s: Sentence) -> None:
                     ChangeCollector.record(t.sentence.id, t.id, f"Converted prepositional phrase: '{t.form}'", module="structures.prepositional3")
             else:
                 # Convert standard prepositional phrases
-                convert_pp(t, t.gov, t)
+                convert_pp(t, t.gov2, t) # type: ignore
                 ChangeCollector.record(t.sentence.id, t.id, f"Converted prepositional phrase: '{t.form}'", module="structures.prepositional4")
 
 
