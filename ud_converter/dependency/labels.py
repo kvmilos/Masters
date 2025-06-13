@@ -446,11 +446,14 @@ def modifier(t: Token, label: str) -> str:
                 mark_t = mark[0]
                 if mark_t.lemma == 'jako' and mark_t.ufeats.get('ConjType'):
                     return 'amod'
+                elif case:
+                    return 'nmod'
                 else:
-                    if case:
-                        return 'nmod'
-                    else:
-                        return 'amod'
+                    return 'amod'
+            elif case:
+                return 'nmod'
+            else:
+                return 'amod'
 
         elif t.upos == 'NUM':
             return 'nmod'
