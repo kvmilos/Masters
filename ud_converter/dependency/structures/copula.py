@@ -129,7 +129,7 @@ def convert_predicative_other(cop: Token, gov_id: str, subj: Token) -> None:
         ChangeCollector.record(cop.sentence.id, pd[0].id, f"Predicative complement '{pd[0].form}' attached to subject '{subj.form}'", module="structures.copula5")
         pd[0].ugov = subj
         pd[0].gov = subj
-        pd[0].udep_label = cl(subj, n=pd[0], gov=cop)
+        pd[0].udep_label = cl(pd[0], n=subj, gov=cop)
         pd[0].dep_label = 'subj'
 
         # Attach the subject to the governor
