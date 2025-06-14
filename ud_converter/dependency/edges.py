@@ -43,14 +43,13 @@ def remove_dependents_of_auxiliary(s: Sentence) -> None:
     """
     for t in s.tokens:
         # Check if token is an auxiliary verb that shouldn't have dependents
-        if t.upos == 'AUX' and not t.children_with_ud_label('conj') and not t.children_with_ud_label('cc') and t.children:
-
+        if t.upos == 'AUX' and t.children2 and not t.children_with_ud_label('conj') and not t.children_with_ud_label('cc'):
             # Find the semantic governor
             sgov = find_semantic_governor(t)
 
             if sgov and int(sgov.id) != 0:
                 # Reattach dependents to the semantic governor
-                for dep in t.uchildren:
+                for dep in t.children2:
                     if dep.lemma != 'nie' and dep.dep_label != 'neg' and dep.udep_label != 'conj':
                         if dep != sgov:
                             ChangeCollector.record(t.sentence.id, dep.id, f"Auxiliary: reattached dependent '{dep.form}' from '{dep.ugov_id}' to '{sgov.form}' ({sgov.id})", module="edges.auxiliary")
@@ -70,14 +69,10 @@ def find_semantic_governor(t: Token) -> Token | None:
     :rtype: Optional[Token]
     """
     # Start with the immediate governor
-    gov = t.ugov
-
-    # If no governor, return None
-    if not gov:
-        return None
+    gov = t.gov2
 
     # If governor is an auxiliary verb, recursively find its governor
-    if gov.upos == 'AUX':
+    if gov and gov.upos == 'AUX':
         return find_semantic_governor(gov)
 
     # Otherwise, return the governor
