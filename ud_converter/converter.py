@@ -94,6 +94,8 @@ def main() -> None:
     with open(output_file, 'r', encoding='utf-8') as f:
         lines = f.readlines()
 
+    lines2 = [line for line in lines]
+
     if tags_only:
         logger.info('Tags-only mode: skipping additional processing.')
         return
@@ -111,9 +113,12 @@ def main() -> None:
 
             fields[5] = morph_feats
             lines[i] = '\t'.join(fields) + '\n'
+            lines2[i] = '\t'.join(fields[:-1]) + '\n'
 
     with open(output_file.replace('.conllu', '-degree-number.conllu'), 'w', encoding='utf-8') as f:
         f.writelines(lines)
+    with open(output_file.replace('.conllu', '-degree-number-nolast.conllu'), 'w', encoding='utf-8') as f2:
+        f2.writelines(lines2)
 
     logger.info('Wrote output to %s', output_file.replace('.conllu', '-degree-number.conllu'))
     # -------------------------------------------------------
