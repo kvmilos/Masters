@@ -34,15 +34,16 @@ def complete_eud(s: Sentence) -> None:
                 # If the enhanced governor ID is '_', set it to the basic governor ID
                 t.ugov_id = t.gov_id
                 ChangeCollector.record(t.sentence.id, t.id, f"Setting gov -> ugov ({t.gov_id}) for token: '{t.form}'", module="postconversion")
-            # Add the basic dependency to the enhanced dependencies
-            t.eud = {t.ugov_id: t.udep_label}
 
             # Handle special cases for mark_rel
             if t.udep_label == 'mark_rel':
                 ChangeCollector.record(t.sentence.id, t.id, f"Converting mark_rel to mark for token: '{t.form}'", module="postconversion")
                 t.udep_label = 'mark'
-                if t.ugov and t.ugov.gov:
-                    t.eud = {t.ugov.gov.id: 'ref'}
+                if t.ugov and t.ugov.gov_id:
+                    t.eud = {t.ugov.gov_id: 'ref'}
+
+            # Add the basic dependency to the enhanced dependencies
+            t.eud = {t.ugov_id: t.udep_label}
 
         # Update any placeholder labels
         for gov, label in list(t.eud.items()):
