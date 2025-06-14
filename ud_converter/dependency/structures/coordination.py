@@ -118,7 +118,7 @@ def coordination(t: Token, gov: Token, punct_conj: bool = False, ud_label: str |
             if t.gov and t.gov.gov_id and (not t.gov.gov or len(t.gov.gov.children_with_label('conjunct')) == 0):
                 ChangeCollector.record(t.sentence.id, main_c.id, f"Adding eud {t.gov.gov_id}: {cl(t.gov)} to '{main_c.form}'", module="structures.coordination-eud1")
                 main_c.eud = {t.gov.gov_id: cl(t.gov)}
-        elif t.gov_id and t.gov_id not in main_c.eud and (not t.gov or t.gov.pos != 'conj'):
+        elif t.gov_id and t.gov_id not in main_c.eud and (not t.gov or t.gov.pos != 'conj') and t.gov.upos != 'PUNCT':
             ChangeCollector.record(t.sentence.id, main_c.id, f"Adding eud {t.gov_id}: {cl(t.gov) if t.gov else 'root'} to '{main_c.form}'", module="structures.coordination-eud2")
             main_c.eud = {t.gov_id: cl(t.gov) if t.gov else 'root'}
 
@@ -231,7 +231,8 @@ def process_conjuncts(conjuncts: list[Token], main_c: Token, t: Token, gov: Toke
                     if enhanced_conjuncts:
                         for ec in enhanced_conjuncts:
                             ChangeCollector.record(t.sentence.id, c.id, f"Adding eud {ec.id}: '{cl(t)}' to '{c.form}'", module="structures.coordination-eud8")
-                            c.eud = {ec.id: cl(main_c, n=t, gov=sorted(enhanced_conjuncts, key=lambda x: int(x.id))[0], relation_gov=gov)}
+                            if ec.upos != 'PUNCT':
+                                c.eud = {ec.id: cl(main_c, n=t, gov=sorted(enhanced_conjuncts, key=lambda x: int(x.id))[0], relation_gov=gov)}
                 else:
                     if c.pos == 'conj' and [cc for cc in c.children_with_label('conjunct') if cc.udep_label == '_']:
                         min_cc = min([cc for cc in c.children_with_label('conjunct') if cc.udep_label == '_'], key=lambda x: int(x.id))
@@ -239,7 +240,10 @@ def process_conjuncts(conjuncts: list[Token], main_c: Token, t: Token, gov: Toke
                         min_cc.eud = {gov.id: cl(t)}
                     elif gov.id:
                         ChangeCollector.record(t.sentence.id, c.id, f"Adding eud {gov.id}: '{cl(main_c)}' to '{c.form}'", module="structures.coordination-eud10")
-                        c.eud = {gov.id: main_c.udep_label}
+                        if gov.upos != 'PUNCT':
+                            c.eud = {gov.id: main_c.udep_label}
+                        else:
+                            c.eud = {'gov_'+main_c.id: '_'}
 
 
 def process_puncts(puncts: list[Token], conjuncts: list[Token]) -> None:
@@ -297,7 +301,8 @@ def process_shared(shared: list[Token], conjuncts: list[Token], main_c: Token) -
         # Enhanced dependencies for shared dependents
         for con in conjuncts:
             ChangeCollector.record(s.sentence.id, s.id, f"Adding eud {con.id}: {cl(s)} to '{s.form}'", module="structures.coordination-eud11")
-            s.eud = {con.id: cl(s)}
+            if con.upos != 'PUNCT':
+                s.eud = {con.id: cl(s)}
 
 
 def process_other(other: list[Token], conjuncts: list[Token], main_c: Token, t: Token) -> None:
@@ -339,7 +344,8 @@ def process_other(other: list[Token], conjuncts: list[Token], main_c: Token, t: 
             o.udep_label = 'mark'
             for con in conjuncts:
                 ChangeCollector.record(o.sentence.id, o.id, f"Adding eud {con.id}: 'mark' to '{o.form}'", module="structures.coordination-eud13")
-                o.eud = {con.id: 'mark'}
+                if con.upos != 'PUNCT':
+                    o.eud = {con.id: 'mark'}
 
         # Default case
         else:

@@ -45,11 +45,39 @@ def complete_eud(s: Sentence) -> None:
             # Add the basic dependency to the enhanced dependencies
             t.eud = {t.ugov_id: t.udep_label}
 
-        # Update any placeholder labels
-        for gov, label in list(t.eud.items()):
-            if label == '_' and t.ugov:
-                ChangeCollector.record(t.sentence.id, t.id, f"Converting placeholder label '_' to '{t.ugov.udep_label}' for token: '{t.form}'", module="postconversion")
-                t.eud = {gov: t.ugov.udep_label}
+        # Update any placeholder governors in the enhanced-deps map
+        for gov in list(t.data['eud'].keys()):
+            label = t.data['eud'][gov]
+            if gov.startswith('gov_'):
+                # Log the replacement
+                ChangeCollector.record(
+                    t.sentence.id,
+                    t.id,
+                    f"Converting placeholder governor '{gov}' for token: '{t.form}'",
+                    module="postconversion"
+                )
+                # Figure out the real ID to use
+                tok = s.dict_by_id.get(gov.split('_', 1)[1])
+                if tok:
+                    real_id = tok.gov2_id  # this is either tok.ugov_id or tok.gov_id
+                else:
+                    # fallback: strip the "gov_" prefix
+                    real_id = gov.split('_', 1)[1]
+
+                # remove the placeholder and insert under the real ID
+                del t.data['eud'][gov]
+                t.eud = {real_id: label}
+
+        # Convert any “_” labels to the true UD label without clobbering other entries
+        for gov, lab in list(t.data['eud'].items()):
+            if lab == '_' and t.ugov:
+                ChangeCollector.record(
+                    t.sentence.id,
+                    t.id,
+                    f"Converting placeholder label '_' to '{t.ugov.udep_label}' for token: '{t.form}'",
+                    module="postconversion"
+                )
+                t.data['eud'][gov] = t.ugov.udep_label
 
 
 def default_label_conversion(s: Sentence) -> None:
