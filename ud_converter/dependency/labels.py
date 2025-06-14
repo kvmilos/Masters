@@ -371,7 +371,7 @@ def verb_complement(t: Token, cleft: bool = False) -> str:
     return t.udep_label
 
 
-def modifier(t: Token, label: str) -> str:
+def modifier(t: Token, gov: Token | None, label: str) -> str:
     """
     Helper function for converting modifier dependencies to UD labels.
 
@@ -388,7 +388,7 @@ def modifier(t: Token, label: str) -> str:
     mark = t.children_with_ud_label('mark')
     case = t.children_with_ud_label('case')
 
-    if t.gov2 and t.gov2.upos in ['PROPN', 'NOUN', 'PRON', 'X', 'NUM', 'SYM']:
+    if gov and gov.upos in ['PROPN', 'NOUN', 'PRON', 'X', 'NUM', 'SYM']:
 
         if t.upos == 'ADJ':
             if t.pos in ['ppas', 'pact']:
