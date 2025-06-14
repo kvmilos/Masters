@@ -120,11 +120,10 @@ def convert_label(t: Token, gov: Token | None = None, n: Token | None = None, re
     # modifier
     elif n.dep_label.startswith('adjunct_') and n.dep_label not in ['adjunct_compar', 'adjunct_qt', 'adjunct_comment',
                                                                     'adjunct_rc', 'adjunct_poss', 'adjunct_title', 'adjunct_emph']:
-        # print(f"t: {t.id}, n: {t.id}, gov: {gov.id if gov else None}, dep_label: {n.dep_label}")
-        return modifier(t, n.dep_label)
+        return modifier(t, gov, n.dep_label)
     # adjunct
     elif n.dep_label == 'adjunct':
-        return modifier(t, n.dep_label)
+        return modifier(t, gov, n.dep_label)
     # clausal complement
     elif n.dep_label == 'comp':
         mark = t.children_with_ud_label('mark')
@@ -413,7 +412,7 @@ def modifier(t: Token, label: str) -> str:
                     if len(mark) > 1:
                         ChangeCollector.record(t.sentence.id, t.id, f"Multiple 'mark'-children for '{t.form}': {[m.form for m in mark]}", module="labels", level="WARNING")
                     mark_t = mark[0]
-                    if mark_t.lemma == 'jako' and mark_t.ufeats.get('ConjType') and t.gov2.pos != 'ger' and label == 'adjunct_attrib':
+                    if mark_t.lemma == 'jako' and mark_t.ufeats.get('ConjType') and gov.pos != 'ger' and label == 'adjunct_attrib':
                         return 'amod'
                     else:
                         return adverbial(t)
@@ -428,7 +427,7 @@ def modifier(t: Token, label: str) -> str:
                     return adverbial(t)
                 else:
                     return 'acl'
-            elif label.startswith('adjunct_') and t.gov2 and t.gov2.children_with_ud_label('cop'):
+            elif label.startswith('adjunct_') and gov and gov.children_with_ud_label('cop'):
                 return adverbial(t)
             else:
                 return 'nmod'
@@ -497,7 +496,7 @@ def modifier(t: Token, label: str) -> str:
 
         return adverbial(t)
 
-    elif t.gov2 and t.gov2.upos == 'DET' and t.gov2.pos in ['num', 'adj']:
+    elif gov and gov.upos == 'DET' and gov.pos in ['num', 'adj']:
 
         if t.upos == 'ADJ':
             if t.pos in ['ppas', 'pact']:
@@ -529,10 +528,10 @@ def modifier(t: Token, label: str) -> str:
         else:
             return adverbial(t)
 
-    elif t.gov2 and t.gov2.upos == 'ADJ':
+    elif gov and gov.upos == 'ADJ':
 
-        if t.gov2 and t.gov2.pos in ['ppas', 'pact']:
-            if t.upos == 'ADJ' and int(t.id) < int(t.gov2.id) and not case and not mark and not t.gov2.children_with_label('aux'):
+        if gov and gov.pos in ['ppas', 'pact']:
+            if t.upos == 'ADJ' and int(t.id) < int(gov.id) and not case and not mark and not gov.children_with_label('aux'):
                 return 'amod'
             else:
                 return adverbial(t)
@@ -554,17 +553,17 @@ def modifier(t: Token, label: str) -> str:
             else:
                 return adverbial(t)
 
-    elif t.gov2 and t.gov2.upos in ['VERB', 'ADV', 'PART', 'INTJ', 'SCONJ']:
+    elif gov and gov.upos in ['VERB', 'ADV', 'PART', 'INTJ', 'SCONJ']:
         return adverbial(t)
 
-    elif t.gov2 and t.gov2.upos == 'ADP' and t.children_with_label('mwe'):
+    elif gov and gov.upos == 'ADP' and t.children_with_label('mwe'):
         if t.upos == 'ADP':
             return 'advmod'
         elif t.upos == 'ADV':
             return adverbial(t)
         elif t.upos == 'PART' and t.lemma in PARTICLES and not mark:
             return 'advmod:emph'
-        elif t.upos == 'CCONJ' and not t.gov2.children_with_label('conjunct'):
+        elif t.upos == 'CCONJ' and not gov.children_with_label('conjunct'):
             return 'cc'
 
     return adverbial(t)
