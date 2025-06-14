@@ -30,9 +30,11 @@ def adv(t: Token) -> None:
     elif t.lemma == 'ile':
         if not t.prev or t.prev.lemma != 'o':
             t.ufeats = {'PronType': 'Int,Rel'}
+    elif t.lemma in ['skąd', 'dokąd']:
+        t.ufeats = {'PronType': 'Int,Rel'}
     elif t.lemma in ['tak', 'tu', 'tutaj', 'tam', 'ówdzie', 'stąd', 'stamtąd', 'tędy', 'tamtędy', 'wtedy', 'wówczas', 'wtenczas', 'odtąd', 'dotąd', 'dlatego']:
         t.ufeats = {'PronType': 'Dem'}
-    elif t.lemma in ['dokąd', 'skąd', 'jakkolwiek', 'gdziekolwiek', 'kiedykolwiek', 'którędykolwiek', 'niekiedy', 'gdzieniegdzie']:
+    elif t.lemma in ['niekiedy', 'gdzieniegdzie', 'dokądś', 'skądś', 'gdzieś', 'jakoś', 'kiedyś', 'którędyś'] or t.lemma.endswith('kolwiek'):
         t.ufeats = {'PronType': 'Ind'}
     elif t.lemma in ['nigdy', 'nigdzie']:
         t.ufeats = {'PronType': 'Neg'}
