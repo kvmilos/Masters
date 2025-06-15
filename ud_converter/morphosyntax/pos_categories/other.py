@@ -52,7 +52,7 @@ def part(t: Token) -> None:
         elif t.lemma == 'może':
             t.upos = 'PART'
             t.ufeats = {'PartType': 'Mod'}
-        elif t.lemma == 'co':
+        elif t.lemma == 'co' and t.dep_label == 'mark_rel':
             t.upos = 'PRON'
             t.ufeats = {'PronType': 'Rel'}
         else:
