@@ -26,7 +26,7 @@ def lemma_based_upos(t: Token) -> None:
 
     :param Token t: The token to be converted
     """
-    if (t.lemma in ['niż', 'niżeli', 'anizeli', 'niźli', 'jakby', 'jakoby', 'niczym', 'niby'] and t.pos not in ['subst', 'part', 'adv']):
+    if (t.lemma in ['niż', 'niżeli', 'aniżeli', 'niźli', 'jakby', 'jakoby', 'niczym', 'niby'] and t.pos not in ['subst', 'part', 'adv']):
         t.upos = 'SCONJ'
         t.ufeats = {'ConjType': 'Comp'}
         logger.debug("S%-5s T%-5s- Converted '%s' to %s", t.sentence.id, t.id, t.form, t.upos)
