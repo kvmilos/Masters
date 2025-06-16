@@ -630,13 +630,11 @@ class Token:
         :return: The found governor Token, or None if not found
         :rtype: Token | None
         """
-        if self.dep_label == label:
-            if self.gov is None:
-                return None
-            if self.gov.dep_label != label:
-                return self.gov, self
-            else:
+        if self.gov:
+            if self.dep_label == label:
                 return self.gov.super_gov_via_label(label)
+            else:
+                return self.gov, self
         return None
 
     def super_gov_via_ulabel(self, label: str) -> tuple['Token', 'Token'] | None:
