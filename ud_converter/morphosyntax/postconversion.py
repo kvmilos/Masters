@@ -5,6 +5,7 @@ This module handles tasks that need to be performed after the main POS and featu
 conversion, such as handling multiword expressions and space-after annotations.
 """
 from utils.classes import Sentence, Token
+from utils.logger import ChangeCollector
 
 
 def post_conversion(s: Sentence, meta: dict[str, str]) -> None:
@@ -18,8 +19,25 @@ def post_conversion(s: Sentence, meta: dict[str, str]) -> None:
     :param meta: Metadata dictionary with additional information for the conversion
     """
     text = meta.get("text")
+    correction(s)
     add_mwe(s, text)
     add_no_space_misc(s, text)
+
+
+def correction(s: Sentence) -> None:
+    """
+    Applies corrections to the sentence's tokens based on specific rules.
+
+    This function checks for auxiliary verbs with 'aux' dep label and changes their UPOS tag from 'VERB' to 'AUX'.
+    It also records the changes made for each token.
+
+    :param Sentence s: The sentence to process
+    """
+    for t in s.tokens:
+        if t.upos == 'VERB' and t.dep_label == 'aux':
+            old_upos = t.upos
+            t.upos = 'AUX'
+            ChangeCollector.record(t.sentence.id, t.id, f"upos changed from {old_upos} to {t.upos}", module="postconversion")
 
 
 def add_mwe(s: Sentence, text: str | None) -> None:

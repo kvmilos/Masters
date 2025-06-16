@@ -54,8 +54,3 @@ def preconversion(s: Sentence) -> None:
             old_upos = t.upos
             t.upos = 'VERB'
             ChangeCollector.record(t.sentence.id, t.id, f"upos changed from {old_upos} to {t.upos}", module="preconversion")
-
-        elif t.upos == 'VERB' and t.dep_label == 'aux':
-            old_upos = t.upos
-            t.upos = 'AUX'
-            ChangeCollector.record(t.sentence.id, t.id, f"upos changed from {old_upos} to {t.upos}", module="preconversion")
