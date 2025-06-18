@@ -70,8 +70,8 @@ def setup_logging() -> logging.Logger:
     root_logger.addHandler(console_handler)
 
     caller_logger = logging.getLogger('ud_converter')
-    caller_logger.info('WARNINGs and INFO are being saved to %s', info_log_file)
-    caller_logger.info('DEBUG, WARNINGs, and INFO are being saved to %s', debug_log_file)
+    caller_logger.info('WARNINGS are being saved to %s', info_log_file)
+    caller_logger.info('DEBUG and WARNINGS are being saved to %s', debug_log_file)
 
     return caller_logger
 
