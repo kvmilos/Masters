@@ -658,6 +658,26 @@ class Token:
                 return self.gov2.super_gov_via_ulabel(label)
         return None
 
+    def super_child_edge_with_label_via_label(self, target_label: str, label: str) -> tuple['Token | None', 'Token | None']:
+        """
+        Recursively finds a child token with a specific label following a path.
+
+        This method first looks among direct children for one with the target label.
+        If none is found, it recursively searches through the children connected
+        via the specified label.
+
+        :param str target_label: The dependency label to look for in children
+        :param str label: The dependency label to follow in the recursive search
+        :return: The found child Token, or None if not found
+        :rtype: Token | None
+        """
+        if self.children_with_label(target_label) and len(self.children_with_label(target_label)) == 1:
+            return self, self.children_with_label(target_label)[0]
+        else:
+            if self.children_with_label(label) and len(self.children_with_label(label)) == 1:
+                return self.children_with_label(label)[0].super_child_edge_with_label_via_label(target_label, label)
+        return None, None
+
     def super_child_with_label_via_label(self, target_label: str, label: str) -> 'Token | None':
         """
         Recursively finds a child token with a specific label following a path.

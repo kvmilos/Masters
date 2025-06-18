@@ -25,16 +25,16 @@ def convert_numeral(s: Sentence) -> None:
     """
     for t in s.tokens:
         if t.pos == 'num':
-            if t.children_with_label('comp'):
+            if t.children_with_label('comp') and len(t.children_with_label('comp')) == 1:
                 standard_numeral(t)
                 ChangeCollector.record(t.sentence.id, t.id, f"Converted standard numeral phrase: '{t.form}'", module="structures.numeral")
-            elif t.gov and (t.gov.upos == 'CCONJ' or t.gov.upos == 'PUNCT' and t.dep_label == 'conjunct') and t.gov.children_with_label('comp'):
+            elif t.gov and (t.gov.upos == 'CCONJ' or (t.gov.upos == 'PUNCT' and t.dep_label == 'conjunct')) and t.gov.children_with_label('comp'):
                 coordinated_numeral(t)
                 ChangeCollector.record(t.sentence.id, t.id, f"Converted coordinated numeral phrase: '{t.form}'", module="structures.numeral")
-            elif t.super_child_with_label_via_label('mwe', 'comp'):
+            elif t.super_child_edge_with_label_via_label('comp', 'mwe'):
                 mwe_numeral(t)
                 ChangeCollector.record(t.sentence.id, t.id, f"Converted MWE numeral phrase: '{t.form}'", module="structures.numeral")
-            elif t.super_child_with_label_via_label('ne', 'comp'):
+            elif t.children_with_label('ne') and len(t.children_with_label('ne')) == 1:
                 ne_numeral(t)
                 ChangeCollector.record(t.sentence.id, t.id, f"Converted NE numeral phrase: '{t.form}'", module="structures.numeral")
             else:
@@ -127,15 +127,18 @@ def mwe_numeral(t: Token) -> None:
 
     :param Token t: The numeral Token to convert
     """
-    mwe = t.super_child_with_label_via_label('mwe', 'comp')
+    mwe = t.super_child_edge_with_label_via_label('comp', 'mwe')[1]
     if t.gov and mwe:
         ChangeCollector.record(t.sentence.id, mwe.id, f"Setting ugov of {mwe.id} to {t.gov.id} with label {cl(t)}", module="structures.numeral6", level='DEBUG')
+        mwe.gov = t.gov
         mwe.ugov = t.gov
-        mwe.udep_label = cl(t)
+        mwe.dep_label = t.dep_label
+        mwe.udep_label = t.udep_label
     if not mwe:
         ChangeCollector.record(t.sentence.id, t.id, f"No MWE found for numeral phrase: '{t.form}'", module="structures.numeral", level='WARNING')
         return
     ChangeCollector.record(t.sentence.id, t.id, f"Setting ugov of {t.id} to {mwe.id} with label {numeral_label(t)}", module="structures.numeral7", level='DEBUG')
+    t.gov = mwe
     t.ugov = mwe
     t.udep_label = numeral_label(t)
 
@@ -150,17 +153,18 @@ def ne_numeral(t: Token) -> None:
     :param Token t: The numeral Token to convert
     """
     ne = t.children_with_label('ne')
-    if ne != t.super_child_with_label_via_label('ne', 'comp'):
-        ChangeCollector.record(t.sentence.id, t.id, "HERE WE PROBABLY HAVE A PROBLEM", module="structures.numeral", level='WARNING')
     if len(ne) != 1:
-        ChangeCollector.record(t.sentence.id, t.id, f"Expected 1 named entity child, got {len(ne)} for numeral phrase: '{t.form}'", module="structures.numeral", level='WARNING')
+        ChangeCollector.record(t.sentence.id, t.id, f"Expected 1 ne child, got {len(ne)} for named entity numeral phrase: '{t.form}'", module="structures.numeral", level='WARNING')
         return
     ne_t = ne[0]
     if t.gov:
         ChangeCollector.record(t.sentence.id, ne_t.id, f"Setting ugov of {ne_t.id} to {t.gov.id} with label {cl(t)}", module="structures.numeral8", level='DEBUG')
+        ne_t.gov = t.gov
         ne_t.ugov = t.gov
-        ne_t.udep_label = cl(t)
+        ne_t.dep_label = t.dep_label
+        ne_t.udep_label = t.udep_label
     ChangeCollector.record(t.sentence.id, t.id, f"Setting ugov of {t.id} to {ne_t.id} with label nummod:flat", module="structures.numeral9", level='DEBUG')
+    t.gov = ne_t
     t.ugov = ne_t
     t.udep_label = 'nummod:flat'
 
