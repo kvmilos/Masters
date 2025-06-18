@@ -127,7 +127,7 @@ def convert_pp(prep: Token, gov: Token, t: Token) -> None:
             prep.udep_label = 'case'
 
             # Process other dependents of the preposition
-            convert_prep_dependents(prep, comp[0])
+            convert_prep_dependents(t, comp[0])
         else:
             ChangeCollector.record(t.sentence.id, t.id, f"The preposition '{prep.form}' has {len(comp)} complements: {[c.form for c in comp]}", module="structures.prepositional13", level='WARNING')
 
@@ -142,8 +142,7 @@ def convert_prep_dependents(t: Token, comp: Token) -> None:
     :param Token comp: The complement of the preposition
     """
     # Get all dependents of the preposition except the complement
-    dependents = [d for d in t.children if d != comp and d.dep_label not in ['mwe', 'abbrev_punct']]
-
+    dependents = [d for d in t.children2 if d != comp and d.dep_label not in ['mwe', 'abbrev_punct']]
     # Attach each dependent to the complement
     for d in dependents:
         ChangeCollector.record(t.sentence.id, t.id, f"Converting dependent '{d.form}' of preposition '{t.form}'", module="structures.prepositional14")
