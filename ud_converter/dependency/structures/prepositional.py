@@ -109,7 +109,7 @@ def convert_pp(prep: Token, gov: Token, t: Token) -> None:
                 prep.udep_label = 'case'
 
                 # Process other dependents of the preposition
-                convert_prep_dependents(prep, mwe_comp)
+                convert_prep_dependents(t, mwe_comp)
     else:
         if len(comp) == 1:
             # Standard case: one complement
