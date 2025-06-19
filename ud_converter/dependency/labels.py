@@ -196,8 +196,8 @@ def convert_label(t: Token, gov: Token | None = None, n: Token | None = None, re
             return 'ccomp:obj'
         elif (
             t.upos == 'SYM' and t.form in ['%', '$']
-            or t.upos in ['PROPN', 'NOUN', 'PRON', 'ADJ', 'NUM', 'X', 'DET'] and not t.children_with_ud_label('case')
-            or t.upos in ['ADV', 'PART']
+            or t.upos in ['PROPN', 'PRON', 'ADJ', 'NUM', 'DET'] and not t.children_with_ud_label('case')
+            or t.upos in ['ADV', 'PART', 'NOUN', 'X']
         ):
             return 'obj'
     # indirect object
