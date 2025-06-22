@@ -27,7 +27,7 @@ def edges_correction(s: Sentence) -> None:
     """
     remove_dependents_of_auxiliary(s)
     remove_dependents_of_fixed(s)
-    remove_dependents_of_flat(s)
+    # remove_dependents_of_flat(s)
     remove_dependents_of_mark_case_cc(s)
 
 
@@ -150,12 +150,18 @@ def remove_dependents_of_flat(s: Sentence) -> None:
         for flat in flat_deps:
             # Check if flat dependent comes before its governor
             if int(flat.id) < int(t.id):
-                if t.ugov:
+                if t.gov2:
                     # swap attachments
-                    flat.ugov = t.ugov
-                    flat.gov = t.ugov
+                    flat.ugov = t.gov2
+                    flat.gov = t.gov2
+                    old_flat_dep = flat.dep_label
+                    old_flat_udep = flat.udep_label
+                    flat.dep_label = t.dep_label
+                    flat.udep_label = t.udep_label
                     t.ugov = flat
                     t.gov = flat
+                    t.dep_label = old_flat_dep
+                    t.udep_label = old_flat_udep
                     ChangeCollector.record(t.sentence.id, flat.id, f"Reordered flat structure: {flat.form} -> {t.form}", module="edges.flat")
                 else:
                     ChangeCollector.record(t.sentence.id, flat.id, f"Flat token '{flat.form}' has no UD governor.", module="edges.flat", level="WARNING")
