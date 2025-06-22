@@ -66,24 +66,32 @@ def standard_numeral(t: Token) -> None:
     t.ugov = comp_t
     t.gov = comp_t
     t.udep_label = numeral_label(t)
-    for c in t.children:
+    for c in t.children2:
         if c != comp_t and c.dep_label not in ['mwe', 'adjunct_compar']:
-            if (
-                c.lemma in [
-                    'ani', 'aż', 'blisko', 'bodaj', 'co', 'dopiero', 'jedynie', 'jeszcze', 'chociaż', 'coraz', 'jak',
-                    'już', 'najwyżej', 'naprawdę', 'nawet', 'niemal', 'niespełna', 'około', 'ponad', 'prawie', 'przeszło',
-                    'przynajmniej', 'raptem', 'tak', 'tylko', 'z', 'za', 'zaledwie', 'zapewne', 'zbyt', 'znacznie'
-                ]
-                and c.upos in ['PART', 'X']
-                and c.dep_label in ['adjunct', 'adjunct_emph']
-            ):
-                pass
-            elif (c.lemma in ['jakiś', 'jaki', 'ten', 'wszystek'] and c.upos == 'DET' and c.dep_label == 'adjunct'):
-                pass
+            if int(c.id) < int(t.id):
+                if (
+                    c.lemma in [
+                        'ani', 'aż', 'blisko', 'bodaj', 'co', 'dopiero', 'jedynie', 'jeszcze', 'chociaż', 'coraz', 'jak',
+                        'już', 'najwyżej', 'naprawdę', 'nawet', 'niemal', 'niespełna', 'około', 'ponad', 'prawie', 'przeszło',
+                        'przynajmniej', 'raptem', 'tak', 'tylko', 'z', 'za', 'zaledwie', 'zapewne', 'zbyt', 'znacznie'
+                    ]
+                    and c.upos in ['PART', 'X']
+                    and c.dep_label in ['adjunct', 'adjunct_emph']
+                ):
+                    pass
+                elif (c.lemma in ['jakiś', 'jaki', 'ten', 'wszystek'] and c.upos == 'DET' and c.dep_label == 'adjunct'):
+                    pass
+                else:
+                    ChangeCollector.record(t.sentence.id, c.id, f"Setting ugov of {c.id} to {comp_t.id} with label {cl(c)}", module="structures.numeral3", level='DEBUG')
+                    c.udep_label = cl(c)
+                    c.gov = comp_t
+                    c.ugov = comp_t
             else:
-                ChangeCollector.record(t.sentence.id, c.id, f"Setting ugov of {c.id} to {comp_t.id} with label {cl(c)}", module="structures.numeral3", level='DEBUG')
-                c.ugov = comp_t
+                ChangeCollector.record(t.sentence.id, c.id, f"Setting ugov of {c.id} to {t.id} with label {cl(c)}", module="structures.numeral3.5", level='DEBUG')
                 c.udep_label = cl(c)
+                c.gov = comp_t
+                c.ugov = comp_t
+
 
 
 def coordinated_numeral(t: Token) -> None:
