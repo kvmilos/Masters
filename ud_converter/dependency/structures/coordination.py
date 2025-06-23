@@ -117,10 +117,10 @@ def coordination(t: Token, gov: Token, punct_conj: bool = False, ud_label: str |
             # Add enhanced dependency from the super-governor to the main conjunct
             if t.gov and t.gov.gov_id and (not t.gov.gov or len(t.gov.gov.children_with_label('conjunct')) == 0):
                 ChangeCollector.record(t.sentence.id, main_c.id, f"Adding eud {t.gov.gov_id}: {cl(t.gov)} to '{main_c.form}'", module="structures.coordination-eud1")
-                main_c.eud = {t.gov.gov_id: cl(t.gov)}
+                main_c.eud = {t.gov.gov_id: cl(t.gov, n=gov)}
         elif t.gov_id and t.gov_id not in main_c.eud and (not t.gov or t.gov.pos != 'conj') and (not t.gov or t.gov.upos != 'PUNCT'):
             ChangeCollector.record(t.sentence.id, main_c.id, f"Adding eud {t.gov_id}: {cl(t.gov) if t.gov else 'root'} to '{main_c.form}'", module="structures.coordination-eud2")
-            main_c.eud = {t.gov_id: cl(t.gov) if t.gov else 'root'}
+            main_c.eud = {t.gov_id: cl(main_c) if t.gov else 'root'}
 
         puncts.append(t)
 

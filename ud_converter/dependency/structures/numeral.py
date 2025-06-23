@@ -51,14 +51,11 @@ def standard_numeral(t: Token) -> None:
     :param Token t: The numeral Token to convert
     """
     comp = t.children_with_label('comp')
-    if len(comp) != 1:
-        ChangeCollector.record(t.sentence.id, t.id, f"Expected 1 comp child, got {len(comp)} for standard numeral phrase: '{t.form}'", module="structures.numeral", level='WARNING')
-        return
     comp_t = comp[0]
-    if t.gov:
-        ChangeCollector.record(t.sentence.id, comp_t.id, f"Setting ugov of {comp_t.id} to {t.gov.id} and the non-UD label to '{t.dep_label}'", module="structures.numeral1", level='DEBUG')
-        comp_t.ugov = t.gov
-        comp_t.gov = t.gov
+    if t.gov2_id and t.gov2_id != '_':
+        ChangeCollector.record(t.sentence.id, comp_t.id, f"Setting ugov of {comp_t.id} to {t.gov2_id} and the non-UD label to '{t.dep_label}'", module="structures.numeral1", level='DEBUG')
+        comp_t.ugov_id = t.gov2_id
+        comp_t.gov_id = t.gov2_id
         comp_t.udep_label = '_'
         comp_t.dep_label = t.dep_label
 
