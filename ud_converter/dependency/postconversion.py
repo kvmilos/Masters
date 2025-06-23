@@ -20,6 +20,7 @@ def postconversion(s: Sentence) -> None:
     pronouns_disambiguation(s)
     default_label_conversion(s)
     complete_eud(s)
+    conj_eud_correction(s)
 
 
 def complete_eud(s: Sentence) -> None:
@@ -78,6 +79,27 @@ def complete_eud(s: Sentence) -> None:
                     module="postconversion"
                 )
                 t.data['eud'][gov] = t.ugov.udep_label
+
+
+def conj_eud_correction(s: Sentence) -> None:
+    """
+    Converts conjunct dependencies to enhanced dependencies.
+
+    This function processes each token in the sentence and converts
+    conjunct dependencies to enhanced dependencies according to the
+    Universal Dependencies guidelines.
+
+    :param Sentence s: The sentence to process
+    """
+    for t in s.tokens:
+        if t.udep_label == 'conj':
+            # Reset enhanced dependencies to those of the governor, then add 'conj'
+            deps = t.data['eud']
+            deps.clear()
+            for gov_key, gov_label in t.gov2.data['eud'].items():  # type: ignore
+                if gov_label != 'root':
+                    t.eud = {gov_key: gov_label}
+            t.eud = {t.gov2_id: 'conj'}  # set the conjunct label
 
 
 def default_label_conversion(s: Sentence) -> None:
