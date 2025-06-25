@@ -21,6 +21,18 @@ def postconversion(s: Sentence) -> None:
     default_label_conversion(s)
     complete_eud(s)
     conj_eud_correction(s)
+    add_extpos(s)
+
+
+def add_extpos(s: Sentence) -> None:
+    """
+    Adds external part-of-speech tags to the adequate tokens in a sentence.
+
+    :param Sentence s: The sentence to process
+    """
+    for t in s.tokens:
+        if t.upos == 'ADP' and t.udep_label.startswith('advmod'):
+            t.data['ext_pos'] = 'ADV'
 
 
 def complete_eud(s: Sentence) -> None:
