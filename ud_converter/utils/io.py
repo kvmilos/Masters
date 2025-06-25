@@ -68,7 +68,7 @@ def write_ud_conll(sentences: list[Sentence], outfile_path: str, meta: dict[str,
     :param str outfile_path: Path to the output file
     :param meta: Dictionary of metadata keyed by sentence index (as string)
     """
-    with open(outfile_path, 'w', encoding='utf-8') as out:
+    with open(outfile_path, 'w', encoding='utf-8', newline='\n') as out:
         for idx, sentence in enumerate(sentences, start=1):
             # if exists, set metadata, if not None, set empty dict
             sent_meta = meta[str(idx)] if meta else {}
