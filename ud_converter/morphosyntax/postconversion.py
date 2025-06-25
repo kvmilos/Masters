@@ -123,8 +123,8 @@ def add_no_space_misc(s: Sentence, text: str | None) -> None:
 
     pointer = 0
     for i, token in enumerate(new_tokens):
-        if '-' in token.id:
-            continue
+        # if '-' in token.id:
+        #     continue
 
         token_form = token.form
         pos = text.find(token_form, pointer)
