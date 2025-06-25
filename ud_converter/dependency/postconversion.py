@@ -40,7 +40,7 @@ def complete_eud(s: Sentence) -> None:
             if t.udep_label == 'mark_rel':
                 ChangeCollector.record(t.sentence.id, t.id, f"Converting mark_rel to mark for token: '{t.form}'", module="postconversion")
                 t.udep_label = 'mark'
-                if t.ugov and t.ugov.gov_id:
+                if t.ugov and t.ugov.gov_id != '0':
                     t.eud = {t.ugov.gov_id: 'ref'}
 
             # Add the basic dependency to the enhanced dependencies
@@ -67,7 +67,10 @@ def complete_eud(s: Sentence) -> None:
 
                 # remove the placeholder and insert under the real ID
                 del t.data['eud'][gov]
-                t.eud = {real_id: label}
+                if real_id != '0':
+                    t.eud = {real_id: label}
+            elif t.data['eud'][gov] == 'mark_rel':
+                t.data['eud'][gov] = 'mark'
 
         # Convert any “_” labels to the true UD label without clobbering other entries
         for gov, lab in list(t.data['eud'].items()):
