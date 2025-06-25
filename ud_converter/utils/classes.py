@@ -7,6 +7,7 @@ converted Universal Dependencies properties.
 """
 import re
 from collections import defaultdict
+import unicodedata
 from utils.constants import feats_dict, MULTIWORD_EXPRESSIONS as MWE
 from utils.logger import LoggingDict
 
@@ -93,7 +94,7 @@ class Sentence:
         :param out: Output stream to write to
         """
         for key, value in self.meta.items():
-            out.write(f"# {key} = {value}\n")
+            out.write(f"# {unicodedata.normalize('NFC', key)} = {unicodedata.normalize('NFC', value)}\n")
 
     def to_string(self, form='mpdt') -> str:
         """
@@ -217,7 +218,7 @@ class Token:
             self.data['sent_id'] = columns[8]
             self.data['misc'] = columns[9]
             self.data['umisc'] = defaultdict(str)
-            self.data['umisc']['Translit'] = columns[9]
+            self.data['umisc']['Translit'] = columns[9].lstrip()
         else:
             self.data = LoggingDict(self)
             self.data['id'] = '_'
