@@ -13,6 +13,7 @@ logs/
 
 # Not-repository data
 data/
+tools-master/
 
 # LaTeX files
 *.aux
@@ -28,3 +29,4 @@ data/
 
 # MyPy cache
 .mypy_cache/
+tools-master/
