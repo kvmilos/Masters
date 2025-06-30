@@ -19,9 +19,10 @@ def postconversion(s: Sentence) -> None:
     """
     pronouns_disambiguation(s)
     default_label_conversion(s)
+    unit_fixes(s)
     complete_eud(s)
-    conj_eud_correction(s)
-    add_extpos(s)
+    eud_correction(s)
+    add_extpos(s) # nie działa - czemu?
 
 
 def add_extpos(s: Sentence) -> None:
@@ -31,8 +32,38 @@ def add_extpos(s: Sentence) -> None:
     :param Sentence s: The sentence to process
     """
     for t in s.tokens:
-        if t.upos == 'ADP' and t.udep_label.startswith('advmod'):
-            t.data['ext_pos'] = 'ADV'
+        if t.children_with_ud_label('fixed'):
+            if t.upos == 'ADP' and t.udep_label.startswith('advmod'):
+                t.feats = {'ExtPos': 'ADV'}
+            else:
+                t.feats = {'ExtPos': t.upos}
+
+
+def unit_fixes(s: Sentence) -> None:
+    """
+    Fixes certain issues in the dependency graph for a sentence.
+    """
+    for t in s.tokens:
+        if t.lemma == 'jako' and t.children_with_lemma('ż') and t.dep_label == 'adjunct_caus':
+            ze = t.children_with_lemma('ż')[0]
+            ze.udep_label = 'fixed'
+            shead = t.children_with_ud_label('ccomp')[0]
+            gov = t.ugov
+            shead.ugov = gov  # type: ignore
+            shead.udep_label = 'advcl'
+            t.ugov = shead
+            t.udep_label = 'mark'
+            t.eud.clear()
+        elif t.lemma == 'jako' and t.children_with_ud_label('xcomp:pred') and t.gov.upos == 'VERB':  # type: ignore
+            xcomp = t.children_with_ud_label('xcomp:pred')[0]
+            xcomp.udep_label = 'obl'
+            xcomp.ugov_id = t.gov2_id  # type: ignore
+            xcomp.eud.clear()
+            t.ugov = xcomp
+            t.udep_label = 'case'
+            t.upos = 'ADP'
+            t.eud.clear()
+
 
 
 def complete_eud(s: Sentence) -> None:
@@ -96,7 +127,7 @@ def complete_eud(s: Sentence) -> None:
                 t.data['eud'][gov] = t.ugov.udep_label
 
 
-def conj_eud_correction(s: Sentence) -> None:
+def eud_correction(s: Sentence) -> None:
     """
     Converts conjunct dependencies to enhanced dependencies.
 
@@ -115,6 +146,11 @@ def conj_eud_correction(s: Sentence) -> None:
                 if gov_label != 'root':
                     t.eud = {gov_key: gov_label}
             t.eud = {t.gov2_id: 'conj'}  # set the conjunct label
+        # if t.gov_id != 0 and there are any 'root' relations in eud, remove  them
+        if t.gov2_id != '0' and any(label == 'root' for label in t.data['eud'].values()):
+            for gov in list(t.data['eud'].keys()):
+                if t.data['eud'][gov] == 'root':
+                    del t.data['eud'][gov]
 
 
 def default_label_conversion(s: Sentence) -> None:
