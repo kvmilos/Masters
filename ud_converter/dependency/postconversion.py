@@ -20,23 +20,132 @@ def postconversion(s: Sentence) -> None:
     pronouns_disambiguation(s)
     default_label_conversion(s)
     unit_fixes(s)
+    fix_fixed(s)
+    add_extpos(s)
     complete_eud(s)
     eud_correction(s)
-    add_extpos(s) # nie działa - czemu?
+
+
+def fix_fixed(s: Sentence) -> None:
+    """
+    Fixes some 'fixed' dependency labels in a sentence.
+    """
+    for t in s.tokens:
+        if t.children_with_ud_label('fixed'):
+            if t.pos.startswith('brev'):
+                for child in t.children_with_ud_label('fixed'):
+                    child.udep_label = 'flat'
+            elif t.lemma == 'po' and t.children_with_ud_label('fixed')[0].upos == 'NOUN':
+                child = t.children_with_ud_label('fixed')[0]
+                if t.gov2 and t.gov2.upos == 'NOUN':
+                    child.ugov_id = t.gov2.gov2_id
+                    child.udep_label = 'obl'
+                    t.ugov_id = child.id
+            elif t.upos == 'X' and t.children_with_ud_label('fixed')[0].upos == 'NOUN' and t.ugov:
+                ugov_id = t.ugov_id
+                child = t.children_with_ud_label('fixed')[0]
+                t.ugov_id = t.children_with_ud_label('fixed')[0].id
+                t.udep_label = 'nummod'
+                child.udep_label = 'nmod'
+                child.ugov_id = ugov_id
+            elif t.lemma == 'ni' and all(t.children_with_ud_label('fixed')[i].lemma in ['w', 'co'] for i in range(len(t.children_with_ud_label('fixed')))):
+                c1 = t.children_with_ud_label('fixed')[0] if t.children_with_ud_label('fixed')[0].lemma == 'w' else t.children_with_ud_label('fixed')[1]
+                c2 = t.children_with_ud_label('fixed')[1] if t.children_with_ud_label('fixed')[0].lemma == 'w' else t.children_with_ud_label('fixed')[0]
+                if t.gov2 and t.gov2.gov2:
+                    c1.ugov = c2
+                    c1.udep_label = 'case'
+                    c2.ugov = t.gov2
+                    c2.udep_label = 'obl:arg'
+                    t.ugov = t.gov2.gov2
+                    t.udep_label = 'advmod:neg'
+            elif t.lemma == 'na' and t.children_with_ud_label('fixed')[0].upos == 'NOUN':
+                child = t.children_with_ud_label('fixed')[0]
+                if t.gov2 and t.udep_label == 'case':
+                    child.ugov = t.gov2
+                    child.udep_label = 'nmod'
+                    t.ugov = child
+            elif t.lemma == 'jeżeli' and t.children_with_ud_label('fixed')[0].upos == 'AUX' and t.children_with_ud_label('ccomp'):
+                if t.gov2 and t.gov2.gov2:
+                    newgov = t.gov2.gov2.children_with_ud_label('xcomp')[0]
+                    t.ugov = t.gov2.gov2
+                    t.udep_label = 'mark'
+                    ccomp = t.children_with_ud_label('ccomp')[0]
+                    ccomp.ugov = newgov
+                    ccomp.udep_label = 'advcl'
+            elif t.lemma == 'w' and t.children_with_ud_label('fixed')[0].upos == 'NOUN' and t.ufeats['Case'] == 'Loc' and t.gov2 and t.gov2.gov2:
+                child = t.children_with_ud_label('fixed')[0]
+                gov = t.gov2
+                newgov = gov.gov2.children_with_ud_label('amod')[0]
+                t.ugov = child
+                gov.ugov = child
+                child.ugov = newgov
+                child.udep_label = 'obl'
+
 
 
 def add_extpos(s: Sentence) -> None:
     """
-    Adds external part-of-speech tags to the adequate tokens in a sentence.
+    Adds external part-of-speech tags to the adequate tokens in a sentence,
+    and for each token with a 'fixed' child, writes a 3-line report entry
+    into extpos_report.txt.
+
+    Report format per fixed-child:
+      Sentence <sent_id> Tokens <parent_id>, <fixed_child_id>
+      <sentence text>
+      <parent.form> <parent.upos>, <child.form> <child.upos>, <parent.ufeats['ExtPos']>
 
     :param Sentence s: The sentence to process
     """
-    for t in s.tokens:
-        if t.children_with_ud_label('fixed'):
-            if t.upos == 'ADP' and t.udep_label.startswith('advmod'):
-                t.feats = {'ExtPos': 'ADV'}
-            else:
-                t.feats = {'ExtPos': t.upos}
+    report_path = "extpos_report.txt"
+    # open once per sentence, append mode
+    with open(report_path, "a", encoding="utf-8") as out:
+        for t in s.tokens:
+            fixed_children = t.children_with_ud_label('fixed')
+            if not fixed_children:
+                continue
+
+            # set the ExtPos feature as before
+            t.ufeats = {'ExtPos': extpos(t, t.children_with_ud_label('fixed'))}
+
+            # for each fixed child, write a 3-line record + blank line
+            for child in fixed_children:
+                # 1) Sentence header
+                out.write(f"Sentence {s.id} Tokens {t.id}, {child.id}\n")
+                # 2) Original sentence text
+                out.write(f"{s.text}\n")
+                # 3) token forms, upos, and ExtPos
+                ext = t.ufeats.get('ExtPos', '')
+                out.write(f"{t.form} {t.upos}, {child.form} {child.upos}, {ext}\n")
+                # blank line between entries
+                out.write("\n")
+
+
+def extpos(t: Token, ch: list[Token]) -> str:
+    """
+    Determines the external part-of-speech tag for a token and child(ren).
+
+    :param Token token: The token to analyze
+    :param list[Token] fixed_children: The fixed children of the token
+    :return: The external part-of-speech tag
+    :rtype: str
+    """
+    if len(ch) > 1:
+        print(f'LOL {t.sentence.id} {t.form} {[c.form for c in ch]}')
+    c = ch[0]
+    if t.upos == 'ADP' and t.udep_label.startswith('advmod'):
+        return 'ADV'
+    elif c.lemma == 'i':
+        if t.lemma == 'jako':
+            t.upos = 'SCONJ'
+            return 'SCONJ'
+        return 'CCONJ'
+    elif t.upos == 'DET' and t.ufeats['Case'] == 'Ins' and c.upos == 'NOUN':
+        return 'ADV'
+    elif t.upos == 'PART' and c.upos == 'ADV':
+        return 'ADV'
+    elif t.lemma == 'to' and t.upos == 'PART' and c.lemma == 'być' and c.upos == 'VERB' and t.udep_label == 'advmod:emph':
+        return 'CCONJ'
+    return t.upos
 
 
 def unit_fixes(s: Sentence) -> None:
@@ -63,7 +172,9 @@ def unit_fixes(s: Sentence) -> None:
             t.udep_label = 'case'
             t.upos = 'ADP'
             t.eud.clear()
-
+        elif t.lemma == 'niech' and t.ugov and t.ugov.children_with_lemma('ż'):
+            for child in t.ugov.children_with_lemma('ż'):
+                child.ugov = t
 
 
 def complete_eud(s: Sentence) -> None:

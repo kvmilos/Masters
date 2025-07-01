@@ -31,28 +31,28 @@ def preconversion(s: Sentence) -> None:
             ):
                 old_feats = t.ufeats.copy() if hasattr(t, 'ufeats') else None
                 t.ufeats = {'ConjType': 'Comp'}
-                ChangeCollector.record(t.sentence.id, t.id, f"ufeats changed from {old_feats} to {t.ufeats}", module="preconversion")
+                ChangeCollector.record(t.sentence.id, t.id, f"ufeats changed from {old_feats} to {t.ufeats}", module="preconversion1")
 
             elif (t.upos == 'AUX' and t.pos not in ['aglt', 'cond']
-                  and t.dep_label != 'aux' and t.lemma not in ['to', 'by']
+                  and not t.dep_label.startswith('aux') and t.lemma not in ['to', 'by', 'niech']
                   and len(t.children) > 0 and (not t.children_with_ud_label('conj') or len(t.children_with_ud_label('conj')) > 1)
                   and (not t.children_with_ud_label('cc') or len(t.children_with_ud_label('cc')) > 1)
             ):
                 if (not t.children_with_label('pd') or len(t.children_with_label('pd')) > 1):
                     old_upos = t.upos
                     t.upos = 'VERB'
-                    ChangeCollector.record(t.sentence.id, t.id, f"upos changed from {old_upos} to {t.upos}", module="preconversion")
+                    ChangeCollector.record(t.sentence.id, t.id, f"upos changed from {old_upos} to {t.upos}", module="preconversion2")
 
             elif (t.upos == 'AUX' and t.pos not in ['aglt', 'cond']
                   and not t.children and t.lemma == 'być'
-                  and t.dep_label not in ['aux', 'aglt']
+                  and t.dep_label != 'aglt' and not t.dep_label.startswith('aux')
             ):
                 if t.super_gov_via_label('conjunct'):
-                    if t.super_gov_via_label('conjunct')[1].dep_label != 'aux' and (not t.children_with_label('pd') or len(t.children_with_label('pd')) > 1): # type: ignore
+                    if not t.super_gov_via_label('conjunct')[1].dep_label.startswith('aux') and (not t.children_with_label('pd') or len(t.children_with_label('pd')) > 1): # type: ignore
                         old_upos = t.upos
                         t.upos = 'VERB'
-                        ChangeCollector.record(t.sentence.id, t.id, f"upos changed from {old_upos} to {t.upos}", module="preconversion")
+                        ChangeCollector.record(t.sentence.id, t.id, f"upos changed from {old_upos} to {t.upos}", module="preconversion3")
                 else:
                     old_upos = t.upos
                     t.upos = 'VERB'
-                    ChangeCollector.record(t.sentence.id, t.id, f"upos changed from {old_upos} to {t.upos}", module="preconversion")
+                    ChangeCollector.record(t.sentence.id, t.id, f"upos changed from {old_upos} to {t.upos}", module="preconversion4")
