@@ -35,6 +35,10 @@ def fix_fixed(s: Sentence) -> None:
             if t.pos.startswith('brev'):
                 for child in t.children_with_ud_label('fixed'):
                     child.udep_label = 'flat'
+            elif t.pos != 'dig' and any(child.pos.startswith('brev') for child in t.children_with_ud_label('fixed')):
+                for child in t.children_with_ud_label('fixed'):
+                    if child.pos.startswith('brev'):
+                        child.udep_label = 'flat'
             elif t.lemma == 'po' and t.children_with_ud_label('fixed')[0].upos == 'NOUN':
                 child = t.children_with_ud_label('fixed')[0]
                 if t.gov2 and t.gov2.upos == 'NOUN':
@@ -75,11 +79,35 @@ def fix_fixed(s: Sentence) -> None:
             elif t.lemma == 'w' and t.children_with_ud_label('fixed')[0].upos == 'NOUN' and t.ufeats['Case'] == 'Loc' and t.gov2 and t.gov2.gov2:
                 child = t.children_with_ud_label('fixed')[0]
                 gov = t.gov2
-                newgov = gov.gov2.children_with_ud_label('amod')[0]
+                newgov = gov.gov2.children_with_ud_label('amod')[0]  # type: ignore
                 t.ugov = child
                 gov.ugov = child
                 child.ugov = newgov
                 child.udep_label = 'obl'
+            elif t.upos == 'PUNCT' and t.gov2.upos == 'X' and t.children_with_ud_label('fixed')[0].upos == 'X':  # type: ignore
+                child = t.children_with_ud_label('fixed')[0]
+                t.udep_label = 'flat'
+                child.udep_label = 'flat'
+            elif t.pos == 'conj' and t.next and t.next.upos == 'NUM' and t.gov2 and t.gov2.upos == 'NUM':
+                gov = t.gov2
+                num = t.next
+                t.udep_label = 'cc'
+                num.ugov = gov
+                num.udep_label = 'conj'
+            # elif t.lemma == 'milion' and t.children_with_ud_label('fixed')[0].lemma == 'milion':
+            #     child = t.children_with_ud_label('fixed')[0]
+            #     t.upos = 'NUM'
+            #     child.upos = 'NUM'
+            #     t.udep_label = 'nummod'
+            #     child.udep_label = 'flat'
+            #     gov_list = t.children_with_ud_label('nmod:arg')
+            #     if gov_list and t.gov2:
+            #         gov = gov_list[0]
+            #         gov.ugov = t.gov2
+            #         t.ugov = gov
+            #         gov.udep_label = 'nmod:tmod'
+            elif t.lemma in ['sto', 'tysiąc', 'milion'] and t.children_with_ud_label('fixed')[0].lemma in ['sto', 'tysiąc', 'milion']:
+                t.children_with_ud_label('fixed')[0].udep_label = 'flat'
 
 
 
@@ -132,19 +160,37 @@ def extpos(t: Token, ch: list[Token]) -> str:
     if len(ch) > 1:
         print(f'LOL {t.sentence.id} {t.form} {[c.form for c in ch]}')
     c = ch[0]
+    if t.lemma == 'dla' and c.form == 'tego':
+        return 'SCONJ'
     if t.upos == 'ADP' and t.udep_label.startswith('advmod'):
+        if t.lemma == 'wraz' and c.lemma == 'z':
+            return 'ADP'
         return 'ADV'
-    elif c.lemma == 'i':
+    if c.lemma == 'i':
         if t.lemma == 'jako':
             t.upos = 'SCONJ'
             return 'SCONJ'
         return 'CCONJ'
-    elif t.upos == 'DET' and t.ufeats['Case'] == 'Ins' and c.upos == 'NOUN':
+    if t.upos == 'DET' and t.ufeats['Case'] == 'Ins' and c.upos == 'NOUN':
         return 'ADV'
-    elif t.upos == 'PART' and c.upos == 'ADV':
+    if t.upos == 'PART' and c.upos == 'ADV':
         return 'ADV'
-    elif t.lemma == 'to' and t.upos == 'PART' and c.lemma == 'być' and c.upos == 'VERB' and t.udep_label == 'advmod:emph':
+    if t.lemma == 'to' and t.upos == 'PART' and c.lemma == 'być' and c.upos == 'VERB' and t.udep_label == 'advmod:emph':
         return 'CCONJ'
+    if t.lemma == 'za' and c.form == 'czym':
+        return 'SCONJ'
+    if t.lemma == 'a' and c.lemma in ['mianowicie', 'niżeli']:
+        return 'CCONJ'
+    if t.lemma == 'jednak' and c.lemma == 'że':
+        return 'CCONJ'
+    if t.upos in ['DET', 'PRON', 'NOUN'] and c.upos in ['DET', 'PRON', 'NOUN'] and t.form.istitle() and c.form.istitle():
+        return 'PROPN'
+    if t.lemma == 'gdy' and c.lemma == 'by':
+        return 'SCONJ'
+    if t.lemma == 'czy' and c.lemma == 'to':
+        return 'SCONJ'
+    if t.upos == 'X':
+        return c.upos
     return t.upos
 
 
