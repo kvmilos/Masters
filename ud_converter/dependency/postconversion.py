@@ -23,6 +23,7 @@ def postconversion(s: Sentence) -> None:
     fix_fixed(s)
     add_extpos(s)
     complete_eud(s)
+    ufeats_correction(s)
     eud_correction(s)
 
 
@@ -162,9 +163,9 @@ def extpos(t: Token, ch: list[Token]) -> str:
     c = ch[0]
     if t.lemma == 'dla' and c.form == 'tego':
         return 'SCONJ'
+    if t.lemma in ['wraz', 'razem'] and c.lemma in ['z', 'ze']:
+        return 'ADP'
     if t.upos == 'ADP' and t.udep_label.startswith('advmod'):
-        if t.lemma == 'wraz' and c.lemma == 'z':
-            return 'ADP'
         return 'ADV'
     if c.lemma == 'i':
         if t.lemma == 'jako':
@@ -189,6 +190,12 @@ def extpos(t: Token, ch: list[Token]) -> str:
         return 'SCONJ'
     if t.lemma == 'czy' and c.lemma == 'to':
         return 'SCONJ'
+    if t.lemma == 'jako' and t.upos == 'ADP' and c.lemma == 'to' and c.upos == 'PART':
+        return 'SCONJ'
+    if t.lemma == 'sam' and c.lemma == 'przez' and ch[1].lemma == 'się':
+        return 'ADV'
+    if t.lemma == 'co' and c.lemma == 'do':
+        return 'ADP'
     if t.upos == 'X':
         return c.upos
     return t.upos
@@ -221,6 +228,16 @@ def unit_fixes(s: Sentence) -> None:
         elif t.lemma == 'niech' and t.ugov and t.ugov.children_with_lemma('ż'):
             for child in t.ugov.children_with_lemma('ż'):
                 child.ugov = t
+
+def ufeats_correction(s: Sentence) -> None:
+    """
+    Corrects the ufeats dictionary for each token in the sentence.
+    """
+    for t in s.tokens:
+        if 'Case' in t.ufeats and t.ufeats['Case'] == '':
+            # If the Case feature is empty, remove it
+            del t.ufeats['Case']
+            ChangeCollector.record(t.sentence.id, t.id, f"Removed empty 'Case' feature for token: '{t.form}'", module="postconversion")
 
 
 def complete_eud(s: Sentence) -> None:
