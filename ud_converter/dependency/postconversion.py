@@ -19,12 +19,29 @@ def postconversion(s: Sentence) -> None:
     """
     pronouns_disambiguation(s)
     default_label_conversion(s)
+    default_ugov(s)
     unit_fixes(s)
     fix_fixed(s)
-    add_extpos(s)
+    fix_det_child(s)
+    fix_conj_order(s)
+    fix_mark(s)
+    add_extpos(s)  # Not sure, either warnings or errors
+    punct_correction(s)  # MPDT_2000 specific! Delete if using another corpus
     complete_eud(s)
     ufeats_correction(s)
     eud_correction(s)
+
+
+def default_ugov(s: Sentence) -> None:
+    """
+    Sets the gov -> ugov for tokens that don't have a ugov.
+    """
+    for t in s.tokens:
+        if '-' not in t.id:
+            if t.ugov_id == '_':
+                # If the enhanced governor ID is '_', set it to the basic governor ID
+                t.ugov_id = t.gov_id
+                ChangeCollector.record(t.sentence.id, t.id, f"Setting gov -> ugov ({t.gov_id}) for token: '{t.form}'", module="postconversion")
 
 
 def fix_fixed(s: Sentence) -> None:
@@ -111,6 +128,98 @@ def fix_fixed(s: Sentence) -> None:
                 t.children_with_ud_label('fixed')[0].udep_label = 'flat'
 
 
+def fix_mark(s: Sentence) -> None:
+    """
+    Fix problems with 'mark'
+    """
+    for t in s.tokens:
+        if t.udep_label == 'mark_rel' and t.lemma == 'co':
+            t.upos = 'PART'
+            t.ufeats.clear()
+        elif t.udep_label == 'mark' and t.upos == 'DET':
+            t.udep_label = 'det'
+
+
+
+def fix_det_child(s: Sentence) -> None:
+    """
+    Fixes [L3 Syntax leaf-det] 'det' not expected to have children error.
+    """
+    for t in s.tokens:
+        if t.udep_label != 'det' or not t.uchildren or t.lemma == 'pewien':
+            continue
+        for child in t.uchildren:
+            if child.udep_label in ['fixed', 'flat'] or child.udep_label.startswith('advmod') or child.udep_label.startswith('obl'):
+                continue
+            if t.ugov and child.upos != 'PART':
+                child.ugov = t.ugov
+
+
+def fix_conj_order(s: Sentence) -> None:
+    """
+    Fixes the order of conjuncts in a sentence.
+    """
+    for t in s.tokens:
+        if t.udep_label == 'conj' and t.ugov and int(t.ugov.id) > int(t.id):
+            old_label = t.ugov.udep_label
+            old_gov = t.ugov.gov2_id
+            t.ugov.udep_label = 'conj'
+            t.ugov.ugov = t
+            t.ugov.eud.clear()
+            t.ugov_id = old_gov
+            t.udep_label = old_label
+            for t2 in s.tokens:
+                if t2.gov2 and t2.gov2.id == t.ugov.id and t2.udep_label == 'conj':
+                    t2.ugov = t
+                if t2.eud and t.ugov.id in t2.eud and t2.eud[t.ugov.id] == 'conj':
+                    del t2.eud[t.ugov.id]
+                    t2.eud = {t.id: 'conj'}
+
+
+def punct_correction(s: Sentence) -> None:
+    """
+    Corrects unit errors in punctuation tokens.
+    """
+    if s.id == '43':
+        for t in s.tokens:
+            if t.id == '18':
+                t.ugov_id = '17'
+    elif s.id == '239':
+        for t in s.tokens:
+            if t.id == '6':
+                t.ugov_id = '5'
+            elif t.id == '13':
+                t.ugov_id = '12'
+    elif s.id == '831':
+        for t in s.tokens:
+            if t.id == '2':
+                t.ugov_id = '3'
+    elif s.id == '1132':
+        for t in s.tokens:
+            if t.id == '15':
+                t.ugov_id = '13'
+    elif s.id == '1855':
+        for t in s.tokens:
+            if t.id == '8':
+                t.ugov_id = '1'
+    elif s.id == '1596':
+        for t in s.tokens:
+            if t.id == '6':
+                t.ugov_id = '0'
+                t.udep_label = 'root'
+                t.data['eud'].clear()
+            elif t.id == '7':
+                t.ugov_id = '6'
+            elif t.id == '10' or t.id == '13':
+                t.ugov_id = '6'
+                t.data['eud'].clear()
+                t.data['eud']['6'] = 'conj'
+            elif t.id == '17':
+                t.ugov_id = '6'
+    for t in s.tokens:
+        if t.upos == 'PUNCT' and t.udep_label != 'punct':
+            t.udep_label = 'punct'
+
 
 def add_extpos(s: Sentence) -> None:
     """
@@ -158,8 +267,8 @@ def extpos(t: Token, ch: list[Token]) -> str:
     :return: The external part-of-speech tag
     :rtype: str
     """
-    if len(ch) > 1:
-        print(f'LOL {t.sentence.id} {t.form} {[c.form for c in ch]}')
+    # if len(ch) > 1:
+    #     print(f'LOL {t.sentence.id} {t.form} {[c.form for c in ch]}')
     c = ch[0]
     if t.lemma == 'dla' and c.form == 'tego':
         return 'SCONJ'
@@ -248,11 +357,6 @@ def complete_eud(s: Sentence) -> None:
     """
     for t in s.tokens:
         if '-' not in t.id:
-            if t.ugov_id == '_':
-                # If the enhanced governor ID is '_', set it to the basic governor ID
-                t.ugov_id = t.gov_id
-                ChangeCollector.record(t.sentence.id, t.id, f"Setting gov -> ugov ({t.gov_id}) for token: '{t.form}'", module="postconversion")
-
             # Handle special cases for mark_rel
             if t.udep_label == 'mark_rel':
                 ChangeCollector.record(t.sentence.id, t.id, f"Converting mark_rel to mark for token: '{t.form}'", module="postconversion")
