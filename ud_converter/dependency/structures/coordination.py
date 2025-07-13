@@ -109,8 +109,12 @@ def coordination(t: Token, gov: Token, punct_conj: bool = False, ud_label: str |
             ChangeCollector.record(t.sentence.id, main_c.id, f"Converting punctuation '{t.form}' with conjunct '{main_c.form}'", module="structures.coordination6")
             main_c.ugov_id = gov.id
             main_c.gov_id = gov.id
-            main_c.udep_label = ud_label if ud_label else t.udep_label
-            main_c.dep_label = t.dep_label
+            if t.udep_label not in ['conj', 'punct']:
+                main_c.udep_label = ud_label if ud_label else t.udep_label
+            else:
+                main_c.udep_label = '_'
+            if t.dep_label not in ['conjunct', 'punct']:
+                main_c.dep_label = t.dep_label
 
         # Handle enhanced dependencies
         if t.dep_label == 'conjunct':
