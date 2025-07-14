@@ -23,13 +23,14 @@ def postconversion(s: Sentence) -> None:
     unit_fixes(s)
     fix_fixed(s)
     fix_det_child(s)
-    fix_conj_order(s)
+    fix_order(s)
     fix_mark(s)
     add_extpos(s)  # Not sure, either warnings or errors
     punct_correction(s)  # MPDT_2000 specific! Delete if using another corpus
     complete_eud(s)
     fix_num(s)
     fix_advmod(s)
+    delete_mark_children(s)
     ufeats_correction(s)
     eud_correction(s)
 
@@ -68,7 +69,7 @@ def fix_advmod(s: Sentence) -> None:
             t.next.next.udep_label = 'fixed'
             t.ufeats['ExtPos'] = 'ADV' # to delete if deleting extpos
         elif t.udep_label.startswith('advmod') and t.upos == 'PRON' and t.lemma == 'to' and [c for c in t.children2 if c.udep_label == 'case']:
-            t.udep_label = t.udep_label.replace('advmod', 'obl')
+            t.udep_label = 'obl'
 
 
 def fix_num(s: Sentence) -> None:
@@ -76,7 +77,7 @@ def fix_num(s: Sentence) -> None:
     Changes the UPOS of tokens with 'dig' POS and 'X' UPOS to 'NUM'.
     """
     for t in s.tokens:
-        if t.pos == 'dig' and t.upos == 'X':
+        if t.pos == 'dig':
             t.upos = 'NUM'
             ChangeCollector.record(t.sentence.id, t.id, f"Changing UPOS from 'X' to 'NUM' for token: '{t.form}'", module="postconversion")
 
@@ -168,7 +169,7 @@ def fix_fixed(s: Sentence) -> None:
 
 def fix_mark(s: Sentence) -> None:
     """
-    Fix problems with 'mark'
+    Fixes problems with 'mark'
     """
     for t in s.tokens:
         if t.udep_label == 'mark_rel' and t.lemma == 'co':
@@ -177,6 +178,15 @@ def fix_mark(s: Sentence) -> None:
         elif t.udep_label == 'mark' and t.upos == 'DET':
             t.udep_label = 'det'
 
+
+def delete_mark_children(s: Sentence) -> None:
+    """
+    Deletes children of tokens with 'mark' dependency label.
+    """
+    for t in s.tokens:
+        if t.udep_label == 'mark' and t.uchildren and t.gov2:
+            for c in t.uchildren:
+                c.ugov = t.gov2
 
 
 def fix_det_child(s: Sentence) -> None:
@@ -193,25 +203,34 @@ def fix_det_child(s: Sentence) -> None:
                 child.ugov = t.ugov
 
 
-def fix_conj_order(s: Sentence) -> None:
+def fix_order(s: Sentence) -> None:
     """
     Fixes the order of conjuncts in a sentence.
     """
     for t in s.tokens:
-        if t.udep_label == 'conj' and t.ugov and int(t.ugov.id) > int(t.id):
-            old_label = t.ugov.udep_label
-            old_gov = t.ugov.gov2_id
-            t.ugov.udep_label = 'conj'
-            t.ugov.ugov = t
-            t.ugov.eud.clear()
+        if t.udep_label == 'conj' and t.gov2 and int(t.gov2.id) > int(t.id):
+            old_label = t.gov2.udep_label
+            old_gov = t.gov2.gov2_id
+            t.gov2.udep_label = 'conj'
+            t.gov2.ugov = t
+            t.gov2.eud.clear()
             t.ugov_id = old_gov
             t.udep_label = old_label
             for t2 in s.tokens:
-                if t2.gov2 and t2.gov2.id == t.ugov.id and t2.udep_label == 'conj':
+                if t2.gov2 and t2.gov2.id == t.gov2.id and t2.udep_label == 'conj':
                     t2.ugov = t
-                if t2.eud and t.ugov.id in t2.eud and t2.eud[t.ugov.id] == 'conj':
-                    del t2.eud[t.ugov.id]
+                if t2.eud and t.gov2.id in t2.eud and t2.eud[t.gov2.id] == 'conj':
+                    del t2.eud[t.gov2.id]
                     t2.eud = {t.id: 'conj'}
+        if t.udep_label in ['fixed', 'flat'] and t.gov2 and int(t.gov2.id) > int(t.id):
+            old_label = t.gov2.udep_label
+            old_gov = t.gov2.gov2_id
+            t.gov2.udep_label = t.udep_label
+            t.gov2.ugov = t
+            t.ugov_id = old_gov
+            t.udep_label = old_label
+            t.eud = t.gov2.eud.copy() if t.gov2 and t.gov2.eud else {}
+            t.gov2.eud.clear()
 
 
 def punct_correction(s: Sentence) -> None:
@@ -239,7 +258,7 @@ def punct_correction(s: Sentence) -> None:
     elif s.id == '1855':
         for t in s.tokens:
             if t.id == '8':
-                t.ugov_id = '1'
+                t.ugov_id = '10'
     elif s.id == '1596':
         for t in s.tokens:
             if t.id == '6':
@@ -375,6 +394,7 @@ def unit_fixes(s: Sentence) -> None:
         elif t.lemma == 'niech' and t.ugov and t.ugov.children_with_lemma('ż'):
             for child in t.ugov.children_with_lemma('ż'):
                 child.ugov = t
+                child.udep_label = 'fixed'
 
 def ufeats_correction(s: Sentence) -> None:
     """
