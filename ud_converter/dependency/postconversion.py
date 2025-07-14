@@ -28,6 +28,8 @@ def postconversion(s: Sentence) -> None:
     add_extpos(s)  # Not sure, either warnings or errors
     punct_correction(s)  # MPDT_2000 specific! Delete if using another corpus
     complete_eud(s)
+    fix_num(s)
+    fix_advmod(s)
     ufeats_correction(s)
     eud_correction(s)
 
@@ -42,6 +44,41 @@ def default_ugov(s: Sentence) -> None:
                 # If the enhanced governor ID is '_', set it to the basic governor ID
                 t.ugov_id = t.gov_id
                 ChangeCollector.record(t.sentence.id, t.id, f"Setting gov -> ugov ({t.gov_id}) for token: '{t.form}'", module="postconversion")
+
+
+def fix_advmod(s: Sentence) -> None:
+    """
+    Fixes the UPOS of tokens with 'advmod' dependency label UPOS.
+    """
+    for t in s.tokens:
+        if t.udep_label.startswith('advmod') and t.upos == 'NOUN':
+            if t.lemma == 'ni':
+                t.upos = 'ADV'
+                t.feats.clear()
+            elif [c for c in t.children2 if c.udep_label == 'case']:
+                t.udep_label = 'obl'
+        elif t.pos.startswith('inf') and t.next and t.next.lemma == 'by' and t.next.upos == 'AUX' and t.next.gov2 and t.next.gov2.upos == 'NOUN':
+            t.next.ugov = t
+            t.next.upos = 'SCONJ'
+            t.next.udep_label = 'mark'
+        elif t.lemma == 'sam' and t.next and t.next.lemma == 'przez' and t.next.next and t.next.next.lemma == 'się':
+            t.next.ugov = t
+            t.next.udep_label = 'fixed'
+            t.next.next.ugov = t
+            t.next.next.udep_label = 'fixed'
+            t.ufeats['ExtPos'] = 'ADV' # to delete if deleting extpos
+        elif t.udep_label.startswith('advmod') and t.upos == 'PRON' and t.lemma == 'to' and [c for c in t.children2 if c.udep_label == 'case']:
+            t.udep_label = t.udep_label.replace('advmod', 'obl')
+
+
+def fix_num(s: Sentence) -> None:
+    """
+    Changes the UPOS of tokens with 'dig' POS and 'X' UPOS to 'NUM'.
+    """
+    for t in s.tokens:
+        if t.pos == 'dig' and t.upos == 'X':
+            t.upos = 'NUM'
+            ChangeCollector.record(t.sentence.id, t.id, f"Changing UPOS from 'X' to 'NUM' for token: '{t.form}'", module="postconversion")
 
 
 def fix_fixed(s: Sentence) -> None:
@@ -102,10 +139,11 @@ def fix_fixed(s: Sentence) -> None:
                 gov.ugov = child
                 child.ugov = newgov
                 child.udep_label = 'obl'
-            elif t.upos == 'PUNCT' and t.gov2.upos == 'X' and t.children_with_ud_label('fixed')[0].upos == 'X':  # type: ignore
+            elif t.upos == 'PUNCT' and t.gov2 and t.gov2.upos == 'X' and t.children_with_ud_label('fixed')[0].upos == 'X':  # type: ignore
                 child = t.children_with_ud_label('fixed')[0]
-                t.udep_label = 'flat'
+                t.udep_label = 'punct'
                 child.udep_label = 'flat'
+                child.ugov = t.gov2
             elif t.pos == 'conj' and t.next and t.next.upos == 'NUM' and t.gov2 and t.gov2.upos == 'NUM':
                 gov = t.gov2
                 num = t.next
@@ -271,7 +309,7 @@ def extpos(t: Token, ch: list[Token]) -> str:
     #     print(f'LOL {t.sentence.id} {t.form} {[c.form for c in ch]}')
     c = ch[0]
     if t.lemma == 'dla' and c.form == 'tego':
-        return 'SCONJ'
+        return 'ADV'
     if t.lemma in ['wraz', 'razem'] and c.lemma in ['z', 'ze']:
         return 'ADP'
     if t.upos == 'ADP' and t.udep_label.startswith('advmod'):
