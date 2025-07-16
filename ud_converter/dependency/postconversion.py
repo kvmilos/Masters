@@ -26,7 +26,9 @@ def postconversion(s: Sentence) -> None:
     fix_order(s)
     fix_mark(s)
     add_extpos(s)  # Not sure, either warnings or errors
-    punct_correction(s)  # MPDT_2000 specific! Delete if using another corpus
+    mpdt_2000_specific_fixes(s)  # MPDT_2000 specific! Delete if using another corpus
+    delete_punct_children(s)
+    delete_cc_children(s)
     complete_eud(s)
     fix_num(s)
     fix_advmod(s)
@@ -165,6 +167,10 @@ def fix_fixed(s: Sentence) -> None:
             #         gov.udep_label = 'nmod:tmod'
             elif t.lemma in ['sto', 'tysiąc', 'milion'] and t.children_with_ud_label('fixed')[0].lemma in ['sto', 'tysiąc', 'milion']:
                 t.children_with_ud_label('fixed')[0].udep_label = 'flat'
+            elif [c for c in t.children2 if c.form.lower() == t.form.lower() and c.udep_label == 'fixed']:
+                for c in t.children2:
+                    if c.form.lower() == t.form.lower() and c.udep_label == 'fixed' and t.next and t.next.lemma == 'nie' and t.next.gov2 == c:
+                        c.udep_label = 'flat'
 
 
 def fix_mark(s: Sentence) -> None:
@@ -184,9 +190,39 @@ def delete_mark_children(s: Sentence) -> None:
     Deletes children of tokens with 'mark' dependency label.
     """
     for t in s.tokens:
-        if t.udep_label == 'mark' and t.uchildren and t.gov2:
+        if t.udep_label == 'mark' and t.children2 and [c for c in t.children2 if c.lemma == 'by']:
+            for c in t.children2:
+                if c.lemma == 'by' and c.upos == 'AUX':
+                    c.upos = 'PART'
+        elif t.udep_label == 'mark' and t.uchildren and t.gov2:
             for c in t.uchildren:
                 c.ugov = t.gov2
+
+
+def delete_punct_children(s: Sentence) -> None:
+    """
+    Deletes children of tokens with 'punct' dependency label.
+    """
+    for t in s.tokens:
+        if t.udep_label == 'punct' and t.children2 and t.gov2:
+            for c in t.children2:
+                if c.upos != 'PUNCT':
+                    c.ugov = t.gov2
+                    if t.id in c.eud:
+                        del c.eud[t.id]
+
+
+def delete_cc_children(s: Sentence) -> None:
+    """
+    Deletes children of tokens with 'cc' dependency label.
+    """
+    for t in s.tokens:
+        if t.udep_label == 'cc' and t.children2 and t.gov2:
+            for c in t.children2:
+                if c.upos not in ['PART', 'CCONJ', 'SCONJ', 'ADV']:
+                    c.ugov = t.gov2
+                    if t.id in c.eud:
+                        del c.eud[t.id]
 
 
 def fix_det_child(s: Sentence) -> None:
@@ -233,9 +269,10 @@ def fix_order(s: Sentence) -> None:
             t.gov2.eud.clear()
 
 
-def punct_correction(s: Sentence) -> None:
+def mpdt_2000_specific_fixes(s: Sentence) -> None:
     """
-    Corrects unit errors in punctuation tokens.
+    Corrects unit errors in punctuation tokens and some other specific fixes
+    for the MPDT_2000 corpus.
     """
     if s.id == '43':
         for t in s.tokens:
@@ -276,6 +313,18 @@ def punct_correction(s: Sentence) -> None:
     for t in s.tokens:
         if t.upos == 'PUNCT' and t.udep_label != 'punct':
             t.udep_label = 'punct'
+    if s.id == '1757':
+        for t in s.tokens:
+            if t.id == '5':
+                t.udep_label = 'flat'
+    elif s.id == '942':
+        for t in s.tokens:
+            if t.id == '37':
+                t.udep_label = 'flat'
+    elif s.id == '536':
+        for t in s.tokens:
+            if t.id == '5':
+                t.udep_label = 'flat'
 
 
 def add_extpos(s: Sentence) -> None:
