@@ -25,8 +25,8 @@ def postconversion(s: Sentence) -> None:
     fix_det_child(s)
     fix_order(s)
     fix_mark(s)
-    add_extpos(s)  # Not sure, either warnings or errors
     mpdt_2000_specific_fixes(s)  # MPDT_2000 specific! Delete if using another corpus
+    add_extpos(s)
     delete_punct_children(s)
     delete_cc_children(s)
     complete_eud(s)
@@ -325,6 +325,69 @@ def mpdt_2000_specific_fixes(s: Sentence) -> None:
         for t in s.tokens:
             if t.id == '5':
                 t.udep_label = 'flat'
+    elif s.id == '484':
+        for t in s.tokens:
+            if t.id == '10':
+                t.udep_label = 'case'
+                t.ugov_id = '11'
+            elif t.id == '11':
+                t.udep_label = 'obl'
+            elif t.id == '12':
+                t.udep_label = 'obl:arg'
+    elif s.id == '755':
+        for t in s.tokens:
+            if t.id == '29':
+                t.udep_label = 'obl'
+                t.ugov_id = '33'
+            elif t.id == '33':
+                t.ugov_id = '18'
+    elif s.id == '1202':
+        for t in s.tokens:
+            if t.id == '5':
+                t.udep_label = 'obj'
+                t.upos = 'NOUN'
+            elif t.id == '11':
+                t.upos = 'NOUN'
+                t.ugov_id = '5'
+            elif t.id == '17':
+                t.ugov_id = '5'
+                t.udep_label = 'conj'
+                t.upos = 'NOUN'
+            elif t.id in ['7', '13', '19']:
+                t.udep_label = 'nummod'
+            elif t.id == '8':
+                t.ugov_id = '7'
+            elif t.id == '14':
+                t.ugov_id = '13'
+            elif t.id == '20':
+                t.ugov_id = '19'
+            elif t.id == '9':
+                t.ugov_id = '7'
+            elif t.id == '15':
+                t.ugov_id = '13'
+            elif t.id == '21':
+                t.ugov_id = '19'
+            elif t.id in ['10', '16', '22']:
+                t.ugov = t.next # type: ignore
+    elif s.id == '319':
+        for t in s.tokens:
+            if t.id == '14':
+                t.ugov_id = '2'
+                t.udep_label = 'conj'
+    elif s.id == '501':
+        for t in s.tokens:
+            if t.id == '6':
+                t.udep_label = 'nummod'
+    elif s.id == '633':
+        for t in s.tokens:
+            if t.id in ['1', '3', '4']:
+                t.ugov_id = '5'
+            elif t.id == '5':
+                t.ugov_id = '0'
+                t.udep_label = 'root'
+            elif t.id == '8':
+                t.ugov_id = '5'
+                t.udep_label = 'ccomp'
 
 
 def add_extpos(s: Sentence) -> None:
