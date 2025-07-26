@@ -38,6 +38,10 @@ def correction(s: Sentence) -> None:
             old_upos = t.upos
             t.upos = 'AUX'
             ChangeCollector.record(t.sentence.id, t.id, f"upos changed from {old_upos} to {t.upos}", module="postconversion")
+        if t.ufeats.get('Aspect') == 'XXX':
+            ufeats2 = {k: v for k, v in t.ufeats.items() if k != 'Aspect'}
+            t.ufeats.clear()
+            t.ufeats = ufeats2
 
 
 def add_mwe(s: Sentence, text: str | None) -> None:
