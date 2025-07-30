@@ -26,6 +26,7 @@ def postconversion(s: Sentence) -> None:
     fix_order(s)
     fix_mark(s)
     mpdt_2000_specific_fixes(s)  # MPDT_2000 specific! Delete if using another corpus
+    remove_numtype_adv_kroc(s)
     add_extpos(s)
     delete_punct_children(s)
     delete_cc_children(s)
@@ -47,6 +48,16 @@ def default_ugov(s: Sentence) -> None:
                 # If the enhanced governor ID is '_', set it to the basic governor ID
                 t.ugov_id = t.gov_id
                 ChangeCollector.record(t.sentence.id, t.id, f"Setting gov -> ugov ({t.gov_id}) for token: '{t.form}'", module="postconversion1")
+
+
+def remove_numtype_adv_kroc(s: Sentence) -> None:
+    """
+    Removes the 'NumType=Ord' feature from ADV ending in -kroć
+    """
+    for t in s.tokens:
+        if t.upos == 'ADV' and t.lemma.endswith('kroć'):
+            t.ufeats.pop('NumType', None)
+            ChangeCollector.record(t.sentence.id, t.id, f"Removing 'NumType=Ord' from token: '{t.form}'", module="postconversion2")
 
 
 def fix_advmod(s: Sentence) -> None:
@@ -81,7 +92,7 @@ def fix_num(s: Sentence) -> None:
     for t in s.tokens:
         if t.pos == 'dig':
             t.upos = 'NUM'
-            ChangeCollector.record(t.sentence.id, t.id, f"Changing UPOS from 'X' to 'NUM' for token: '{t.form}'", module="postconversion2")
+            ChangeCollector.record(t.sentence.id, t.id, f"Changing UPOS from 'X' to 'NUM' for token: '{t.form}'", module="postconversion3")
 
 
 def fix_fixed(s: Sentence) -> None:
@@ -421,14 +432,14 @@ def mpdt_2000_specific_fixes(s: Sentence) -> None:
         for t in s.tokens:
             if t.id == '23':
                 t.ufeats.clear()
-    elif s.id == '213':
-        for t in s.tokens:
-            if t.id == '25':
-                t.ufeats.clear()
-    elif s.id == '213':
-        for t in s.tokens:
-            if t.id in ['13', '34']:
-                t.ufeats.clear()
+    # elif s.id == '213':
+    #     for t in s.tokens:
+    #         if t.id == '25':
+    #             t.ufeats.clear()
+    # elif s.id == '339':
+    #     for t in s.tokens:
+    #         if t.id in ['13', '34']:
+    #             t.ufeats.clear()
 
 
 def add_extpos(s: Sentence) -> None:
@@ -473,7 +484,7 @@ def extpos(t: Token, ch: list[Token]) -> str:
     if t.upos == 'ADP' and t.udep_label.startswith('advmod'):
         return 'ADV'
     if c.lemma == 'i':
-        if t.lemma == 'jako':
+        if t.lemma == 'jako' and t.upos == 'CCONJ':
             t.upos = 'SCONJ'
             return 'SCONJ'
         return 'CCONJ'
