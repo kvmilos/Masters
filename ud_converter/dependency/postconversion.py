@@ -46,7 +46,7 @@ def default_ugov(s: Sentence) -> None:
             if t.ugov_id == '_':
                 # If the enhanced governor ID is '_', set it to the basic governor ID
                 t.ugov_id = t.gov_id
-                ChangeCollector.record(t.sentence.id, t.id, f"Setting gov -> ugov ({t.gov_id}) for token: '{t.form}'", module="postconversion")
+                ChangeCollector.record(t.sentence.id, t.id, f"Setting gov -> ugov ({t.gov_id}) for token: '{t.form}'", module="postconversion1")
 
 
 def fix_advmod(s: Sentence) -> None:
@@ -81,7 +81,7 @@ def fix_num(s: Sentence) -> None:
     for t in s.tokens:
         if t.pos == 'dig':
             t.upos = 'NUM'
-            ChangeCollector.record(t.sentence.id, t.id, f"Changing UPOS from 'X' to 'NUM' for token: '{t.form}'", module="postconversion")
+            ChangeCollector.record(t.sentence.id, t.id, f"Changing UPOS from 'X' to 'NUM' for token: '{t.form}'", module="postconversion2")
 
 
 def fix_fixed(s: Sentence) -> None:
@@ -196,7 +196,8 @@ def delete_mark_children(s: Sentence) -> None:
                     c.upos = 'PART'
         elif t.udep_label == 'mark' and t.uchildren and t.gov2:
             for c in t.uchildren:
-                c.ugov = t.gov2
+                if c.udep_label != 'fixed':
+                    c.ugov = t.gov2
 
 
 def delete_punct_children(s: Sentence) -> None:
@@ -388,6 +389,34 @@ def mpdt_2000_specific_fixes(s: Sentence) -> None:
             elif t.id == '8':
                 t.ugov_id = '5'
                 t.udep_label = 'ccomp'
+    elif s.id == '689':
+        for t in s.tokens:
+            if t.id == '33':
+                t.udep_label = 'flat'
+    elif s.id == '661':
+        for t in s.tokens:
+            if t.id in ['4', '6']:
+                t.ugov_id = '2'
+    elif s.id == '999':
+        for t in s.tokens:
+            if t.id == '10':
+                t.ugov_id = '8'
+    elif s.id == '1205':
+        for t in s.tokens:
+            if t.id == '3':
+                t.udep_label = 'fixed'
+    elif s.id == '983':
+        for t in s.tokens:
+            if t.id == '4':
+                t.udep_label = 'nsubj:outer'
+    elif s.id == '1222':
+        for t in s.tokens:
+            if t.id == '14':
+                t.udep_label = 'nsubj:outer'
+    elif s.id == '1702':
+        for t in s.tokens:
+            if t.id == '18':
+                t.ugov_id = '14'
 
 
 def add_extpos(s: Sentence) -> None:
