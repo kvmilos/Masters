@@ -417,6 +417,18 @@ def mpdt_2000_specific_fixes(s: Sentence) -> None:
         for t in s.tokens:
             if t.id == '18':
                 t.ugov_id = '14'
+    elif s.id == '199':
+        for t in s.tokens:
+            if t.id == '23':
+                t.ufeats.clear()
+    elif s.id == '213':
+        for t in s.tokens:
+            if t.id == '25':
+                t.ufeats.clear()
+    elif s.id == '213':
+        for t in s.tokens:
+            if t.id in ['13', '34']:
+                t.ufeats.clear()
 
 
 def add_extpos(s: Sentence) -> None:
