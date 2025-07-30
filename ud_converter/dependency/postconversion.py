@@ -69,7 +69,7 @@ def fix_advmod(s: Sentence) -> None:
             t.next.udep_label = 'fixed'
             t.next.next.ugov = t
             t.next.next.udep_label = 'fixed'
-            t.ufeats['ExtPos'] = 'ADV' # to delete if deleting extpos
+            t.ufeats['ExtPos'] = 'ADV'
         elif t.udep_label.startswith('advmod') and t.upos == 'PRON' and t.lemma == 'to' and [c for c in t.children2 if c.udep_label == 'case']:
             t.udep_label = 'obl'
 
@@ -403,28 +403,14 @@ def add_extpos(s: Sentence) -> None:
 
     :param Sentence s: The sentence to process
     """
-    report_path = "extpos_report.txt"
-    # open once per sentence, append mode
-    with open(report_path, "a", encoding="utf-8") as out:
-        for t in s.tokens:
-            fixed_children = t.children_with_ud_label('fixed')
-            if not fixed_children:
-                continue
+    # open once per sentence
+    for t in s.tokens:
+        fixed_children = t.children_with_ud_label('fixed')
+        if not fixed_children:
+            continue
 
-            # set the ExtPos feature as before
-            t.ufeats = {'ExtPos': extpos(t, t.children_with_ud_label('fixed'))}
-
-            # for each fixed child, write a 3-line record + blank line
-            for child in fixed_children:
-                # 1) Sentence header
-                out.write(f"Sentence {s.id} Tokens {t.id}, {child.id}\n")
-                # 2) Original sentence text
-                out.write(f"{s.text}\n")
-                # 3) token forms, upos, and ExtPos
-                ext = t.ufeats.get('ExtPos', '')
-                out.write(f"{t.form} {t.upos}, {child.form} {child.upos}, {ext}\n")
-                # blank line between entries
-                out.write("\n")
+        # set the ExtPos feature
+        t.ufeats = {'ExtPos': extpos(t, t.children_with_ud_label('fixed'))}
 
 
 def extpos(t: Token, ch: list[Token]) -> str:
