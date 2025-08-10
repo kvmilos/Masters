@@ -436,6 +436,16 @@ def mpdt_2000_specific_fixes(s: Sentence) -> None:
         for t in s.tokens:
             if t.id == '2':
                 t.udep_label = 'flat'
+    elif s.id == '1908':
+        for t in s.tokens:
+            if t.id == '10':
+                t.ugov_id = '9'
+                t.udep_label = 'nmod'
+            elif t.id == '8':
+                t.ufeats.clear()
+                t.upos = 'NUM'
+                t.ufeats['NumType'] = 'Card'
+                t.ufeats['NumForm'] = 'Word'
 
 
 def add_extpos(s: Sentence) -> None:
@@ -516,6 +526,12 @@ def extpos(t: Token, ch: list[Token]) -> str:
         return 'CCONJ'
     if t.lemma == 'czy' and c.lemma == 'li' and c.next and c.next.lemma == 'ż':
         return 'ADV'
+    if t.lemma == 'i' and c.upos == 'PART' and t.udep_label == 'advmod:emph':
+        return 'ADV'
+    if t.lemma == 'co' and c.lemma == 'za':
+        return 'ADV'
+    if t.lemma == 'a' and c.lemma in ['zatym', 'zatem']:
+        return 'ADV'
     if t.upos == 'X':
         return c.upos
     return t.upos
@@ -551,6 +567,8 @@ def unit_fixes(s: Sentence) -> None:
                 child.udep_label = 'fixed'
         elif t.form in ['ż', 'ć'] and t.gov2 and t.udep_label == 'fixed' and t.upos == 'PART':
             t.udep_label = 'advmod:emph'
+        elif t.upos == 'ADV' and 'NumType' in t.ufeats:
+            t.ufeats.pop('NumType', None)
 
 def ufeats_correction(s: Sentence) -> None:
     """
