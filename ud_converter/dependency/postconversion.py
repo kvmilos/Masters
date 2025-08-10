@@ -415,7 +415,7 @@ def mpdt_2000_specific_fixes(s: Sentence) -> None:
     elif s.id == '1205':
         for t in s.tokens:
             if t.id == '3':
-                t.udep_label = 'fixed'
+                t.ugov_id = '5'
     elif s.id == '983':
         for t in s.tokens:
             if t.id == '4':
@@ -432,14 +432,10 @@ def mpdt_2000_specific_fixes(s: Sentence) -> None:
         for t in s.tokens:
             if t.id == '23':
                 t.ufeats.clear()
-    # elif s.id == '213':
-    #     for t in s.tokens:
-    #         if t.id == '25':
-    #             t.ufeats.clear()
-    # elif s.id == '339':
-    #     for t in s.tokens:
-    #         if t.id in ['13', '34']:
-    #             t.ufeats.clear()
+    elif s.id == '1011':
+        for t in s.tokens:
+            if t.id == '2':
+                t.udep_label = 'flat'
 
 
 def add_extpos(s: Sentence) -> None:
@@ -506,12 +502,20 @@ def extpos(t: Token, ch: list[Token]) -> str:
         return 'SCONJ'
     if t.lemma == 'czy' and c.lemma == 'to':
         return 'SCONJ'
-    if t.lemma == 'jako' and t.upos == 'ADP' and c.lemma == 'to' and c.upos == 'PART':
+    if t.lemma == 'jako' and c.lemma == 'to' and t.udep_label.startswith('adv'):
+        return 'ADV'
+    if t.lemma == 'jako' and t.upos in ['ADP', 'PART'] and c.lemma == 'to' and c.upos == 'PART':
         return 'SCONJ'
     if t.lemma == 'sam' and c.lemma == 'przez' and ch[1].lemma == 'się':
         return 'ADV'
     if t.lemma == 'co' and c.lemma == 'do':
         return 'ADP'
+    if t.lemma == 'jednak' and t.upos == 'PART' and c.lemma == 'ż' and c.upos == 'PART':
+        return 'CCONJ'
+    if t.lemma == 'nie' and c.lemma == 'tylko':
+        return 'CCONJ'
+    if t.lemma == 'czy' and c.lemma == 'li' and c.next and c.next.lemma == 'ż':
+        return 'ADV'
     if t.upos == 'X':
         return c.upos
     return t.upos
@@ -545,6 +549,8 @@ def unit_fixes(s: Sentence) -> None:
             for child in t.ugov.children_with_lemma('ż'):
                 child.ugov = t
                 child.udep_label = 'fixed'
+        elif t.form in ['ż', 'ć'] and t.gov2 and t.udep_label == 'fixed' and t.upos == 'PART':
+            t.udep_label = 'advmod:emph'
 
 def ufeats_correction(s: Sentence) -> None:
     """
