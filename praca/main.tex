@@ -6,6 +6,12 @@
 \usepackage{subfiles}
 \usepackage{chngcntr}
 
+% ---- Bibliography (biblatex + biber) ----
+\usepackage[backend=biber,style=numeric,sorting=nyt,maxnames=6,giveninits=true]{biblatex}
+\addbibresource{proposed.bib}
+\usepackage{csquotes}
+
+
 \hypersetup{
   colorlinks=true,
   linkcolor=black,
@@ -30,6 +36,7 @@ University of Warsaw}
 \tytulang{Middle Polish Dependency Treebank in Universal Dependencies format: Design, Implementation, and Analysis}
 
 \begin{document}
+\pagenumbering{gobble}% hide page numbers for front matter (title, abstracts, ToC)
 \maketitle
 
 \titlepl{Średniopolski Bank Drzew Zależnościowych w formacie Universal Dependencies: projekt, implementacja i analiza}
@@ -44,8 +51,10 @@ Praca przedstawia podejście regułowe do konwersji Średniopolskiego Banku Drze
 \tableofcontents
 
 % --- CHAPTER 1 ---
-\chapter{Introduction}
+\cleardoublepage
 \pagenumbering{arabic}
+\setcounter{page}{5}
+\chapter{Introduction}
 \subfile{sections/intro}
 
 % --- CHAPTER 2 ---
@@ -68,7 +77,6 @@ Praca przedstawia podejście regułowe do konwersji Średniopolskiego Banku Drze
 \chapter{Cognitive Science Perspective}
 \subfile{sections/cogsci}
 
-\bibliographystyle{plain}
-\bibliography{proposed}
+\printbibliography
 
 \end{document}

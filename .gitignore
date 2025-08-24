@@ -20,6 +20,11 @@ tools-master/
 *.fdb_latexmk
 *.fls
 *.synctex.gz
+*.bcf
+*.bbl
+*.blg
+*.xml
+*.toc
 
 # macOS system files
 .DS_Store
@@ -30,3 +35,7 @@ tools-master/
 # MyPy cache
 .mypy_cache/
 tools-master/
+
+# Personal files
+*.sh
+*.txt
