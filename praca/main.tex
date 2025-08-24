@@ -1,40 +1,74 @@
 \documentclass[magisterska,en]{pracamgr_Kogni}
-\usepackage{graphicx} % inserting images
-\usepackage{setspace} % ustawienie interlinii
-\usepackage{hyperref} % referencje i url
 
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage{subfiles}
+\usepackage{chngcntr}
 
- \hypersetup{
-     colorlinks=true,
-     linkcolor=black,
-     citecolor=black,
-     urlcolor=black,
-     }
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=black,
+  urlcolor=black,
+}
+
 \onehalfspacing
 \counterwithout{footnote}{chapter}
+
 \autor{Kamil Tomaszek}{432044}
-\title{Conversion of the Middle Polish Dependency Treebank into Universal Dependencies format}
+\title{Middle Polish Dependency Treebank in Universal Dependencies format: Design, Implementation, and Analysis}
 \kierunek{Cognitive Science}
 \opiekun{Dr. Alina Wróblewska\\
 Institute of Computer Science\\
-Polish Academy of Science\\
-\bfseries Dr.  Grzegorz Krajewski\\
+Polish Academy of Sciences\\
+\bfseries Dr. Grzegorz Krajewski\\
 University of Warsaw}
 \date{September 2025}
-\keywords{Middle Polish, dependency trees, language corpus}
-\keywordspl{język staropolski, drzewa zależnościowe, korpus językowy}
-\tytulang{Conversion of the Middle Polish Dependency Treebank into Universal Dependencies format}
-\begin{document}
+\keywords{Middle Polish, dependency trees, treebank conversion, Universal Dependencies}
+\keywordspl{język średniopolski, drzewa zależnościowe, konwersja korpusu, Universal Dependencies}
+\tytulang{Middle Polish Dependency Treebank in Universal Dependencies format: Design, Implementation, and Analysis}
 
+\begin{document}
 \maketitle
-\titlepl{Konwersja XXX do formatu Universal Dependencies}
+
+\titlepl{Średniopolski Bank Drzew Zależnościowych w formacie Universal Dependencies: projekt, implementacja i analiza}
 \begin{abstract}
-{test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test }
+This thesis presents a rule-based approach to converting the Middle Polish Dependency Treebank (MPDT), annotated in a Polish-specific scheme, into the Universal Dependencies (UD) format. After introducing the project motivation, data sources, and target standard, the thesis outlines general design assumptions behind the conversion, the mapping strategy, and the validation workflow. It reports overall outcomes of the conversion and sketches applications and extensions, including releasing MPDT-UD and implications for research in historical language processing within cognitive science.
 \end{abstract}
 
 \begin{abstractpl}
-{test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test }    
+Praca przedstawia podejście regułowe do konwersji Średniopolskiego Banku Drzew Zależnościowych (MPDT), anotowanego w polskim schemacie, do formatu Universal Dependencies (UD). Po krótkim omówieniu motywacji, danych i standardu docelowego zaprezentowano ogólne założenia projektu, strategię odwzorowań oraz schemat walidacji. Przedstawiono ogólne wyniki konwersji oraz możliwe zastosowania i kierunki rozwoju, w tym udostępnienie MPDT-UD i znaczenie dla badań nad przetwarzaniem języka historycznego w kognitywistyce.
 \end{abstractpl}
 
+\tableofcontents
+
+% --- CHAPTER 1 ---
+\chapter{Introduction}
+\pagenumbering{arabic}
+\subfile{sections/intro}
+
+% --- CHAPTER 2 ---
+\chapter{Linguistic Background}
+\subfile{sections/linguistics}
+
+% --- CHAPTER 3 ---
+\chapter{Conversion Approach}
+\subfile{sections/approach}
+
+% --- CHAPTER 4 ---
+\chapter{Validation and Results}
+\subfile{sections/validation}
+
+% --- CHAPTER 5 ---
+\chapter{Applications and Future Work}
+\subfile{sections/applications}
+
+% --- CHAPTER 6 ---
+\chapter{Cognitive Science Perspective}
+\subfile{sections/cogsci}
+
+\bibliographystyle{plain}
+\bibliography{proposed}
 
 \end{document}
