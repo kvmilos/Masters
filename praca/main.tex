@@ -7,7 +7,8 @@
 \usepackage{chngcntr}
 
 % ---- Bibliography (biblatex + biber) ----
-\usepackage[backend=biber,style=authoryear,sorting=nyt,maxnames=6,giveninits=true]{biblatex}
+% giveninits=true works with uniquename=init to avoid conflicts
+\usepackage[backend=biber,style=authoryear,sorting=nyt,maxnames=6,giveninits=true,uniquename=init]{biblatex}
 \addbibresource{proposed.bib}
 \usepackage{csquotes}
 
@@ -73,7 +74,8 @@ Praca przedstawia podejście regułowe do konwersji Średniopolskiego Banku Drze
 \chapter{Applications and Cognitive Science Perspective}
 \subfile{sections/applications}
 
-
+% Print all entries for now; remove once you add real \cite commands
+\nocite{*}
 \printbibliography
 
 \end{document}
