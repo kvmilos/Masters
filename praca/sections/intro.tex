@@ -3,15 +3,61 @@
 
 \section{Motivation}
 
-\section{Project Scope}
+Natural-language tools and comparative treebank research have standardized around~Universal Dependencies (UD),
+which enables typologically informed analyses and cross-lingual transfer \parencite{nivre-etal-2020-universal}.
+For~17th–18th-century Polish, however, key resources remain outside~UD:
+Middle Polish texts in~KorBa \parencite{Gruszczynski2022KorBa}
+and the emerging Middle Polish Dependency Treebank (MPDT) are annotated in~a~Polish-specific scheme
+\parencite{Wieczorek2025TowardsMPDT}.
+This limits their interoperability with~UD-based tools and doesn't allow for straightforward comparative studies with~other languages.
 
-\section{Objectives and Contributions}
+From~an engineering perspective, a~faithful, auditable conversion is non-trivial:
+historical orthography, abbreviations (\texttt{brev}), clitic mobility (\textit{by}, \textit{że}),
+numeral complexes, and multiword conjunctions/prepositions interact with~head rules and label inventories.
+Prior conversion experience for~contemporary Polish (PDB~$\rightarrow$~UD) offers valuable guidance
+\parencite{wroblewska-2020-towards},
+yet historical data introduce additional phenomena that require explicit, rule-based handling and transparent traceability.
 
-\section{Key Concepts and Resources}
-\subsection{Dependency Trees}
-\subsection{Universal Dependencies (UD)}
-\subsection{Resources Overview (KorBa, MPDT, PDB)}
+\section{Objectives}
+
+The thesis pursues the following goals:
+
+\begin{enumerate}[label=\textbf{(O\arabic*)}, leftmargin=2em]
+  \item \textbf{Design a~UD-oriented conversion strategy for~MPDT.}
+        Specify mapping principles that respect Middle Polish specifics while aligning with~UD guidelines.
+  \item \textbf{Implement an auditable conversion pipeline.}
+        Provide modular components for~morphosyntax mapping and dependency restructuring, with~token-level logging.
+  \item \textbf{Ensure UD conformance and evaluability.}
+        Produce output that passes the official UD validator (strict settings) and supports downstream analysis.
+  \item \textbf{Document decisions.}
+        Record non-obvious mapping choices and edge-case policies to~enable maintenance and reuse.
+\end{enumerate}
+
+\section{Contributions}
+
+This project delivers concrete, reusable artifacts:
+
+\begin{enumerate}[label=\textbf{(C\arabic*)}, leftmargin=2em]
+  \item \textbf{A~rule-based MPDT~$\rightarrow$~UD converter.}
+        A~modular pipeline with~fine-grained logging, selectively adapting ideas from~PDB$\rightarrow$UD while
+        targeting Middle Polish phenomena. The code will be released in~a~public repository under~an open-source
+        license, together with~this paper, which documents the design and implementation.
+  \item \textbf{An initial public release of~MPDT-UD.}
+        A~subset of~MPDT (2018 sentences at~the time of~writing) converted automatically and validated with~the
+        official UD validator on all of the levels.
+\end{enumerate}
+
+\noindent The intended users include historical linguists needing UD-compatible data and~NLP
+practitioners interested in~diachronic Polish or~cross-lingual experiments.
 
 \section{Structure of the Document}
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Chapter~2: Background.} Dependency grammar from~first principles; UD design; CoNLL-U and validation; a~brief note on~KorBa, MPDT, and~PDB.
+  \item \textbf{Chapter~3: Linguistic Features of~Middle Polish.} Data and annotation context; orthography, morphology, and syntax relevant to~conversion; annotation principles used here.
+  \item \textbf{Chapter~4: Conversion Design and Implementation.} Pipeline modules; POS/morph mapping; relation conversion (function words, coordination, copulas, numerals, MWEs); testing, logging, and traceability.
+  \item \textbf{Chapter~5: Validation and Outcomes.} Evaluation setup; validator configuration; aggregate results and warning profiles; qualitative error analysis; limitations.
+  \item \textbf{Chapter~6: Applications and Cognitive Science Perspective.} Usefulness and audience; packaging and repository integration with~UD; exemplar use cases (historical syntax, parser baselines); future work.
+\end{itemize}
 
 \end{document}

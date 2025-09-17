@@ -5,6 +5,8 @@
 \usepackage{hyperref}
 \usepackage{subfiles}
 \usepackage{chngcntr}
+\usepackage{enumitem}
+\usepackage{tikz-dependency} 
 
 % ---- Bibliography (biblatex + biber) ----
 % giveninits=true works with uniquename=init to avoid conflicts
@@ -55,27 +57,29 @@ Praca przedstawia podejście regułowe do konwersji Średniopolskiego Banku Drze
 \cleardoublepage
 \pagenumbering{arabic}
 \setcounter{page}{5}
-\chapter{Motivation and Background}
+\chapter{Introduction}
 \subfile{sections/intro}
 
 % --- CHAPTER 2 ---
+\chapter{Background}
+\subfile{sections/background}
+
+% --- CHAPTER 3 ---
 \chapter{Linguistic Features of Middle Polish}
 \subfile{sections/linguistics}
 
-% --- CHAPTER 3 ---
+% --- CHAPTER 4 ---
 \chapter{Conversion Design and Implementation}
 \subfile{sections/approach}
 
-% --- CHAPTER 4 ---
+% --- CHAPTER 5 ---
 \chapter{Validation and Outcomes}
 \subfile{sections/validation}
 
-% --- CHAPTER 5 ---
+% --- CHAPTER 6 ---
 \chapter{Applications and Cognitive Science Perspective}
 \subfile{sections/applications}
 
-% Print all entries for now; remove once you add real \cite commands
-\nocite{*}
 \printbibliography
 
 \end{document}
