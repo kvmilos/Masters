@@ -7,7 +7,45 @@
 
 \section{Resources}
 \subsection{KorBa}
-\subsection{MPDT (Middle Polish Dependency Treebank)}
+
+KorBa is a~13.5-million-token corpus of~Polish texts from~1601–1772, compiled from~over seven hundred sources
+and annotated morphosyntactically (lemmas, POS, features). It is searchable via~MTAS (Multi Tier Annotation Search),
+and provides parallel transliteration/transcription layers, structural and language markup, and rich metadata
+(period, region, text type, genre) that enable stratified analyses \parencite{Gruszczynski2022KorBa}.
+
+In~this thesis, KorBa supplies the textual and morphosyntactic substrate.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{figs/korba_map.pdf}
+  \caption{Geographical distribution of~texts in~the corpus displayed on~the map of~the Commonwealth after~the Union of~Lublin of~1569}
+  \label{fig:korba-map}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{figs/korba_sources.pdf}
+  \caption{Types of~texts}
+  \label{fig:korba-sources}
+\end{figure}
+
+\noindent\emph{Source for~Figures~\ref{fig:korba-map}--\ref{fig:korba-sources}:} \textcite{Gruszczynski2022KorBa}, CC~BY~4.0.
+
+\subsection{MPDT}
+
+Middle Polish Dependency Treebank is a~syntactically annotated subset of~KorBa: it adds a~dependency layer on~top of~KorBa’s tokenization, lemmas,
+POS, and FEATS for~selected Middle Polish texts \parencite{Wieczorek2025TowardsMPDT}.
+The annotation scheme is compatible with~PDB conventions, and the resource is under active development (not publicly released at~the time of~writing).
+
+In~this thesis, the converter consumes MPDT data—i.e., KorBa’s tokenization, lemmata, POS and features
+\emph{together with} the MPDT dependency layer—and transforms them to~UD (CoNLL-U).
+Only those KorBa segments that belong to~MPDT are converted, since a~dependency layer is a~prerequisite for~UD conversion.
+
 \subsection{PDB / PDB-UD (analogy and rule reuse)}
+
+Polish Dependency Treebank and its UD counterpart (PDB-UD) are not data sources for~this work, but they serve as~useful analogies.
+Where appropriate, we~reuse or adapt established Polish-specific conversion patterns (e.g., treatment of~function words,
+coordination, and numerals) described for~PDB~$\rightarrow$~UD, tailoring them to~Middle Polish phenomena
+\parencite{wroblewska-2020-towards}.
 
 \end{document}

@@ -7,6 +7,11 @@
 \usepackage{chngcntr}
 \usepackage{enumitem}
 \usepackage{tikz-dependency} 
+\usepackage{float}
+\usepackage[section]{placeins}
+\counterwithout{figure}{chapter}
+\counterwithout{table}{chapter} % if you want the same for tables
+
 
 % ---- Bibliography (biblatex + biber) ----
 % giveninits=true works with uniquename=init to avoid conflicts
