@@ -15,8 +15,15 @@
 
 % ---- Bibliography (biblatex + biber) ----
 % giveninits=true works with uniquename=init to avoid conflicts
-\usepackage[backend=biber,style=authoryear,sorting=nyt,maxnames=6,giveninits=true,uniquename=init]{biblatex}
+\usepackage[backend=biber,style=authoryear,sorting=nyt,maxnames=10,giveninits=true,uniquename=init,dashed=false,useprefix=true]{biblatex}
 \addbibresource{proposed.bib}
+\AtBeginBibliography{%
+  \DeclareNameAlias{default}{family-given}%
+  \DeclareNameAlias{author}{family-given}%
+  \DeclareNameAlias{editor}{family-given}%
+  \DeclareNameAlias{bookauthor}{family-given}%
+  \DeclareNameAlias{translator}{family-given}%
+}
 \usepackage{csquotes}
 
 
