@@ -3,7 +3,107 @@
 
 \section{Dependency Grammar}
 
+Dependency grammar is a~theory of~syntactic structure organized around~asymmetric
+head–dependent relations. A~\emph{dependency} links two lexical items: a~\emph{head} that selects and constrains, and
+a~\emph{dependent} that is licensed by~the head. Sentences are modeled as~directed trees whose nodes correspond to~tokens and whose
+edges encode these head–dependent links. The tree has a~single \emph{root} (a node with no governor), and every other node is
+reachable from~it along~directed edges. In~addition to~purely structural links. We~use dependency grammar here in~a~strictly
+morphosyntactic sense, leaving semantic or prosodic dependency representations aside.
+
+The example dependency trees below illustrates the notation used in~this thesis. Edge labels are function-like and purely illustrative.
+
+\medskip
+\noindent\textbf{Example tree}
+\begin{dependency}[theme=simple, baseline=6.8em, label style={font=\footnotesize}]
+  \begin{deptext}[column sep=1.8em]
+    Chłopiec \& siedzi \& na \& łóżku \& . \\
+    boy \& sits \& on \& bed \& . \\
+     \& \& \& \& \\
+    NOUN \& VERB \& ADP \& NOUN \& PUNCT \\
+  \end{deptext}
+  \deproot[edge style=dotted]{2}{root}
+  \depedge{2}{1}{subj}
+  \depedge{2}{3}{comp}
+  \depedge{3}{4}{comp}
+  \depedge{2}{5}{punct}
+\end{dependency}
+
+\medskip
+Dependency formalisms differ on~certain design choices (e.g., whether adpositions are heads or dependents inside adpositional phrases;
+how to~encode coordination; whether and how to~mark valency vs.~modification). One universal standard is~Universal Dependencies.
+
+
+
 \section{Universal Dependencies}
+
+Universal Dependencies (further references as UD) is a~cross-linguistic annotation framework designed to~harmonize
+morphosyntactic and syntactic representations across languages within a~dependency-based,
+lexicalist model \parencite{nivre-etal-2020-universal}. It is widely adopted in~NLP and linguistic typology, and
+serves as~the target formalism for~the conversion presented in this thesis.
+The scheme provides three aligned layers:
+
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{Tokenization.} UD defines dependencies between \emph{syntactic words}.
+        To handle orthographic contractions or clitic clusters, it uses
+        \emph{multiword tokens}, ensuring a~faithful word-level analysis.
+        Conversely, several orthographic tokens may be combined into one syntactic word
+        in~well-motivated, language-specific cases.
+  \item \textbf{Morphology.} Each token is associated with a~\texttt{LEMMA},
+        a~universal POS tag (\texttt{UPOS} from a~fixed 17-tag set),
+        and a~bundle of~\texttt{FEATS}.
+        UD~v2 standardized features and values across languages
+        and clarified tag boundaries, e.g.~extending \texttt{AUX} to~copulas and
+        tense–aspect–mood particles while narrowing \texttt{PART}.
+  \item \textbf{Syntax.} The syntactic layer is a~single-rooted tree with
+        universal dependency relations such as \texttt{nsubj}, \texttt{obj}, \texttt{obl},
+        \texttt{amod}, \texttt{case}, \texttt{cc}, and \texttt{conj}.
+        UD~v2 unified earlier divergences by, for example, replacing \texttt{dobj} with
+        \texttt{obj}, reserving \texttt{obl} for predicate-level obliques (distinct
+        from nominal \texttt{nmod}), and constraining the use of~\texttt{cop} to
+        pure grammatical linkers.
+\end{enumerate}
+
+In~addition to~the \emph{basic} representation, UD also defines an \emph{enhanced} graph
+that adds extra arcs (and occasionally null nodes) to capture phenomena such as
+shared dependents in~coordination, control and raising, relativization, and ellipsis.
+
+\paragraph{Format:}
+UD uses the CoNLL-U format, a~ten-column tabular specification with the fields:
+\begin{list}{}{
+  \setlength{\leftmargin}{2em}
+  \setlength{\itemsep}{0.6\itemsep}
+}
+\item[-] \texttt{ID} - a~token index (or range for multiword tokens);
+\item[-] \texttt{FORM} - the surface form;
+\item[-] \texttt{LEMMA} - the dictionary form;
+\item[-] \texttt{UPOS} - the universal POS tag;
+\item[-] \texttt{XPOS} - a~language-specific POS tag;
+\item[-] \texttt{FEATS} - a~pipe (|) separated list of~morphological features;
+\item[-] \texttt{HEAD} - the index of~the head token (or 0 for~the root);
+\item[-] \texttt{DEPREL} - the dependency relation to~the head;
+\item[-] \texttt{DEPS} - for~enhanced dependencies;
+\item[-] \texttt{MISC} - for~miscellaneous annotations.
+\end{list}
+\medskip
+Here is an example CoNLL-U snippet:
+{\scriptsize
+\begin{list}{}{
+  \setlength{\leftmargin}{-3em}
+}
+\item
+\begin{verbatim}
+# sent_id = test-sentence
+# text = Chłopiec siedzi na łóżku.
+1   Chłopiec   chłopiec  NOUN   subst   Gender=Masc|Number=Sing|Case=Nom                     2   nsubj   _   _
+2   siedzi     siedzieć  VERB   fin     Aspect=Imp|Mood=Ind|Tense=Pres|Person=3|Number=Sing  0   root    _   _
+3   na         na        ADP    prep    AdpType=Prep|Case=Loc                                4   case    _   _
+4   łóżku      łóżko     NOUN   subst   Gender=Neut|Number=Sing|Case=Loc                     2   obl     _   _
+5   .          .         PUNCT  interp  PunctType=Peri                                       2   punct   _   _
+\end{verbatim}
+\end{list}
+}
+\medskip
+
 
 \section{Resources}
 \subsection{KorBa}
@@ -25,11 +125,12 @@ In~this thesis, KorBa supplies the textual and morphosyntactic substrate.
 \begin{figure}[H]
   \centering
   \includegraphics[width=\linewidth]{figs/korba_sources.pdf}
-  \caption{Types of~texts}
+  \caption{Types of~texts in KorBa}
   \label{fig:korba-sources}
 \end{figure}
 
 \noindent\emph{Source for~Figures~\ref{fig:korba-map}--\ref{fig:korba-sources}:} \textcite{Gruszczynski2022KorBa}, CC~BY~4.0.
+
 
 \subsection{MPDT}
 
@@ -40,12 +141,5 @@ The annotation scheme is compatible with~PDB conventions, and the resource is un
 In~this thesis, the converter consumes MPDT data—i.e., KorBa’s tokenization, lemmata, POS and features
 \emph{together with} the MPDT dependency layer—and transforms them to~UD (CoNLL-U).
 Only those KorBa segments that belong to~MPDT are converted, since a~dependency layer is a~prerequisite for~UD conversion.
-
-\subsection{PDB / PDB-UD (analogy and rule reuse)}
-
-Polish Dependency Treebank and its UD counterpart (PDB-UD) are not data sources for~this work, but they serve as~useful analogies.
-Where appropriate, we~reuse or adapt established Polish-specific conversion patterns (e.g., treatment of~function words,
-coordination, and numerals) described for~PDB~$\rightarrow$~UD, tailoring them to~Middle Polish phenomena
-\parencite{wroblewska-2020-towards}.
 
 \end{document}
