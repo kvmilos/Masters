@@ -13,8 +13,8 @@ interoperability with~UD-based tools and does not allow for~straightforward comp
 From~an engineering perspective, a~faithful, auditable conversion is non-trivial:
 historical orthography, abbreviations (\texttt{brev}), clitic mobility (\textit{by}, \textit{że}),
 numeral complexes, and multiword conjunctions/prepositions interact with~head rules and label inventories.
-Prior conversion experience for~contemporary Polish (PDB~$\rightarrow$~UD) offers valuable guidance
-\parencite{wroblewska-2020-towards},
+Prior conversion experience for~contemporary Polish (PDB~$\rightarrow$~PDB-UD; NKJP1M~$\rightarrow$~NKJP1M-UD) offers valuable guidance
+\parencite{wroblewska-2018-extended, wroblewska-2020-towards},
 yet historical data introduce additional phenomena that require explicit, rule-based handling and transparent traceability.
 
 As~\textcite{Wieczorek2025TowardsMPDT} notes, MPDT’s current PDB-consistent format is~well-suited to~comparative
@@ -35,7 +35,7 @@ The thesis pursues the following goals:
   \item \textbf{Implement an auditable conversion pipeline.}
         Provide modular components for~morphosyntax mapping and dependency restructuring, with~token-level logging.
   \item \textbf{Ensure UD conformance and evaluability.}
-        Produce output that passes the official UD validator (strict settings) and supports downstream analysis.
+        Produce output that passes the official UD validator (on all levels) and supports downstream analysis.
   \item \textbf{Document decisions.}
         Record non-obvious mapping choices and edge-case policies to~enable maintenance and reuse.
 \end{enumerate}
@@ -52,7 +52,7 @@ This project delivers concrete, reusable artifacts:
         license, together with~this paper, which documents the design and implementation.
   \item \textbf{An initial public release of~MPDT-UD.}
         A~subset of~MPDT (2018 sentences at~the time of~writing) converted automatically and validated with~the
-        official UD validator on all of the levels.
+        official UD validator.
 \end{enumerate}
 
 \noindent The intended users include historical linguists needing UD-compatible data and~NLP
@@ -62,11 +62,8 @@ practitioners interested in~diachronic Polish or~cross-lingual experiments.
 \section{Structure of the Document}
 
 \begin{itemize}[leftmargin=1.5em]
-  \item \textbf{Chapter~2: Background.} Dependency grammar from~first principles; UD design; CoNLL-U and validation; a~brief note on~KorBa, MPDT, and~PDB.
-  \item \textbf{Chapter~3: Linguistic Features of~Middle Polish.} Data and annotation context; orthography, morphology, and syntax relevant to~conversion; annotation principles used here.
-  \item \textbf{Chapter~4: Conversion Design and Implementation.} Pipeline modules; POS/morph mapping; relation conversion (function words, coordination, copulas, numerals, MWEs); testing, logging, and traceability.
-  \item \textbf{Chapter~5: Validation and Outcomes.} Evaluation setup; validator configuration; aggregate results and warning profiles; qualitative error analysis; limitations.
-  \item \textbf{Chapter~6: Applications and Cognitive Science Perspective.} Usefulness and audience; packaging and repository integration with~UD; exemplar use cases (historical syntax, parser baselines); future work.
+  \item \textbf{Chapter~2: Background.} Presents the foundational concepts and resources, including dependency grammar, Universal Dependencies, KorBa and MPDT.
+  \item The remaining chapters will be incorporated here as they are finalized.
 \end{itemize}
 
 \end{document}
