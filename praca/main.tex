@@ -15,7 +15,9 @@
 
 % ---- Bibliography (biblatex + biber) ----
 % giveninits=true works with uniquename=init to avoid conflicts
-\usepackage[backend=biber,style=authoryear,sorting=nyt,maxnames=10,giveninits=true,uniquename=init,dashed=false,useprefix=true]{biblatex}
+\usepackage[backend=biber,style=authoryear,sorting=nyt,
+  giveninits=true,uniquename=init,dashed=false,useprefix=true,
+  maxcitenames=2,mincitenames=1,maxbibnames=99]{biblatex}
 \addbibresource{proposed.bib}
 \AtBeginBibliography{%
   \DeclareNameAlias{default}{family-given}%
