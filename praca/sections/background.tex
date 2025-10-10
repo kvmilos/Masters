@@ -43,8 +43,9 @@ The example dependency trees below illustrate the scheme of a PDB-annotated sent
 \begin{figure}[H]
   \centering
   \resizebox{\textwidth}{!}{%
+    {\scriptsize
     \begin{dependency}[theme=simple, baseline=6.8em, label style={font=\footnotesize}]
-      \begin{deptext}[column sep=1.8em]
+      \begin{deptext}[column sep=1.8em, nodes={text width=4.8em, align=center}]
         Chłopiec \& siedzi \& na \& łóżku \& i \& czyta \& . \\
         \textit{boy} \& \textit{sits} \& \textit{on} \& \textit{bed} \& \textit{and} \& \textit{reads} \& \textit{.} \\
          \& \& \& \& \& \& \\
@@ -57,7 +58,8 @@ The example dependency trees below illustrate the scheme of a PDB-annotated sent
       \depedge{3}{4}{pobj}
       \depedge{5}{6}{conj}
       \depedge{5}{7}{interp}
-  \end{dependency}%
+    \end{dependency}%
+    }
   }
   \caption{Example PDB dependency tree with morphological tags}
   \label{fig:pdb-example}
@@ -66,8 +68,9 @@ The example dependency trees below illustrate the scheme of a PDB-annotated sent
 \begin{figure}[H]
   \centering
   \resizebox{\textwidth}{!}{%
+    {\scriptsize
     \begin{dependency}[theme=simple, baseline=6.8em, label style={font=\footnotesize}]
-      \begin{deptext}[column sep=1.8em]
+      \begin{deptext}[column sep=1.8em, nodes={text width=4.8em, align=center}]
         Chłopiec \& siedzi \& na \& łóżku \& i \& czyta \& . \\
         \textit{boy} \& \textit{sits} \& \textit{on} \& \textit{bed} \& \textit{and} \& \textit{reads} \& \textit{.} \\
          \& \& \& \& \& \& \\
@@ -81,6 +84,7 @@ The example dependency trees below illustrate the scheme of a PDB-annotated sent
       \depedge{2}{6}{conj}
       \depedge{2}{7}{punct}
     \end{dependency}%
+    }
   }
   \caption{A dependency tree of the same sentence in UD format, showing tags}
   \label{fig:ud-example}
@@ -200,12 +204,26 @@ The corpus includes diverse text types ranging from literary works (epic poetry,
 
 \subsection{MPDT}
 
-Middle Polish Dependency Treebank is a~syntactically annotated subset of~KorBa that adds a~dependency layer on~top of~KorBa's tokenization, lemmas,
-POS, and FEATS for~selected Middle Polish texts \parencite{Wieczorek2025TowardsMPDT}.
-The annotation scheme follows PDB conventions, making it compatible with contemporary Polish syntactic resources while addressing specific Middle Polish phenomena.
+Middle Polish Dependency Treebank (MPDT) is a syntactically annotated subset of KorBa that adds a dependency layer on top of KorBa’s tokenization, lemmas, POS, and features for selected 17th–18th-century Polish texts \parencite{Wieczorek2025TowardsMPDT}. The annotation follows PDB conventions, ensuring compatibility with contemporary Polish resources while capturing historical phenomena.
 
-The resource is under active development and not yet publicly released. The current version contains 2,018 sentences, with an average sentence length of X tokens.
+The current MPDT release contains 2,018 sentences totaling 47,273 tokens, with an average sentence length of 23.43 tokens. No sentence has more than one root, and all sentences are cycle-free. However, 3,748 non-projective edges occur across the dataset, affecting 879 sentences, reflecting the discontinuous structures typical of historical Polish.
 
-[Tutaj proszę scharakteryzować MPDT (typy tekstów, liczba drzew, średnia tokenów/zdanie, statystyki tagów, etykiet, krzyżujących się krawędzi, etc.). Podać przykłady.]
+Figure~\ref{fig:mpdt-pos-frequency} presents the 20 most frequent MPDT POS tags, highlighting the prominence of nouns (\texttt{subst}: 11,374 occurrences), punctuation (\texttt{interp}: 7,971), adjectives (\texttt{adj}: 5,315), and prepositions (\texttt{prep}: 4,391).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{./figs/pos_frequency.png}
+  \caption{Top 20 MPDT POS tag frequencies}
+  \label{fig:mpdt-pos-frequency}
+\end{figure}
+
+Figure~\ref{fig:mpdt-dep-frequency} shows the distribution of the top 20 dependency relation bases. Adjuncts (\texttt{adjunct}: 13,276) and complements (\texttt{comp}: 8,539) are most common, followed by punctuation (\texttt{punct}: 6,896), coordination elements (\texttt{conjunct}: 6,071), and core arguments (\texttt{obj}: 3,423; \texttt{subj}: 2,286).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{./figs/dep_frequency.png}
+  \caption{Top 20 MPDT dependency relation base frequencies}
+  \label{fig:mpdt-dep-frequency}
+\end{figure}
 
 \end{document}
