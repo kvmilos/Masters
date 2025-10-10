@@ -204,9 +204,32 @@ The corpus includes diverse text types ranging from literary works (epic poetry,
 
 \subsection{MPDT}
 
-Middle Polish Dependency Treebank (MPDT) is a syntactically annotated subset of KorBa that adds a dependency layer on top of KorBa’s tokenization, lemmas, POS, and features for selected 17th–18th-century Polish texts \parencite{Wieczorek2025TowardsMPDT}. The annotation follows PDB conventions, ensuring compatibility with contemporary Polish resources while capturing historical phenomena.
+The Middle Polish Dependency Treebank (MPDT) is a manually curated, syntactically annotated subset of the KorBa corpus, capturing key syntactic phenomena of 17th–18th-century Polish texts.
+Sentences chosen for MPDT exclude poetry and Latin insertions. This ensures high-quality tokenization, lemmas, POS tags, and morphological features, while maintaining representativeness across period, region, and text type.
 
-The current MPDT release contains 2,018 sentences totaling 47,273 tokens, with an average sentence length of 23.43 tokens. No sentence has more than one root, and all sentences are cycle-free. However, 3,748 non-projective edges occur across the dataset, affecting 879 sentences, reflecting the discontinuous structures typical of historical Polish. There are 45 distinct POS tags and 27 distinct dependency relations in the current MPDT version.
+\paragraph{Annotation workflow:}
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{Automatic pre-annotation.} Two parsers trained on contemporary PDB data (MaltParser, COMBO) generate initial dependency analyses.
+  \item \textbf{Manual correction.} Two linguist annotators independently revise parser outputs, leveraging complementary error profiles.
+  \item \textbf{Adjudication.} Conflicting annotations are resolved by an adjudicator to produce a single gold-standard tree.
+  \item \textbf{Format and tooling.} Final annotations are encoded in CoNLL-U with KorBa’s extended tagset (e.g., dual number \texttt{Dual}) and processed using MaltEvalAnnotator.
+\end{enumerate}
+
+To accommodate Middle Polish morphology, which is described in detail in Chapter 3 (to add a chapter autoref here !!!), several POS and feature categories were added:
+\begin{itemize}[leftmargin=2em]
+  \item \texttt{adjb}, \texttt{ppasb}, \texttt{ppraet} for short-forms and past participles
+  \item Feature \texttt{Number=Dual} alongside \texttt{Sing} and \texttt{Plur} for the dual number.
+\end{itemize}
+
+\paragraph{Corpus statistics}
+\begin{itemize}[leftmargin=2em]
+  \item Total sentences: 2 018  
+  \item Total tokens: 47 273  
+  \item Distinct POS tags: 45  
+  \item Distinct dependency relations: 27  
+  \item Non-projective edges: 3 748 across 879 sentences  
+  \item Average sentence length: 23.43 tokens  
+\end{itemize}
 
 Figure~\ref{fig:mpdt-pos-frequency} presents the 20 most frequent MPDT POS tags, highlighting the prominence of nouns (\texttt{subst}: 11,374 occurrences), punctuation (\texttt{interp}: 7,971), adjectives (\texttt{adj}: 5,315), and prepositions (\texttt{prep}: 4,391).
 
@@ -225,5 +248,6 @@ Figure~\ref{fig:mpdt-dep-frequency} shows the distribution of the top 20 depende
   \caption{Top 20 MPDT dependency relation base frequencies}
   \label{fig:mpdt-dep-frequency}
 \end{figure}
+
 
 \end{document}
