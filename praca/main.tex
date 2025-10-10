@@ -10,7 +10,7 @@
 \usepackage{float}
 \usepackage[section]{placeins}
 \counterwithout{figure}{chapter}
-\counterwithout{table}{chapter} % if you want the same for tables
+\counterwithout{table}{chapter}
 
 
 % ---- Bibliography (biblatex + biber) ----
@@ -18,7 +18,7 @@
 \usepackage[backend=biber,style=authoryear,sorting=nyt,
   giveninits=true,uniquename=init,dashed=false,useprefix=true,
   maxcitenames=2,mincitenames=1,maxbibnames=99]{biblatex}
-\addbibresource{proposed.bib}
+\addbibresource{mybib.bib}
 \AtBeginBibliography{%
   \DeclareNameAlias{default}{family-given}%
   \DeclareNameAlias{author}{family-given}%
