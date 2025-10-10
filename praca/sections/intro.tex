@@ -4,33 +4,35 @@
 
 \section{Motivation}
 
-Natural-language tools and comparative treebank research have standardized around~Universal Dependencies (UD),
+Natural-language preprocessing tools and comparative treebank research have standardized around~Universal Dependencies (UD),
 which enables typologically informed analyses and cross-lingual transfer \parencite{nivre-etal-2020-universal}.
-For~17th–18th-century Polish, however, key resources remain outside~UD:
-Middle Polish texts in~KorBa \parencite{Gruszczynski2022KorBa} and the emerging Middle Polish Dependency Treebank
-(MPDT) are annotated in~a~Polish-specific scheme \parencite{Wieczorek2025TowardsMPDT}. This limits their
-interoperability with~UD-based tools and does not allow for~straightforward comparative studies with~other languages.
+For~Polish texts from the 17th and 18th centuries, however, key resources remain outside~UD:
+texts in~the KorBa corpus \parencite{Gruszczynski2022KorBa} and the emerging Middle Polish Dependency Treebank
+(MPDT) are annotated in~a~Polish-specific scheme \parencite{Wieczorek2025TowardsMPDT}. KorBa is a corpus of historical Polish texts, while MPDT adds a syntactic dependency layer to selected portions of this corpus. However, these resources being annotated in a different format creates challenges
+for interoperability with~UD-based tools and limits straightforward comparative studies with~other languages.
 
-From~an engineering perspective, a~faithful, auditable conversion is non-trivial:
-historical orthography, abbreviations (\texttt{brev}), clitic mobility (\textit{by}, \textit{że}),
+A natural solution is to convert these resources to the UD format. From~an engineering perspective, however, a~faithful, auditable conversion is non-trivial:
+historical orthography, abbreviations, clitic mobility, 
 numeral complexes, and multiword conjunctions/prepositions interact with~head rules and label inventories.
 Prior conversion experience for~contemporary Polish (PDB~$\rightarrow$~PDB-UD; NKJP1M~$\rightarrow$~NKJP1M-UD) offers valuable guidance
 \parencite{wroblewska-2018-extended, wroblewska-2020-towards},
 yet historical data introduce additional phenomena that require explicit, rule-based handling and transparent traceability.
 
-As~\textcite{Wieczorek2025TowardsMPDT} notes, MPDT’s current PDB-consistent format is~well-suited to~comparative
+As~\textcite{Wieczorek2025TowardsMPDT} notes, MPDT's current format is~well-suited to~comparative
 studies with~contemporary Polish syntax; at~the same time, she highlights the advantages of~moving to~UD
 for~cross-linguistic comparability, wider intelligibility, and representational options such as~enhanced dependencies
-for~shared dependents and shared governors in~coordination—even if~some information may be lost in~translation.
-This thesis operationalizes that rationale by~delivering a~documented, UD-oriented conversion for~MPDT and preparing
-an initial MPDT-UD subset suitable for~validation and downstream use.
+for~shared dependents and shared governors in~coordination—even if~some information may be lost in~conversion.
+This thesis operationalizes that rationale by~delivering a~documented, UD-oriented converter for~MPDT and preparing
+the current version of MPDT-UD suitable for~validation and downstream use.
+
+The intended users include historical linguists needing UD-compatible data and~NLP practitioners interested in~diachronic Polish or~cross-lingual experiments.
 
 
 \section{Objectives}
 
-The thesis pursues the following goals:
+The thesis pursues the following research goals:
 
-\begin{enumerate}[label=\textbf{(O\arabic*)}, leftmargin=2em]
+\begin{enumerate}[label=\textbf{(R\arabic*)}, leftmargin=2em]
   \item \textbf{Design a~UD-oriented conversion strategy for~MPDT.}
         Specify mapping principles that respect Middle Polish specifics while aligning with~UD guidelines.
   \item \textbf{Implement an auditable conversion pipeline.}
@@ -47,20 +49,17 @@ The thesis pursues the following goals:
 This project delivers concrete, reusable artifacts:
 
 \begin{enumerate}[label=\textbf{(C\arabic*)}, leftmargin=2em]
-  \item \textbf{A~rule-based MPDT~$\rightarrow$~UD converter.}
-        A~modular pipeline with~fine-grained logging, selectively adapting ideas from~PDB$\rightarrow$UD while
+  \item \textbf{A~rule-based MPDT~$\rightarrow$~MPDT-UD converter.}
+        A~modular pipeline with~fine-grained logging, selectively adapting ideas from~PDB$\rightarrow$PDB-UD while
         targeting Middle Polish phenomena. The code will be released in~a~public repository under~an open-source
-        license, together with~this paper, which documents the design and implementation.
+        license, together with~this thesis, which documents the design and implementation.
   \item \textbf{An initial public release of~MPDT-UD.}
-        A~subset of~MPDT (2018 sentences at~the time of~writing) converted automatically and validated with~the
+        A~set of~MPDT (2018 sentences at~the time of~writing) converted automatically and validated with~the
         official UD validator.
 \end{enumerate}
 
-\noindent The intended users include historical linguists needing UD-compatible data and~NLP
-practitioners interested in~diachronic Polish or~cross-lingual experiments.
 
-
-\section{Structure of the Document}
+\section{Structure of the Thesis}
 
 \begin{itemize}[leftmargin=1.5em]
   \item \textbf{Chapter~2: Background.} Presents the foundational concepts and resources, including dependency grammar, Universal Dependencies, KorBa and MPDT.

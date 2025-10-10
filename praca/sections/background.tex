@@ -2,66 +2,130 @@
 \documentclass[../main.tex]{subfiles}
 \begin{document}
 
+This chapter provides the essential background for understanding the Middle Polish Dependency Treebank conversion to Universal Dependencies. It begins with the theoretical foundations of dependency grammar and its specific Polish manifestation in the Polish Dependency Bank (PDB) scheme. Then it outlines Universal Dependencies as the target framework, highlighting its advantages for cross-linguistic research. Finally, it describes the key resources: KorBa as the source corpus and MPDT as the dependency-annotated dataset that forms the input to our conversion pipeline.
+
 \section{Dependency Grammar}
 
 Dependency grammar is a~theory of~syntactic structure organized around~asymmetric
-head–dependent relations. A~\emph{dependency} links two lexical items: a~\emph{head} that selects and constrains, and
-a~\emph{dependent} that is licensed by~the head. Sentences are modeled as~directed trees whose nodes correspond to~tokens and whose
-edges encode these head–dependent links. The tree has a~single \emph{root} (a node with no governor), and every other node is
-reachable from~it along~directed edges. In~addition to~purely structural links, we~use dependency grammar here in~a~strictly
-morphosyntactic sense, leaving semantic or prosodic dependency representations aside.
+governor–dependent relations. A~\emph{dependency} links two lexical items: a~\emph{governor} that selects and constrains a dependent, and
+a~\emph{dependent} that is licensed by~the governor. One item can be a governor for multiple dependents, but each dependent has a~single governor. Sentence structures are modeled as~directed trees whose nodes correspond to~tokens and whose
+edges encode these governor–dependent links. The tree has a~single \emph{root} (a node with no governor), and every other node is
+reachable from~it along~directed edges. In~addition to~purely structural links, dependency grammar is used here in~a~morphosyntactic
+sense, focusing on grammatical relations rather than semantic or prosodic dependency representations.
 
-The example dependency trees below illustrates the notation used in~this thesis. Edge labels are function-like and purely illustrative.
+The dependency scheme used in Middle Polish follows the conventions established for the Polish Dependency Bank (PDB), which is adapted specifically for Polish syntax \parencite{Wroblewska2023PDBManual}. The PDB annotation scheme uses a comprehensive set of morphological categories and dependency relations designed specifically for Polish morphosyntax.
 
-\medskip
-\noindent\textbf{Example tree}
-\begin{dependency}[theme=simple, baseline=6.8em, label style={font=\footnotesize}]
-  \begin{deptext}[column sep=1.8em]
-    Chłopiec \& siedzi \& na \& łóżku \& . \\
-    boy \& sits \& on \& bed \& . \\
-     \& \& \& \& \\
-    NOUN \& VERB \& ADP \& NOUN \& PUNCT \\
-  \end{deptext}
-  \deproot[edge style=dotted]{2}{root}
-  \depedge{2}{1}{subj}
-  \depedge{2}{3}{comp}
-  \depedge{3}{4}{comp}
-  \depedge{2}{5}{punct}
-\end{dependency}
+\paragraph{The PDB tagset includes the following morphological categories:}
 
-\medskip
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Nouns:} \texttt{subst} (noun), \texttt{depr} (depreciative noun)
+  \item \textbf{Pronouns:} \texttt{ppron12} (non-third person pronoun), \texttt{ppron3} (third person pronoun), \texttt{siebie} (reflexive pronoun)
+  \item \textbf{Adjectives:} \texttt{adj} (adjective), \texttt{adja} (adjectival adjective), \texttt{adjc} (predicative adjective), \texttt{adjp} (prepositional adjective)
+  \item \textbf{Verb forms:} \texttt{fin} (finite non-past), \texttt{praet} (past tense), \texttt{imps} (impersonal), \texttt{impt} (imperative), \texttt{inf} (infinitive), \texttt{aglt} (agglutinate of 'być'), \texttt{bedzie} (future form of 'być'), \texttt{winien} (modal verbs like 'winien'), \texttt{pred} (predicative), \texttt{ger} (gerund), \texttt{pcon} (contemporary adverbial participle), \texttt{pant} (anterior adverbial participle), \texttt{pact} (active adjectival participle), \texttt{ppas} (passive adjectival participle)
+  \item \textbf{Numerals:} \texttt{num} (cardinal numeral), \texttt{numcomp} (numeral compound)
+  \item \textbf{Conjunctions:} \texttt{comp} (subordinating conjunction), \texttt{conj} (coordinating conjunction)
+  \item \textbf{Other categories:} \texttt{adv} (adverb), \texttt{brev} (abbreviation), \texttt{dig} (Arabic numeral), \texttt{romandig} (Roman numeral), \texttt{emo} (emoticon), \texttt{fill} (filler), \texttt{frag} (fragment), \texttt{interj} (interjection), \texttt{interp} (punctuation), \texttt{part} (particle), \texttt{prep} (preposition), \texttt{ign} (unrecognized form)
+\end{itemize}
+
+\paragraph{The PDB annotation scheme distinguishes several classes of dependency relations:}
+
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Core arguments:} \texttt{subj} (subject), \texttt{obj} (direct object), \texttt{obj\_th} (thematic object), \texttt{comp} (complement), \texttt{comp\_fin} (finite complement), \texttt{comp\_inf} (infinitive complement), \texttt{comp\_ag} (agent complement)
+  \item \textbf{Adjuncts and modifiers:} \texttt{adjunct} with semantic subtypes such as \texttt{adjunct\_temp} (temporal), \texttt{adjunct\_loc} (locative), \texttt{adjunct\_dur} (duration), \texttt{adjunct\_caus} (causal), \texttt{adjunct\_mod} (manner), \texttt{adjunct\_emph} (emphatic particle), \texttt{adjunct\_compar} (comparative)
+  \item \textbf{Predicate-related:} \texttt{pd} (predicate), \texttt{aux} (auxiliary), \texttt{neg} (negation)
+  \item \textbf{Coordination:} \texttt{conjunct} (coordinated element), \texttt{pre\_coord} (pre-coordinator)
+  \item \textbf{Multiword expressions:} \texttt{mwe} (multiword expression), \texttt{ne} (named entity), \texttt{ne\_foreign} (foreign named entity)
+  \item \textbf{Special relations:} \texttt{punct} (punctuation), \texttt{vocative} (vocative), \texttt{refl} (reflexive), \texttt{orphan} (orphaned dependent), \texttt{discourse} (discourse marker), \texttt{parataxis} (parataxis), \texttt{root} (sentence root)
+\end{itemize}
+
+The example dependency trees below illustrate the scheme of a PDB-annotated sentence alongside its UD counterpart, showing the structural differences.
+
+\begin{figure}[H]
+  \centering
+  \resizebox{\textwidth}{!}{%
+    \begin{dependency}[theme=simple, baseline=6.8em, label style={font=\footnotesize}]
+      \begin{deptext}[column sep=1.8em]
+        Chłopiec \& siedzi \& na \& łóżku \& i \& czyta \& . \\
+        \textit{boy} \& \textit{sits} \& \textit{on} \& \textit{bed} \& \textit{and} \& \textit{reads} \& \textit{.} \\
+         \& \& \& \& \& \& \\
+        subst \& fin \& prep \& subst \& conj \& fin \& interp \\
+      \end{deptext}
+      \deproot[edge style=dotted]{5}{root}
+      \depedge{5}{2}{conj}
+      \depedge{2}{1}{subj}
+      \depedge{2}{3}{pred}
+      \depedge{3}{4}{pobj}
+      \depedge{5}{6}{conj}
+      \depedge{5}{7}{interp}
+  \end{dependency}%
+  }
+  \caption{Example PDB dependency tree with morphological tags}
+  \label{fig:pdb-example}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \resizebox{\textwidth}{!}{%
+    \begin{dependency}[theme=simple, baseline=6.8em, label style={font=\footnotesize}]
+      \begin{deptext}[column sep=1.8em]
+        Chłopiec \& siedzi \& na \& łóżku \& i \& czyta \& . \\
+        \textit{boy} \& \textit{sits} \& \textit{on} \& \textit{bed} \& \textit{and} \& \textit{reads} \& \textit{.} \\
+         \& \& \& \& \& \& \\
+        NOUN \& VERB \& ADP \& NOUN \& CCONJ \& VERB \& PUNCT \\
+      \end{deptext}
+      \deproot[edge style=dotted]{2}{root}
+      \depedge{2}{1}{nsubj}
+      \depedge{4}{3}{case}
+      \depedge{2}{4}{obl}
+      \depedge{6}{5}{cc}
+      \depedge{2}{6}{conj}
+      \depedge{2}{7}{punct}
+    \end{dependency}%
+  }
+  \caption{A dependency tree of the same sentence in UD format, showing tags}
+  \label{fig:ud-example}
+\end{figure}
+
+
 Dependency formalisms differ on~certain design choices (e.g., whether adpositions are heads or dependents inside adpositional phrases;
-how to~encode coordination; whether and how to~mark valency vs.~modification). One universal standard is~Universal Dependencies.
-
-
+how to~encode coordination; whether and how to~mark valency vs.~modification). The PDB scheme takes specific positions on these issues, treating prepositions as heads (note the on$\rightarrow$bed relation in \autoref{fig:pdb-example}), using a coordination-centric approach where conjunctions govern coordinated elements (\textit{i} being the \texttt{root} of both \textit{siedzi} and \textit{czyta} in \autoref{fig:pdb-example}), and distinguishing arguments from adjuncts through detailed semantic role marking.
 
 \section{Universal Dependencies}
 
-Universal Dependencies (further references as UD) is a~cross-linguistic annotation framework designed to~harmonize
+Universal Dependencies (hereafter UD) is a~cross-linguistic annotation framework designed to~harmonize
 morphosyntactic and syntactic representations across languages within a~dependency-based,
-lexicalist model \parencite{nivre-etal-2020-universal}. It is widely adopted in~NLP and linguistic typology, and
-serves as~the target formalism for~the conversion presented in this thesis.
-The scheme provides three aligned layers:
+lexicalist model \parencite{nivre-etal-2020-universal, de-marneffe-manning-nivre-zeman-2021}. UD serves as both a theoretical framework and a practical collection of treebanks—currently the largest repository of multilingual dependency trees with over 200 treebanks for more than 150 languages.\footnote{Universal Dependencies, \url{https://universaldependencies.org}, accessed 2025-10-10.} It is widely adopted in~NLP and linguistic typology, and is maintained by an open community with regular releases.
+
+The scheme provides three aligned layers for sentence-level annotation:
 
 \begin{enumerate}[leftmargin=2em]
   \item \textbf{Tokenization.} UD defines dependencies between \emph{syntactic words}.
         To handle orthographic contractions or clitic clusters, it uses
         \emph{multiword tokens}, ensuring a~faithful word-level analysis.
+        For example, German token \textit{im} would be split into syntactic words \textit{in} and \textit{dem}, where each receives its own morphological analysis and syntactic role. In (Middle) Polish, examples of such multiword tokens include jeszcześ (jeszcze + ś), kiedym (kiedy + m), and mogłaby (mogła + by).
         Conversely, several orthographic tokens may be combined into one syntactic word
         in~well-motivated, language-specific cases.
-  \item \textbf{Morphology.} Each token is associated with a~\texttt{LEMMA},
-        a~universal POS tag (\texttt{UPOS} from a~fixed 17-tag set),
-        and a~bundle of~\texttt{FEATS}.
+  \item \textbf{Morphology.} Each syntactic word is associated with a~\texttt{LEMMA},
+        a~universal part-of-speech tag (hereafter part of speech tag$=$\texttt{POS}; universal part of speech tag$=$\texttt{UPOS}) from a~fixed 17-tag set,
+        and a~bundle of~\texttt{FEATS} (morphological features).
+        The UPOS tags cover open-class words (adjectives \texttt{ADJ}, adverbs \texttt{ADV}, interjections \texttt{INTJ}, nouns \texttt{NOUN}, proper nouns \texttt{PROPN}, verbs \texttt{VERB}), closed-class words (adpositions \texttt{ADP}, auxiliary verbs \texttt{AUX}, coordinating conjunctions \texttt{CCONJ}, determiners \texttt{DET}, numerals \texttt{NUM}, pronouns \texttt{PRON}, particles \texttt{PART}, subordinating conjunctions \texttt{SCONJ}), and other categories (punctuation \texttt{PUNCT}, symbols \texttt{SYM}, other \texttt{X}).
         UD~v2 standardized features and values across languages
-        and clarified tag boundaries, e.g.~extending \texttt{AUX} to~copulas and
-        tense–aspect–mood particles while narrowing \texttt{PART}.
-  \item \textbf{Syntax.} The syntactic layer is a~single-rooted tree with
-        universal dependency relations such as \texttt{nsubj}, \texttt{obj}, \texttt{obl},
-        \texttt{amod}, \texttt{case}, \texttt{cc}, and \texttt{conj}.
-        UD~v2 unified earlier divergences by, for example, replacing \texttt{dobj} with
-        \texttt{obj}, reserving \texttt{obl} for predicate-level obliques (distinct
-        from nominal \texttt{nmod}), and constraining the use of~\texttt{cop} to
-        pure grammatical linkers.
+        and clarified tag boundaries, e.g.~extending auxiliary verbs to~copulas and
+        tense–aspect–mood particles while narrowing particles.
+  \item \textbf{Syntax.} The syntactic layer is a~single-rooted tree with possible
+        37 universal dependency relations organized according to functional and structural categories.
+        Relations include:
+        \begin{itemize}
+         \item core arguments (nominal subject \texttt{nsubj}, direct object \texttt{obj}, indirect object \texttt{iobj}, and clausal complement \texttt{ccomp}), 
+        \item non-core dependents (object \texttt{obl}, dislocated element \texttt{dislocated}, adverbial clause modifier \texttt{advcl}, adverbial modifier \texttt{advmod}, discourse element \texttt{discourse}, auxiliary \texttt{aux}, and copula \texttt{cop}), 
+        \item nominal dependents (nominal modifier \texttt{nmod}, numeral modifier \texttt{nummod}, adjectival modifier \texttt{amod}, determiner \texttt{det}, and case marker \texttt{case}), 
+        \item coordination (conjunct \texttt{conj}, coordinating conjunction \texttt{cc}), 
+        \item multiword expressions (fixed \texttt{fixed}, flat \texttt{flat}),
+        \item special relations (list element \texttt{list}, parataxis \texttt{parataxis}, orphan \texttt{orphan}, punct \texttt{punct}, root \texttt{root}, other dependent \texttt{dep}).
+        \end{itemize}
+        The framework also allows language-specific subtypes (e.g., \texttt{nsubj:pass} for passive subjects, \texttt{det:poss} for possessive determiners)
+        and defines semi-mandatory subtypes that should be used when the relevant phenomenon exists in the language. A full list of relations and subtypes, along with their descriptions, is available in the UD webpage.\footnote{Universal Dependencies relations list: \url{https://universaldependencies.org/u/dep/index.html}}
+
 \end{enumerate}
 
 In~addition to~the \emph{basic} representation, UD also defines an \emph{enhanced} graph
@@ -69,7 +133,9 @@ that adds extra arcs (and occasionally null nodes) to capture phenomena such as
 shared dependents in~coordination, control and raising, relativization, and ellipsis.
 
 \paragraph{Format:}
-UD uses the CoNLL-U format, a~ten-column tabular specification with the fields:
+
+For practical implementation and data sharing, UD annotations must be encoded in a standardized format. UD uses the CoNLL-U format, a~ten-column tabular specification with the fields:
+
 \begin{list}{}{
   \setlength{\leftmargin}{2em}
   \setlength{\itemsep}{0.6\itemsep}
@@ -94,53 +160,52 @@ Here is an example CoNLL-U snippet:
 \item
 \begin{verbatim}
 # sent_id = test-sentence
-# text = Chłopiec siedzi na łóżku.
-1   Chłopiec   chłopiec  NOUN   subst   Gender=Masc|Number=Sing|Case=Nom                     2   nsubj   _   _
-2   siedzi     siedzieć  VERB   fin     Aspect=Imp|Mood=Ind|Tense=Pres|Person=3|Number=Sing  0   root    _   _
-3   na         na        ADP    prep    AdpType=Prep|Case=Loc                                4   case    _   _
-4   łóżku      łóżko     NOUN   subst   Gender=Neut|Number=Sing|Case=Loc                     2   obl     _   _
-5   .          .         PUNCT  interp  PunctType=Peri                                       2   punct   _   _
+# text = Chłopiec siedzi na łóżku i czyta.
+1   Chłopiec   chłopiec  NOUN   subst   Gender=Masc|Number=Sing|Case=Nom                     2   nsubj   _         _
+2   siedzi     siedzieć  VERB   fin     Aspect=Imp|Mood=Ind|Tense=Pres|Person=3|Number=Sing  0   root    _         _
+3   na         na        ADP    prep    AdpType=Prep|Case=Loc                                4   case    _         _
+4   łóżku      łóżko     NOUN   subst   Gender=Neut|Number=Sing|Case=Loc                     2   obl     _         _
+5   i          i         CCONJ  conj    _                                                    2   cc      _         _
+6   czyta      czytać    VERB   fin     Aspect=Imp|Mood=Ind|Tense=Pres|Person=3|Number=Sing  2   conj    1:nsubj   _
+7   .          .         PUNCT  interp  PunctType=Peri                                       2   punct   _         _
 \end{verbatim}
 \end{list}
 }
 \medskip
 
-
-\section{Resources}
+\section{Middle Polish Linguistic Resources}
 \subsection{KorBa}
 
-KorBa is a~13.5-million-token corpus of~Polish texts from~1601–1772, compiled from~over seven hundred sources
-and annotated morphosyntactically (lemmas, POS, features). It is searchable via~MTAS (Multi Tier Annotation Search),
+KorBa \parencite{Gruszczynski2022KorBa} -- from Polish \textit{Korpus Barokowy}, "Baroque Corpus" -- is a~13.5-million-token corpus of~Polish texts from~1601–1772, compiled from~over seven hundred sources
+and annotated morphosyntactically (lemmas, POS, features). It is searchable via~MTAS (Multi Tier Annotation Search) \parencite{Brouwer-etal-2017},
 and provides parallel transliteration/transcription layers, structural and language markup, and rich metadata
-(period, region, text type, genre) that enable stratified analyses \parencite{Gruszczynski2022KorBa}.
+(period, region, text type, genre) that enable stratified analyses.
 
-In~this thesis, KorBa supplies the textual and morphosyntactic substrate.
+The corpus includes diverse text types ranging from literary works (epic poetry, drama, lyric poetry) to non-literary materials (scientific-didactic texts, persuasive writings, factual literature, official documents, press releases) and biblical texts. Geographically, texts span the Polish-Lithuanian Commonwealth, with approximately 27\% of the corpus being of unknown origin. As shown in Figures~\ref{fig:korba-map} and \ref{fig:korba-sources}, the corpus maintains careful balance across regions and text types to ensure representativeness of Middle Polish.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\linewidth]{figs/korba_map.pdf}
-  \caption{Geographical distribution of~texts in~the corpus displayed on~the map of~the Commonwealth after~the Union of~Lublin of~1569}
+  \caption{Geographical distribution of~texts in~the corpus displayed on~the map of~the Commonwealth after~the Union of~Lublin of~1569. Source: \textcite{Gruszczynski2022KorBa}, p. 315, CC~BY~4.0.}
   \label{fig:korba-map}
 \end{figure}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\linewidth]{figs/korba_sources.pdf}
-  \caption{Types of~texts in KorBa}
+  \caption{Types of~texts in KorBa. Source: \textcite{Gruszczynski2022KorBa}, p. 316, CC~BY~4.0.}
   \label{fig:korba-sources}
 \end{figure}
-
-\noindent\emph{Source for~Figures~\ref{fig:korba-map}--\ref{fig:korba-sources}:} \textcite{Gruszczynski2022KorBa}, CC~BY~4.0.
 
 
 \subsection{MPDT}
 
-Middle Polish Dependency Treebank is a~syntactically annotated subset of~KorBa: it adds a~dependency layer on~top of~KorBa’s tokenization, lemmas,
+Middle Polish Dependency Treebank is a~syntactically annotated subset of~KorBa that adds a~dependency layer on~top of~KorBa's tokenization, lemmas,
 POS, and FEATS for~selected Middle Polish texts \parencite{Wieczorek2025TowardsMPDT}.
-The annotation scheme is compatible with~PDB conventions, and the resource is under active development (not publicly released at~the time of~writing).
+The annotation scheme follows PDB conventions, making it compatible with contemporary Polish syntactic resources while addressing specific Middle Polish phenomena.
 
-In~this thesis, the converter consumes MPDT data—i.e., KorBa’s tokenization, lemmata, POS and features
-\emph{together with} the MPDT dependency layer—and transforms them to~UD (CoNLL-U).
-Only those KorBa segments that belong to~MPDT are converted, since a~dependency layer is a~prerequisite for~UD conversion.
+The resource is under active development and not yet publicly released. The current version contains 2,018 sentences, with an average sentence length of X tokens.
+
+[Tutaj proszę scharakteryzować MPDT (typy tekstów, liczba drzew, średnia tokenów/zdanie, statystyki tagów, etykiet, krzyżujących się krawędzi, etc.). Podać przykłady.]
 
 \end{document}
