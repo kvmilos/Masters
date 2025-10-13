@@ -27,7 +27,7 @@ During syntactic annotation, punctuation is interpreted according to its syntact
 
 \begin{quote}
 \textit{Powstawszy raz z bárzo ćięszkiey choroby/ ták rzekł Nie nagorzey śię zemną stáło: Bo mię chorobá vpomniáłá/ ábym się w pychę nie podnośił/ ponieważem iest śmiertelny.}\\
-('Having once recovered from a very severe illness/ he said thus: It did not go too badly with me: For the illness reminded me/ that I should not lift myself up in pride/ since I am mortal.’)
+('Having once recovered from a very severe illness/ he said thus: It did not go too badly with me: For the illness reminded me/ that I should not lift myself up in pride/ since I am mortal.')
 \end{quote}
 
 \section{Morphology}
@@ -50,7 +50,7 @@ In modern Polish, the short form \textit{żyw} ('alive') would be considered arc
 
 \begin{quote}
 \textit{Chcesz się zemną równać: nie \textbf{godzien}eś tego.}\\
-('You want to match yourself with me: you are not worthy of this.’)\\
+('You want to match yourself with me: you are not worthy of this.')\\
 In modern Polish, \textit{godzien} still exists, along with words like \textit{pewien} ('certain'), however their usage is now limited, and the standard forms are \textit{godny}, and \textit{pewny}.
 \end{quote}
 
@@ -60,13 +60,13 @@ They are annotated as \texttt{ADJ} with \texttt{VerbForm=Part, Voice=Pass, Varia
 
 \begin{quote}
 \textit{Kto vwierzy, á okrzći się, \textbf{zbáwion} będźie, ále kto nie vwierzy będźie \textbf{potępion}.}\\
-('Whoever believes and is baptized will be saved, but whoever does not believe will be condemned.’)\\
+('Whoever believes and is baptized will be saved, but whoever does not believe will be condemned.')\\
 In modern Polish, these short forms are archaic; the standard forms are fully inflected \textit{zbawiony}, \textit{potępiony}.
 \end{quote}
 
 \begin{quote}
 \textit{Pisań na zamku pileckim, dnia 23 miesiąca lipca, roku Pańskiego 1620.}\\
-('Written at the castle of Pilec, on the 23rd day of July, in the Year of Our Lord 1620.’)\\
+('Written at the castle of Pilec, on the 23rd day of July, in the Year of Our Lord 1620.')\\
 In modern Polish, the short form \textit{pisan} is archaic; the standard form is \textit{pisany}.
 \end{quote}
 
@@ -76,7 +76,7 @@ They are mapped to \texttt{ADJ} with \texttt{VerbForm=Part} and \texttt{Tense=Pa
 
 \begin{quote}
 \textit{Częstokroć ábowiem były widáne z twarzámi \textbf{opuchłymi}/ \textbf{záśiniáłymi}.}\\
-('For often they were seen with swollen/ bruised faces.’)\\
+('For often they were seen with swollen/ bruised faces.')\\
 In modern Polish, some of those forms are still in use, but some are archaic or poetic. For example, \textit{opuchłymi} would be rather replaced by \textit{opuchniętymi}, while \textit{zasiniałymi} is still acceptable.
 \end{quote}
 
@@ -86,7 +86,7 @@ These forms gradually merged with the plural after ca.~1740, though fossilized d
 
 \begin{quote}
 \textit{6. Po przepędzonych przez \textbf{dwie lecie} tych okrutnych boleściách, pokazał się iey Pan mowiąc: Iż bez lat pięc nie miałaby iadać ani mięsa. ani nabiáłu.}\\
-('6. After two years spent in these cruel pains, the Lord appeared to her saying: That for five years she should not eat either meat or dairy.’)\\
+('6. After two years spent in these cruel pains, the Lord appeared to her saying: That for five years she should not eat either meat or dairy.')\\
 \end{quote}
 Here, \textit{dwie lecie} is dual accusative of \textit{dwa} (two) and \textit{lato} ('summer; year'). In modern Polish, the dual form is archaic; the standard form (both the nominative and accusative) is \textit{dwa lata}.
 
@@ -94,7 +94,7 @@ Here, \textit{dwie lecie} is dual accusative of \textit{dwa} (two) and \textit{l
 
 The masculine gender system was less differentiated than today. KorBa distinguishes three values:
 \texttt{m} (general masculine), \texttt{manim1} (personal), and \texttt{manim2} (non-personal).  
-In early texts, these values overlap; many forms do not yet reflect consistent distinctions in case endings. For example, \textit{ptaki} and \textit{ptacy} alternate for 'birds’ depending on context.
+In early texts, these values overlap; many forms do not yet reflect consistent distinctions in case endings. For example, \textit{ptaki} and \textit{ptacy} alternate for 'birds' depending on context.
 
 \begin{quote}
 \emph{(m)} \textit{6. Vbogáćiłeś ich chybkośćią i lotem nád wszytkie loty prędszym i bystrzeyszym/ i bystrym ták/ iż i strzały/ i \textbf{ptaki}/ i pioruny poprzedzáć/ á wszytkie rzeczy/ mury/ skáły/ przenikać mogą.}\\
@@ -131,7 +131,7 @@ Middle Polish syntax exhibits high flexibility of word order, frequent inversion
 \noindent\textit{Source:} adapted from \textcite{Wieczorek2025TowardsMPDT}, Fig.~6, p.~12.
 
 \paragraph{Example 2 (discontinuous order):}
-\textit{Opaci dobrą uprowidowani fundacyą} ('Abbots supplied with good funds’) → crossing edges between \textit{dobrą} and \textit{fundacyą}.  
+\textit{Opaci dobrą uprowidowani fundacyą} ('Abbots supplied with good funds') → crossing edges between \textit{dobrą} and \textit{fundacyą}.  
 \medskip
 \\
 \begin{dependency}
@@ -177,11 +177,26 @@ As noted by \textcite{Wieczorek2025TowardsMPDT}, it is rare in modern Polish for
 
 \subsection{Clause Linking and Subordination}
 
-Middle Polish frequently employs conjunctions that have since changed meaning:
-\textit{jako} ('as’, 'that’), \textit{iż} ('that’), \textit{abo} ('or’), \textit{a} (broad connective).  
-As \textcite{Wieczorek2020Instr} notes, \textit{jako} may function either as a comparative marker or a subordinating conjunction equivalent to \textit{że}.  
-During conversion, such cases are normalized to UD \texttt{mark} relations headed by \texttt{SCONJ}.  
-\textbf{"TO CHECK THE JAKO”}.
+Middle Polish frequently employs conjunctions that have since changed meaning, an example of which could be the token
+\textit{jako}. It is frequently employed in two functions: (i) as a comparative/similative marker in the sense of modern \textit{jak} ('like/as; when/how'), and (ii) in the modern-like role/identity sense 'as'.
+
+\begin{quote}
+\textit{Ale iako nowi Obywatele tam przybywać poczeli z Kir, czy Syr Kraiu w Medii lezącego, Kirya, to Syria zwać się poczęła.}\\
+('But as/when new inhabitants began to arrive there from the land of Kir, or Syr, lying in Media, Kirya then began to be called Syria.')\\
+\textit{jako} in the sense of \textit{jak} 'when'
+\end{quote}
+
+\begin{quote}
+\textit{Iako Roża rozpuszcza z przyrodzenia swego zapach przyiemny, tak Serce dobroczynne wydaie bez przyniewolenia uczynki dobre.}\\
+('As a rose by its nature gives off a pleasant fragrance, so a charitable heart produces good deeds without compulsion.')\\
+\textit{jako} in the sense of \textit{jak} 'how/as'
+\end{quote}
+
+\begin{quote}
+\textit{Ja zaś w tych terminach stawam jako mediator, prowadząc do zgody obiedwie strony.}\\
+('And I, for my part, in these proceedings stand as a mediator, leading both sides to agreement.')\\
+\textit{jako} = 'as (in the role of)'
+\end{quote}
 
 \section{Summary}
 
