@@ -2,9 +2,198 @@
 \documentclass[../main.tex]{subfiles}
 \begin{document}
 
+This chapter characterizes the linguistic system of Middle Polish as represented in the KorBa corpus and the Middle Polish Dependency Treebank (MPDT). It outlines key differences from modern Polish orthography, morphology, and syntax, emphasizing those that directly affect dependency annotation and conversion to Universal Dependencies (UD).
 
 \section{Orthography and Punctuation}
+
+\subsection{Orthography and Transliteration}
+
+The KorBa corpus preserves two parallel orthographic layers: \emph{transliteration} (a faithful rendering of the historical text) and \emph{transcription} (a normalized spelling approximating contemporary Polish orthography). As noted in the KorBa manual, transliteration reflects the original graphic form of seventeenth- and eighteenth-century sources, while the transcription adapts them to modern conventions, keeping key phonetic and morphological features of Middle Polish.
+
+Middle Polish orthography was far from standardized. The same word could appear in several spelling variants, sometimes even within a single text. Graphemes were often used interchangeably (e.g.\ \textit{i}/\textit{y}, \textit{u}/\textit{v}, \textit{ć}/\textit{ci}, \textit{rz}/\textit{ż}). Long vowels (\textit{á}, \textit{é}) and palatalization (\textit{ć}, \textit{ź}, \textit{ś}, \textit{ń}) were marked inconsistently. The KorBa transliteration layer preserves this variation, while the transcription layer normalizes it (e.g.\ \textit{rodźicow} $\rightarrow$ \textit{rodziców}).\footnote{See \textcite{Gruszczynski2022KorBa}, p.~317.}
+
+Orthographic conventions also influenced tokenization. Many expressions that are today written separately were then written together, and vice versa. Following the \textcite{Wieczorek2020Instr}, elements that would now be written jointly are linked with the \texttt{mwe} relation during annotation.
+
+\paragraph{Examples:}
+\begin{itemize}[leftmargin=2em]
+  \item Historical joint writing: \textit{zchęći} (modern \textit{z chęci}; 'from willingness') $\rightarrow$ split into two syntactic words in UD.
+  \item Historical separate writing: \textit{dla tego} (modern \textit{dlatego}; 'because', lit. 'for this') is treated as a single prepositional unit.
+\end{itemize}
+
+\subsection{Punctuation}
+
+As described by \textcite{Wieczorek2025TowardsMPDT}, punctuation in Middle Polish reflected the rhythm and pauses of speech rather than syntactic boundaries. Marks were used inconsistently and sometimes idiosyncratically: slashes (/) often functioned as commas, semicolons as commas, and colons as semicolons or dashes. Conversely, long unpunctuated stretches also occur.  
+During syntactic annotation, punctuation is interpreted according to its syntactic role, not its original mark, e.g.\ a slash (/) introducing a new clause is annotated as \texttt{punct}.
+
+\begin{quote}
+\textit{Powstawszy raz z bárzo ćięszkiey choroby/ ták rzekł Nie nagorzey śię zemną stáło: Bo mię chorobá vpomniáłá/ ábym się w pychę nie podnośił/ ponieważem iest śmiertelny.}\\
+('Having once recovered from a very severe illness/ he said thus: It did not go too badly with me: For the illness reminded me/ that I should not lift myself up in pride/ since I am mortal.’)
+\end{quote}
+
 \section{Morphology}
+
+The morphological system of Middle Polish differs significantly from the modern language, both in its inventory of forms and in category values. These distinctions were codified in the KorBa 2.0 tagset and later adopted in the MPDT.
+
+\subsection{Additional Parts of Speech and Forms}
+
+The Middle Polish tagset introduces several POS categories absent in contemporary Polish:
+
+\paragraph{(a) Short-form adjectives (\texttt{adjb}).}
+These forms—like \textit{żyw}, \textit{godzien}—are indeclinable or partially declined adjectives, often used predicatively without the copula.  
+They correspond to UD \texttt{ADJ} with \texttt{Variant=Short}.
+
+\begin{quote} 
+\textit{Iak długo ia \textbf{żyw} iestem, żyie Pán moy poty, Czuię bol y wesołość, czuię y kłopoty.}\\
+('As long as I live, my Lord lives likewise, I feel pain and joy, I also feel troubles.')\\
+In modern Polish, the short form \textit{żyw} ('alive') would be considered archaic or poetic; the modern equivalent is \textit{żywy}.
+\end{quote}
+
+\begin{quote}
+\textit{Chcesz się zemną równać: nie \textbf{godzien}eś tego.}\\
+('You want to match yourself with me: you are not worthy of this.’)\\
+In modern Polish, \textit{godzien} still exists, along with words like \textit{pewien} ('certain'), however their usage is now limited, and the standard forms are \textit{godny}, and \textit{pewny}.
+\end{quote}
+
+\paragraph{(b) Short passive participles (\texttt{ppasb}).}
+Passive participles in the uninflected short form (e.g.\ \textit{zbawion}, \textit{pisan}) co-occur with finite forms of \textit{być}.  
+They are annotated as \texttt{ADJ} with \texttt{VerbForm=Part, Voice=Pass, Variant=Short}.
+
+\begin{quote}
+\textit{Kto vwierzy, á okrzći się, \textbf{zbáwion} będźie, ále kto nie vwierzy będźie \textbf{potępion}.}\\
+('Whoever believes and is baptized will be saved, but whoever does not believe will be condemned.’)\\
+In modern Polish, these short forms are archaic; the standard forms are fully inflected \textit{zbawiony}, \textit{potępiony}.
+\end{quote}
+
+\begin{quote}
+\textit{Pisań na zamku pileckim, dnia 23 miesiąca lipca, roku Pańskiego 1620.}\\
+('Written at the castle of Pilec, on the 23rd day of July, in the Year of Our Lord 1620.’)\\
+In modern Polish, the short form \textit{pisan} is archaic; the standard form is \textit{pisany}.
+\end{quote}
+
+\paragraph{(c) Past participles (\texttt{ppraet}).}
+These forms, such as \textit{osłabiałe}, \textit{opuchłymi}, \textit{zasiniałymi}, represent an older stage of adjectival participles derived from past tenses, intermediate between \texttt{ppas} and \texttt{pact}.  
+They are mapped to \texttt{ADJ} with \texttt{VerbForm=Part} and \texttt{Tense=Past}.
+
+\begin{quote}
+\textit{Częstokroć ábowiem były widáne z twarzámi \textbf{opuchłymi}/ \textbf{záśiniáłymi}.}\\
+('For often they were seen with swollen/ bruised faces.’)\\
+In modern Polish, some of those forms are still in use, but some are archaic or poetic. For example, \textit{opuchłymi} would be rather replaced by \textit{opuchniętymi}, while \textit{zasiniałymi} is still acceptable.
+\end{quote}
+
+\paragraph{(d) Dual number (\texttt{Number=Dual}).}
+Middle Polish still preserved dual forms for certain nouns, numerals, adjectives, and verbs. The KorBa manual documents the explicit tag \texttt{du}.  
+These forms gradually merged with the plural after ca.~1740, though fossilized duals like \textit{ręce}, \textit{oczy} survive in modern Polish (sg. \textit{oko} ['eye'] $\rightarrow$ pl. \textit{oczy} when referring to the organ, but also pl. \textit{oka} when used in other sense, e.g. \textit{oka w rosole} ('eyes in the broth'); similarly sg. \textit{ucho} ['ear'] $\rightarrow$ pl. \textit{uszy}, when about body parts, or pl. \textit{ucha}, when referring to cup handles).
+
+\begin{quote}
+\textit{6. Po przepędzonych przez \textbf{dwie lecie} tych okrutnych boleściách, pokazał się iey Pan mowiąc: Iż bez lat pięc nie miałaby iadać ani mięsa. ani nabiáłu.}\\
+('6. After two years spent in these cruel pains, the Lord appeared to her saying: That for five years she should not eat either meat or dairy.’)\\
+\end{quote}
+Here, \textit{dwie lecie} is dual accusative of \textit{dwa} (two) and \textit{lato} ('summer; year'). In modern Polish, the dual form is archaic; the standard form (both the nominative and accusative) is \textit{dwa lata}.
+
+\subsection{Gender System and Declension}
+
+The masculine gender system was less differentiated than today. KorBa distinguishes three values:
+\texttt{m} (general masculine), \texttt{manim1} (personal), and \texttt{manim2} (non-personal).  
+In early texts, these values overlap; many forms do not yet reflect consistent distinctions in case endings. For example, \textit{ptaki} and \textit{ptacy} alternate for 'birds’ depending on context.
+
+\begin{quote}
+\emph{(m)} \textit{6. Vbogáćiłeś ich chybkośćią i lotem nád wszytkie loty prędszym i bystrzeyszym/ i bystrym ták/ iż i strzały/ i \textbf{ptaki}/ i pioruny poprzedzáć/ á wszytkie rzeczy/ mury/ skáły/ przenikać mogą.}\\
+('You have enriched them with speed and with flight swifter and sharper than all flights/ so that even arrows/ and birds/ and thunder they can outpace/ and penetrate all things/ walls/ rocks.')
+\end{quote}
+
+\begin{quote}
+\emph{(manim1)} \textit{122. Czemu \textbf{ptacy} ktorzy ogona nie máią dlugie nogi maią?}\\
+('Why do birds that do not have a tail, have long legs?')
+\end{quote}
+
 \section{Syntax}
+
+\subsection{Word Order and Non-projectivity}
+
+Middle Polish syntax exhibits high flexibility of word order, frequent inversion, and long-distance dependencies. As noted by \textcite{Wieczorek2025TowardsMPDT}, discontinuous structures—especially in noun phrases with adjectival modifiers—often yield non-projective trees.
+
+\paragraph{Example 1 (linear order):}
+\textit{Káżdy kray ma przymioty} → no crossing edges.
+\medskip
+\\
+\begin{dependency}
+    \begin{deptext}[column sep=2em]
+        Káżdy \& kray \& ma \& przymioty \\
+        \textit{every} \& \textit{country} \& \textit{has} \& \textit{attributes} \\
+         \& \& \& \\
+        ADJ \& SUBST \& FIN \& SUBST \\
+    \end{deptext}
+    \depedge{2}{1}{adjunct}
+    \depedge{3}{2}{subj}
+    \depedge{3}{4}{obj\_theme}
+\end{dependency}
+
+\noindent\textit{Source:} adapted from \textcite{Wieczorek2025TowardsMPDT}, Fig.~6, p.~12.
+
+\paragraph{Example 2 (discontinuous order):}
+\textit{Opaci dobrą uprowidowani fundacyą} ('Abbots supplied with good funds’) → crossing edges between \textit{dobrą} and \textit{fundacyą}.  
+\medskip
+\\
+\begin{dependency}
+    \begin{deptext}[column sep=2em]
+        Opaci \& dobrą \& uprowidowani \& fundacyą \\
+        \textit{abbots} \& \textit{good} \& \textit{supplied} \& \textit{fund(s)} \\
+         \& \& \& \\
+        SUBST \& ADJ \& PPAS \& SUBST \\
+    \end{deptext}
+    \depedge[edge unit distance=4.5ex]{3}{1}{adjunct}
+    \depedge{3}{4}{obj\_instr}
+    \depedge{4}{2}{adjunct}
+\end{dependency}
+
+\noindent\textit{Source:} adapted from \textcite{Wieczorek2025TowardsMPDT}, Fig.~7, p.~12.
+
+These inversions complicate automatic parsing and were one motivation for explicit rule-based conversion to UD.
+
+\subsection{Predicate Ellipsis}
+
+As noted by \textcite{Wieczorek2025TowardsMPDT}, it is rare in modern Polish for sentences to lack a predicate (at least in texts written in careful language), but this was quite common in 17th–18th-century Polish. In dependency analysis, the predicate is considered the centre of the sentence (\texttt{root})—most often a finite verb. In the absence of a predicate, another sentence element serves as the centre. Most often, this centre becomes the subject, which receives the label \texttt{root} instead of \texttt{subj}.
+
+\paragraph{Example (missing verbal predicate):}
+\begin{quote}
+\textit{Tabakierka złotem wybijana .}\\
+('A snuffbox, embossed with gold.')
+\end{quote}
+
+\begin{dependency}[baseline=7.2em,label style={font=\footnotesize}]
+  \begin{deptext}[column sep=2.2em]
+    Tabakierka \& złotem \& wybijana \& . \\
+    \textit{snuffbox} \& \textit{with gold} \& \textit{embossed} \& \textit{.} \\
+     \& \& \& \\
+    NOUN \& NOUN \& PPAS \& PUNCT \\
+  \end{deptext}
+  \deproot{1}{root}
+  \depedge{1}{3}{adjunct}
+  \depedge{3}{2}{obj\_attrib}
+  \depedge{1}{4}{punct}
+\end{dependency}
+
+\noindent\textit{Source:} adapted from \textcite{Wieczorek2025TowardsMPDT}, Fig.~8, p.~13.
+
+\subsection{Clause Linking and Subordination}
+
+Middle Polish frequently employs conjunctions that have since changed meaning:
+\textit{jako} ('as’, 'that’), \textit{iż} ('that’), \textit{abo} ('or’), \textit{a} (broad connective).  
+As \textcite{Wieczorek2020Instr} notes, \textit{jako} may function either as a comparative marker or a subordinating conjunction equivalent to \textit{że}.  
+During conversion, such cases are normalized to UD \texttt{mark} relations headed by \texttt{SCONJ}.  
+\textbf{"TO CHECK THE JAKO”}.
+
+\section{Summary}
+
+Middle Polish exhibits substantial divergence from modern Polish in orthography, morphology, and syntax:
+
+\begin{itemize}[leftmargin=2em]
+  \item Orthography: inconsistent, variable, often merging or splitting tokens differently from modern norms.
+  \item Punctuation: prosodic rather than syntactic, with slashes and colons used irregularly.
+  \item Morphology: additional forms (\texttt{adjb}, \texttt{ppasb}, \texttt{ppraet}), productive dual number, and fluid gender distinctions.
+  \item Syntax: high non-projectivity, frequent inversion, ellipsis, and loose coordination.
+\end{itemize}
+
+These properties directly inform the design of the MPDT → MPDT-UD conversion pipeline, motivating special conversion rules and additional validation layers to preserve linguistic authenticity while ensuring formal compatibility with Universal Dependencies.
 
 \end{document}
