@@ -61,7 +61,7 @@ The example dependency trees below illustrate the scheme of a PDB-annotated sent
     \end{dependency}%
     }
   }
-  \caption{Example PDB dependency tree with morphological tags}
+  \caption{Example dependency tree in the PDB format}
   \label{fig:pdb-example}
 \end{figure}
 
@@ -86,7 +86,7 @@ The example dependency trees below illustrate the scheme of a PDB-annotated sent
     \end{dependency}%
     }
   }
-  \caption{A dependency tree of the same sentence in UD format, showing tags}
+  \caption{A dependency tree of the same sentence in UD format}
   \label{fig:ud-example}
 \end{figure}
 
@@ -106,9 +106,23 @@ The scheme provides three aligned layers for sentence-level annotation:
   \item \textbf{Tokenization.} UD defines dependencies between \emph{syntactic words}.
         To handle orthographic contractions or clitic clusters, it uses
         \emph{multiword tokens}, ensuring a~faithful word-level analysis.
-        For example, German token \textit{im} would be split into syntactic words \textit{in} and \textit{dem}, where each receives its own morphological analysis and syntactic role. In (Middle) Polish, examples of such multiword tokens include jeszcześ (jeszcze + ś), kiedym (kiedy + m), and mogłaby (mogła + by).
-        Conversely, several orthographic tokens may be combined into one syntactic word
-        in~well-motivated, language-specific cases.
+        A multiword token is a single orthographic unit that is split into multiple syntactic words, each receiving its own morphological analysis and syntactic role.
+
+        For example, Middle Polish \textit{kiedym} 'when I' is annotated as:
+\begin{verbatim}
+14-15   kiedym     _       _     ...
+14      kiedy      kiedy   ADV   ...
+15      m          być     AUX   ...
+\end{verbatim}
+        Here, the single orthographic token \textit{kiedym} (ID 14-15) splits into two syntactic words: \textit{kiedy} 'when' (ID 14) and \textit{m} (clitic form of 'I am', ID 15).
+
+        Similarly, \textit{jeszcześ} 'still you are' becomes:
+\begin{verbatim}
+7-8   jeszcześ   _         _      ...
+7     jeszcze    jeszcze   PART   ...
+8     ś          być       AUX    ...
+\end{verbatim}
+
   \item \textbf{Morphology.} Each syntactic word is associated with a~\texttt{LEMMA},
         a~universal part-of-speech tag (hereafter part of speech tag$=$\texttt{POS}; universal part of speech tag$=$\texttt{UPOS}) from a~fixed 17-tag set,
         and a~bundle of~\texttt{FEATS} (morphological features).
@@ -116,12 +130,14 @@ The scheme provides three aligned layers for sentence-level annotation:
         UD~v2 standardized features and values across languages
         and clarified tag boundaries, e.g.~extending auxiliary verbs to~copulas and
         tense–aspect–mood particles while narrowing particles.
+
   \item \textbf{Syntax.} The syntactic layer is a~single-rooted tree with possible
         37 universal dependency relations organized according to functional and structural categories.
-        Relations include:
+        Sentence structures are modeled as~directed trees whose nodes correspond to~syntactic words and whose
+        edges encode governor–dependent links. Relations include:
         \begin{itemize}
          \item core arguments (nominal subject \texttt{nsubj}, direct object \texttt{obj}, indirect object \texttt{iobj}, and clausal complement \texttt{ccomp}), 
-        \item non-core dependents (object \texttt{obl}, dislocated element \texttt{dislocated}, adverbial clause modifier \texttt{advcl}, adverbial modifier \texttt{advmod}, discourse element \texttt{discourse}, auxiliary \texttt{aux}, and copula \texttt{cop}), 
+        \item non-core dependents (oblique \texttt{obl}, dislocated element \texttt{dislocated}, adverbial clause modifier \texttt{advcl}, adverbial modifier \texttt{advmod}, discourse element \texttt{discourse}, auxiliary \texttt{aux}, and copula \texttt{cop}), 
         \item nominal dependents (nominal modifier \texttt{nmod}, numeral modifier \texttt{nummod}, adjectival modifier \texttt{amod}, determiner \texttt{det}, and case marker \texttt{case}), 
         \item coordination (conjunct \texttt{conj}, coordinating conjunction \texttt{cc}), 
         \item multiword expressions (fixed \texttt{fixed}, flat \texttt{flat}),
@@ -135,6 +151,33 @@ The scheme provides three aligned layers for sentence-level annotation:
 In~addition to~the \emph{basic} representation, UD also defines an \emph{enhanced} graph
 that adds extra arcs (and occasionally null nodes) to capture phenomena such as
 shared dependents in~coordination, control and raising, relativization, and ellipsis.
+In \autoref{fig:ud-example}, the basic tree structure is shown; an enhanced representation would add an additional edge to represent the dependent (in this case: the subject) of \textit{czyta} (reads) as also being
+the \textit{Chłopiec} (boy), as shown in figure \autoref{fig:ud-enhanced-example}.
+\begin{figure}[H]
+  \centering
+  \resizebox{\textwidth}{!}{%
+    {\scriptsize
+    \begin{dependency}[theme=simple, baseline=6.8em, label style={font=\footnotesize}]
+      \begin{deptext}[column sep=1.8em, nodes={text width=4.8em, align=center}]
+        Chłopiec \& siedzi \& na \& łóżku \& i \& czyta \& . \\
+        \textit{boy} \& \textit{sits} \& \textit{on} \& \textit{bed} \& \textit{and} \& \textit{reads} \& \textit{.} \\
+         \& \& \& \& \& \& \\
+        NOUN \& VERB \& ADP \& NOUN \& CCONJ \& VERB \& PUNCT \\
+      \end{deptext}
+      \deproot[edge style=dotted]{2}{root}
+      \depedge{2}{1}{nsubj}
+      \depedge{4}{3}{case}
+      \depedge{2}{4}{obl}
+      \depedge{6}{5}{cc}
+      \depedge{2}{6}{conj}
+      \depedge{2}{7}{punct}
+      \depedge[edge style=dashed]{6}{1}{nsubj}
+    \end{dependency}%
+    }
+  }
+  \caption{A dependency tree with enhanced dependencies (dashed lines)}
+  \label{fig:ud-enhanced-example}
+\end{figure}
 
 \paragraph{Format:}
 
@@ -144,19 +187,21 @@ For practical implementation and data sharing, UD annotations must be encoded in
   \setlength{\leftmargin}{2em}
   \setlength{\itemsep}{0.6\itemsep}
 }
-\item[-] \texttt{ID} - a~token index (or range for multiword tokens);
+\item[-] \texttt{ID} - a~syntactic word index (or range for multiword tokens);
 \item[-] \texttt{FORM} - the surface form;
 \item[-] \texttt{LEMMA} - the dictionary form;
 \item[-] \texttt{UPOS} - the universal POS tag;
 \item[-] \texttt{XPOS} - a~language-specific POS tag;
 \item[-] \texttt{FEATS} - a~pipe (|) separated list of~morphological features;
-\item[-] \texttt{HEAD} - the index of~the head token (or 0 for~the root);
+\item[-] \texttt{HEAD} - the index of~the head syntactic word (or 0 for~the root);
 \item[-] \texttt{DEPREL} - the dependency relation to~the head;
 \item[-] \texttt{DEPS} - for~enhanced dependencies;
 \item[-] \texttt{MISC} - for~miscellaneous annotations.
 \end{list}
 \medskip
-Here is an example CoNLL-U snippet:
+
+Here is a CoNLL-U snippet for the sentence "Chłopiec siedzi na łóżku i czyta.", with the enhanced dependencies.
+
 {\scriptsize
 \begin{list}{}{
   \setlength{\leftmargin}{-3em}
@@ -181,7 +226,7 @@ Here is an example CoNLL-U snippet:
 \subsection{KorBa}
 
 KorBa \parencite{Gruszczynski2022KorBa} -- from Polish \textit{Korpus Barokowy}, "Baroque Corpus" -- is a~13.5-million-token corpus of~Polish texts from~1601–1772, compiled from~over seven hundred sources
-and annotated morphosyntactically (lemmas, POS, features). It is searchable via~MTAS (Multi Tier Annotation Search) \parencite{Brouwer-etal-2017},
+and annotated morphosyntactically (lemmas, POS, features). It is searchable via~MTAS (Multi Tier Annotation Search; \cite{Brouwer-etal-2017}),
 and provides parallel transliteration/transcription layers, structural and language markup, and rich metadata
 (period, region, text type, genre) that enable stratified analyses.
 
@@ -215,7 +260,7 @@ Sentences chosen for MPDT exclude poetry and Latin insertions. This ensures high
   \item \textbf{Format and tooling.} Final annotations are encoded in CoNLL-U with KorBa’s extended tagset (e.g., dual number \texttt{Dual}) and processed using MaltEvalAnnotator.
 \end{enumerate}
 
-To accommodate Middle Polish morphology, which is described in detail in Chapter 3 (to add a chapter autoref here !!!), several POS and feature categories were added:
+To accommodate Middle Polish morphology, which is described in detail in \autoref{chap:language}, several POS and feature categories were added:
 \begin{itemize}[leftmargin=2em]
   \item \texttt{adjb}, \texttt{ppasb}, \texttt{ppraet} for short-forms and past participles
   \item Feature \texttt{Number=Dual} alongside \texttt{Sing} and \texttt{Plur} for the dual number.
