@@ -64,7 +64,7 @@ This project delivers concrete, reusable artifacts:
 \begin{itemize}[leftmargin=1.5em]
   \item \textbf{Chapter~2: Background.} Outlines dependency grammar and the Polish Dependency Bank (PDB) scheme; introduces Universal Dependencies (layers, relations, enhanced graphs); and summarizes the key resources (KorBa and MPDT) that the conversion operates on.
   \item \textbf{Chapter~3: Linguistic Features of Middle Polish.} Surveys conversion-relevant properties in KorBa/MPDT—orthography and punctuation, key morphological categories (including \texttt{adjb}, \texttt{ppasb}, \texttt{ppraet}, dual number), masculine gender distinctions, clause linking with \emph{jako}, and core syntactic traits (non-projectivity, predicate ellipsis)—with brief MPDT examples.
-
+  \item \textbf{Chapter~4: Conversion Design and Implementation.} Details the custom Python pipeline, including the core \texttt{Sentence} and \texttt{Token} data structures and the auditable logging system. It then describes the two-phase conversion process: first, the rule-based morphosyntactic mapping (handling POS, features, and clitic reconstruction); and second, the complex dependency transformation (restructuring prepositions and coordination, and mapping relations contextually).
 \end{itemize}
 
 \end{document}

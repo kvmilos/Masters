@@ -1,0 +1,104 @@
+%!TEX root = ../main.tex
+\documentclass[../main.tex]{subfiles}
+\begin{document}
+
+This chapter details the design and implementation of the MPDT$\rightarrow$MPDT-UD conversion pipeline. The conversion is a complex, multi-stage process, divided into two primary phases: (1) morphosyntactic mapping and (2) dependency tree transformation.
+
+The entire process is implemented in~Python, leveraging a~custom-built environment designed for traceability and modularity. This environment is built around core data structures, \texttt{Sentence} and \texttt{Token} classes, defined in~\texttt{utils/classes.py}. A~key design choice is that each \texttt{Token} object stores both the original MPDT annotation (e.g., \texttt{pos}, \texttt{feats}, \texttt{gov\_id}, \texttt{dep\_label}) and the new, converted UD annotation (e.g., \texttt{upos}, \texttt{ufeats}, \texttt{ugov\_id}, \texttt{udep\_label}) in~parallel. This allows conversion rules to~access the original, unmodified MPDT context at~any stage, which is crucial for resolving ambiguity during the complex dependency transformation phase.
+
+\section{Design Overview and Pipeline}
+
+The conversion pipeline is orchestrated by~the main \texttt{converter.py} script. The script first reads the input MPDT \texttt{.conll} file and the metadata \texttt{.json} file using the high-level functions in~\texttt{utils/io.py}. The metadata is essential as it contains the original, non-tokenized sentence text (\texttt{"text"}), which is required for reconstructing multiword tokens and clitic forms.
+
+Once the data is loaded into the \texttt{Sentence} and \texttt{Token} objects, the pipeline proceeds sequentially:
+\begin{enumerate}
+    \item \textbf{Phase 1: Morphosyntactic Conversion.} The \texttt{morphosyntax.convert\_to\_upos} function is called for~each sentence. This phase is rule-based and operates on~each token relatively independently.
+    \item \textbf{Phase 2: Dependency Conversion.} If the \texttt{--tags-only} flag is not set, the \texttt{dependency.conversion.main} function is called for~each sentence. This phase is highly contextual and transforms the syntactic tree structure.
+    \item \textbf{Output Generation.} The converted \texttt{Sentence} objects are written to~a~\texttt{.conllu} file.
+\end{enumerate}
+
+The \texttt{Token} class is equipped with~numerous helper properties and methods to~simplify the writing of~conversion rules, such as \texttt{.gov2} (to~access the governor in~the new UD tree), \texttt{.children\_with\_label()}, and \texttt{.super\_gov\_via\_label()} (to~traverse the tree).
+
+\section{Logging, Testing, and Traceability}
+\label{sec:logging}
+
+A~core design principle of~the converter is audibility, fulfilling research goal \textbf{(R2)}. This is implemented via~a~custom logging system in~\texttt{utils/logger.py}.
+
+A~central \texttt{ChangeCollector} class gathers change events from~all modules. To~automate this, core data structures like \texttt{Token.data} are implemented as~a~\texttt{LoggingDict}, a~dictionary subclass that automatically calls \texttt{ChangeCollector.record()} whenever a~value is set or changed.
+
+Each log entry records the sentence ID, token ID, the specific module and function that triggered the change, and a~message detailing the transformation (e.g., \texttt{upos changed from VERB to AUX}). This fine-grained logging (Contribution \textbf{C1}) proved invaluable for debugging, as it allows for~a~step-by-step reconstruction of~how a~token was processed and which rules fired. It was particularly critical for identifying and resolving rule conflicts during the complex dependency conversion phase.
+
+\section{Phase 1: Morphosyntactic Conversion}
+
+The first phase, handled by~the \texttt{morphosyntax/} module, converts MPDT \texttt{XPOS} tags and features to their \texttt{UPOS} and \texttt{FEATS} counterparts. As shown in~\texttt{morphosyntax/morphosyntax.py}, this phase itself is a~three-step pipeline.
+
+\subsection{Pre-conversion}
+First, \texttt{morphosyntax/preconversion.py} applies a~set of~lemma-based rules. These rules override the POS-specific logic for~specific lexical items. For example:
+\begin{itemize}[leftmargin=2em]
+    \item Conjunctions like \textit{niż}, \textit{jakby}, and \textit{niczym} are unambiguously mapped to \texttt{SCONJ} with \texttt{ConjType=Comp}.
+    \item The lemma \textit{temu} is mapped to \texttt{ADP} with \texttt{AdpType=Post}.
+    \item Words with~initial capitalization (and not otherwise classified) are provisionally tagged \texttt{PROPN}, correcting for~cases where a~proper noun was tagged as~a~common noun (\texttt{subst}).
+\end{itemize}
+
+\subsection{Core POS Conversion}
+Next, the main \texttt{morphosyntax/conversion.py} script acts as~a~dispatcher, routing each token to~a~dedicated function based on~its MPDT \texttt{pos} tag. These functions, located in~the \texttt{morphosyntax/pos\_categories/} directory, implement the one-to-one and one-to-many mappings.
+
+For example, the function \texttt{morphosyntax/pos\_categories/noun.py:subst} handles \texttt{subst} (noun) tokens. While most are mapped to \texttt{NOUN}, it checks for~pronominal lemmas (e.g., \textit{kto}, \textit{co}, \textit{nikt}) and maps them to \texttt{PRON} with the corresponding \texttt{PronType}.
+
+This module also handles the specific Middle Polish phenomena described in~\autoref{chap:language}.
+\begin{itemize}[leftmargin=2em]
+    \item \texttt{adjb} (short adjective) is mapped to \texttt{UPOS=ADJ} + \texttt{Variant=Short}.
+    \item \texttt{ppasb} (short passive participle) is mapped to \texttt{UPOS=ADJ} + \texttt{VerbForm=Part}, \texttt{Voice=Pass}, \texttt{Variant=Short}.
+    \item The \texttt{helpers.py} module correctly maps the PDB gender system (e.g., \texttt{manim1}) to~the UD features \texttt{Gender=Masc} and \texttt{Animacy=Hum}, and preserves the \texttt{Number=Dual} feature.
+\end{itemize}
+
+\subsection{Post-conversion}
+Finally, \texttt{morphosyntax/postconversion.py} performs sentence-level cleanup. Its two main tasks are:
+\begin{enumerate}[leftmargin=2em]
+    \item \textbf{Reconstructing Multiword Tokens:} Using the original sentence \texttt{"text"} from~the metadata, the \texttt{add\_mwe} function identifies tokens that are not separated by~a~space. This is essential for handling Middle Polish clitics, correctly grouping forms like \textit{kiedym} into an MWE that spans the syntactic words \textit{kiedy}  and \textit{m}.
+    \item \textbf{Annotating Spaces:} The \texttt{add\_no\_space\_misc} function analyzes the same text to add \texttt{SpaceAfter=No} to~the \texttt{MISC} column for~tokens that are immediately followed by~another token or punctuation, a~requirement for~the CoNLL-U format.
+\end{enumerate}
+
+\section{Phase 2: Dependency Conversion}
+
+The second phase, managed by~the \texttt{dependency/} module, is significantly more complex. Unlike morphosyntax, dependency conversion is not token-local; rules must consider a~token's governor, its dependents, and its siblings, often operating on~the original PDB structure, the partially converted UD structure, or both.
+
+Many of~the structural transformations were adapted from~the principles established for~the conversion of~the contemporary Polish Dependency Bank (PDB$\rightarrow$PDB-UD) \parencite{wroblewska-2018-extended, wroblewska-2020-towards}, but were re-implemented to~fit the custom pipeline and~handle Middle Polish phenomena. The conversion follows a~strict pipeline, defined in~\texttt{dependency/conversion.py}.
+
+\subsection{Structural Restructuring}
+The first and most critical step is to~change the topology of~the dependency tree. The \texttt{dependency/structures/} directory contains modules for~specific syntactic constructions. The two most fundamental transformations, which were illustrated in~\autoref{fig:pdb-example} and \autoref{fig:ud-example}, are:
+
+\begin{itemize}[leftmargin=2em]
+    \item \textbf{Prepositional Phrases:} In~PDB, a~preposition (\texttt{prep}) governs its nominal complement (\texttt{comp}). The \texttt{dependency/structures/prepositional.py} module inverts this: the nominal complement becomes the head, it inherits the dependency relation from~the preposition (e.g., \texttt{adjunct} $\rightarrow$ \texttt{obl}), and the preposition is re-attached to~the noun with the \texttt{case} relation.
+    
+    \item \textbf{Coordination:} In~PDB, the coordinating conjunction (\texttt{conj}) is the head of~the coordinated elements (\texttt{conjunct}). The \texttt{dependency/structures/coordination.py} module restructures this by~promoting the \emph{first} conjunct to~be the head. Subsequent conjuncts are attached to~the first with the \texttt{conj} relation, and the conjunction itself is attached to~its \emph{following} conjunct with the \texttt{cc} relation.
+\end{itemize}
+
+Similar restructuring logic is applied to~copula constructions (\texttt{copula.py}), numeral phrases (\texttt{numeral.py}), and subordinate clauses (\texttt{subordination.py}).
+
+\subsection{Label Mapping}
+After the tree structure is finalized, the \texttt{dependency/labels.py} module traverses the tree and assigns a~final \texttt{udep\_label} to~each token. This mapping is highly context-sensitive. For~example, the generic PDB \texttt{adjunct} relation is mapped to~a~variety of~UD relations based on~the UPOS of~the head and the dependent:
+\begin{itemize}[leftmargin=2em]
+    \item \texttt{adjunct} on~a~\texttt{NOUN} dependent $\rightarrow$ \texttt{nmod}
+    \item \texttt{adjunct} on~an \texttt{ADJ} dependent $\rightarrow$ \texttt{amod}
+    \item \texttt{adjunct} on~an \texttt{ADV} dependent $\rightarrow$ \texttt{advmod}
+    \item \texttt{adjunct} (prepositional phrase) on~a~\texttt{VERB} $\rightarrow$ \texttt{obl}
+    \item \texttt{adjunct} (clausal) on~a~\texttt{VERB} $\rightarrow$ \texttt{advcl}
+\end{itemize}
+
+\subsection{Correction and Post-processing}
+Finally, a~series of~cleanup scripts are run. \texttt{dependency/edges.py} ensures UD validation compliance by~removing disallowed dependents (e.g., a~\texttt{case} token cannot have its own dependents).
+
+The \texttt{dependency/postconversion.py} module handles final tasks, such as disambiguating pronouns (\texttt{PronType=Int,Rel} $\rightarrow$ \texttt{PronType=Int} or \texttt{PronType=Rel} based on~tree context) and, most importantly, generating the enhanced dependency graph (\texttt{DEPS} column) by~propagating shared dependents in~coordination, fulfilling goal \textbf{(R3)}.
+
+\section{Processing Workflow}
+
+From a~user's perspective, the pipeline is executed via~a~single command. The converter takes the MPDT \texttt{.conll} file and the corresponding metadata \texttt{.json} file as~input.
+
+\begin{verbatim}
+python converter.py input_file.conll output_file.conllu meta_file.json
+\end{verbatim}
+
+The script processes each sentence and saves the result in~the specified \texttt{output\_file.conllu} in~the valid CoNLL-U format, ready for~validation and downstream use.
+
+\end{document}
