@@ -12,7 +12,7 @@ logs/
 *.out
 
 # Not-repository data
-data/
+data/ud/
 tools-master/
 
 # LaTeX files
