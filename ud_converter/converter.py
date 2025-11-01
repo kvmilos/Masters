@@ -89,40 +89,6 @@ def main() -> None:
     write_ud_conll(sentences, output_file, meta_data, form)
     logger.info('Conversion completed.')
 
-    # -------------------------------------------------------
-    # to be deleted later
-    with open(output_file, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
-
-    lines2 = [line for line in lines]
-
-    if tags_only:
-        logger.info('Tags-only mode: skipping additional processing.')
-        return
-
-    logger.info('Processing lines for additional changes.')
-    for i, line in enumerate(lines):
-        if line.strip() and not line.startswith('#'):
-            fields = line.strip().split('\t')
-            upos_feats = fields[4]  # 5th column
-            morph_feats = fields[5]  # 6th column
-
-            if any(upos_feats.startswith(prefix) for prefix in ('praet', 'ppas', 'pact')):
-                morph_feats = morph_feats.replace('|Degree=Pos', '')
-            morph_feats = morph_feats.replace('Number=Ptan', 'Number=Plur')
-
-            fields[5] = morph_feats
-            lines[i] = '\t'.join(fields) + '\n'
-            lines2[i] = '\t'.join(fields[:-1]) + '\n'
-
-    with open(output_file.replace('.conllu', '-degree-number.conllu'), 'w', encoding='utf-8') as f:
-        f.writelines(lines)
-    with open(output_file.replace('.conllu', '-degree-number-nolast.conllu'), 'w', encoding='utf-8') as f2:
-        f2.writelines(lines2)
-
-    logger.info('Wrote output to %s', output_file.replace('.conllu', '-degree-number.conllu'))
-    # -------------------------------------------------------
-
 
 if __name__ == '__main__':
     main()
