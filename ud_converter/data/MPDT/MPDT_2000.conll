@@ -7861,13 +7861,13 @@
 33	.	.	interp	interp	_	7	punct	_	.	
 
 1	Za	za	prep	prep:gen	gen	12	adjunct_temp	_	Zá	
-2	Aleksandra	Aleksander	subst	subst:sg:gen:m	sg|gen|m	8	app	_	Alexandra	
+2	Aleksandra	Aleksander	subst	subst:sg:gen:m	sg|gen|m	1	comp	_	Alexandra	 
 3	VII	VII	romandig	romandig	_	2	ne	_	VII	
 4	.	.	interp	interp	_	3	punct	_	.	
-5	Innocentego	Innocenty	subst	subst:sg:gen:m	sg|gen|m	8	app	_	Innocentego	
+5	Innocentego	Innocenty	subst	subst:sg:gen:m	sg|gen|m	2	conj	_	Innocentego	
 6	XI	XI	romandig	romandig	_	5	ne	_	XI	
 7	.	.	interp	interp	_	6	punct	_	.	
-8	Papieżów	papież	subst	subst:pl:gen:m	pl|gen|m	1	comp	_	Pápieżow	
+8	Papieżów	papież	subst	subst:pl:gen:m	pl|gen|m	2	app	_	Pápieżow	
 9	głód	głód	subst	subst:sg:acc:m	sg|acc|m	12	obj	_	głod	
 10	od	od	prep	prep:gen:nwok	gen|nwok	12	comp	_	od	
 11	Rzymu	Rzym	subst	subst:sg:gen:m	sg|gen|m	10	comp	_	Rzymu	
@@ -17271,10 +17271,10 @@
 5	Katarzynę	Katarzyna	subst	subst:sg:acc:f	sg|acc|f	4	app	_	Katarzynę	
 6	,	,	interp	interp	_	12	obj_theme	_	,	
 7	Pawła	Paweł	subst	subst:sg:acc:m	sg|acc|m	8	conjunct	_	Pawła	
-8	,	,	interp	interp	_	11	app	_	,	
+8	,	,	interp	interp	_	6	conjunct	_	,	
 9	Grzegorza	Grzegorz	subst	subst:sg:acc:m	sg|acc|m	8	conjunct	_	Grzegorza	
 10	–	–	interp	interp	_	11	punct	_	–	
-11	synów	syn	subst	subst:pl:acc:manim1	pl|acc|manim1	6	conjunct	_	synów	
+11	synów	syn	subst	subst:pl:acc:manim1	pl|acc|manim1	8	app	_	synów	
 12	mający	mieć	pact	pact:sg:nom:m:imperf:aff:pos	sg|nom|m|imperf|aff|pos	1	adjunct	_	mający	
 13	.	.	interp	interp	_	1	punct	_	.	
 
@@ -22063,7 +22063,7 @@
 15	dary	dar	subst	subst:pl:acc:m	pl|acc|m	13	comp	_	dáry	
 16	/	/	interp	interp	_	31	punct	_	/	
 17	którymi	który	adj	adj:pl:inst:m:pos	pl|inst|m|pos	31	obj_instr	_	ktorymi	
-18	ś	ś	aglt	aglt:sg:sec:imperf:nwok	sg|sec|imperf|nwok	25	aglt	_	ś	
+18	ś	być	aglt	aglt:sg:sec:imperf:nwok	sg|sec|imperf|nwok	25	aglt	_	ś	
 19	duchy	duch	subst	subst:pl:acc:m	pl|acc|m	31	obj	_	duchy	
 20	one	on	adj	adj:pl:acc:m:pos	pl|acc|m|pos	19	adjunct	_	one	
 21	niebieskie	niebieski	adj	adj:pl:acc:m:pos	pl|acc|m|pos	22	adjunct	_	niebieskie	
