@@ -14,7 +14,7 @@ for interoperability with~UD-based tools and limits straightforward comparative 
 A natural solution is to convert these resources to the UD format. From~an engineering perspective, however, a~faithful, auditable conversion is non-trivial:
 historical orthography, abbreviations, clitic mobility, 
 numeral complexes, and multiword conjunctions/prepositions interact with~head rules and label inventories.
-Prior conversion experience for~contemporary Polish (PDB~$\rightarrow$~PDB-UD; NKJP1M~$\rightarrow$~NKJP1M-UD) offers valuable guidance
+Prior conversion experience for~contemporary Polish offers valuable guidance
 \parencite{wroblewska-2018-extended, wroblewska-2020-towards},
 yet historical data introduce additional phenomena that require explicit, rule-based handling and transparent traceability.
 
@@ -22,9 +22,9 @@ As~\textcite{Wieczorek2025TowardsMPDT} notes, MPDT's current format is~well-suit
 studies with~contemporary Polish syntax; at~the same time, she highlights the advantages of~moving to~UD
 for~cross-linguistic comparability, wider intelligibility, and representational options such as~enhanced dependencies
 for~shared dependents and shared governors in~coordination—even if~some information may be lost in~conversion.
+
 This thesis operationalizes that rationale by~delivering a~documented, UD-oriented converter for~MPDT and preparing
 the current version of MPDT-UD suitable for~validation and downstream use.
-
 The intended users include historical linguists needing UD-compatible data and~NLP practitioners interested in~diachronic Polish or~cross-lingual experiments.
 
 
@@ -50,7 +50,7 @@ This project delivers concrete, reusable artifacts:
 
 \begin{enumerate}[label=\textbf{(C\arabic*)}, leftmargin=2em]
   \item \textbf{A~rule-based MPDT~$\rightarrow$~MPDT-UD converter.}
-        A~modular pipeline with~fine-grained logging, selectively adapting ideas from~PDB$\rightarrow$PDB-UD while
+        A~modular pipeline with~fine-grained logging, selectively adapting ideas from~PDB$\rightarrow$PDB-UD \parencite{wroblewska-2018-extended} while
         targeting Middle Polish phenomena. The code will be released in~a~public repository under~an open-source
         license, together with~this thesis, which documents the design and implementation.
   \item \textbf{An initial public release of~MPDT-UD.}

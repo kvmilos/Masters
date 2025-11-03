@@ -10,24 +10,24 @@ This chapter characterizes the linguistic system of Middle Polish as represented
 
 The KorBa corpus preserves two parallel orthographic layers: \emph{transliteration} (a faithful rendering of the historical text) and \emph{transcription} (a normalized spelling approximating contemporary Polish orthography). As noted in the KorBa manual, transliteration reflects the original graphic form of seventeenth- and eighteenth-century sources, while the transcription adapts them to modern conventions, keeping key phonetic and morphological features of Middle Polish.
 
-Middle Polish orthography was far from standardized. The same word could appear in several spelling variants, sometimes even within a single text. Graphemes were often used interchangeably (e.g.\ \textit{i}/\textit{y}, \textit{u}/\textit{v}, \textit{ć}/\textit{ci}, \textit{rz}/\textit{ż}). Long vowels (\textit{á}, \textit{é}) and palatalization (\textit{ć}, \textit{ź}, \textit{ś}, \textit{ń}) were marked inconsistently. The KorBa transliteration layer preserves this variation, while the transcription layer normalizes it (e.g.\ \textit{rodźicow} $\rightarrow$ \textit{rodziców}).\footnote{See \textcite{Gruszczynski2022KorBa}, p.~317.}
+Middle Polish orthography was far from standardized. The same word could appear in several spelling variants, sometimes even within a single text. Graphemes were often used interchangeably (e.g.,\ \textit{i}/\textit{y}, \textit{u}/\textit{v}, \textit{ć}/\textit{ci}, \textit{rz}/\textit{ż}). Long vowels (\textit{á}, \textit{é}) and palatalization (\textit{ć}, \textit{ź}, \textit{ś}, \textit{ń}) were marked inconsistently. The KorBa transliteration layer preserves this variation, while the transcription layer normalizes it (e.g.,\ \textit{rodźicow} $\rightarrow$ \textit{rodziców}).\footnote{See \textcite{Gruszczynski2022KorBa}, p.~317.}
 
 Orthographic conventions also influenced tokenization. Many expressions that are today written separately were then written together, and vice versa. Following the \textcite{Wieczorek2020Instr}, elements that would now be written jointly are linked with the \texttt{mwe} relation during annotation.
 
 \paragraph{Examples:}
 \begin{itemize}[leftmargin=2em]
-  \item Historical joint writing: \textit{zchęći} (modern \textit{z chęci}; 'from willingness') $\rightarrow$ split into two syntactic words in UD.
-  \item Historical separate writing: \textit{dla tego} (modern \textit{dlatego}; 'because', lit. 'for this') is treated as a single prepositional unit.
+  \item Historical joint writing: \textit{zchęći} (modern \textit{z chęci}; `from willingness') $\rightarrow$ split into two syntactic words in UD.
+  \item Historical separate writing: \textit{dla tego} (modern \textit{dlatego}; `because', lit. `for this') is treated as a single prepositional unit.
 \end{itemize}
 
 \subsection{Punctuation}
 
 As described by \textcite{Wieczorek2025TowardsMPDT}, punctuation in Middle Polish reflected the rhythm and pauses of speech rather than syntactic boundaries. Marks were used inconsistently and sometimes idiosyncratically: slashes (/) often functioned as commas, semicolons as commas, and colons as semicolons or dashes. Conversely, long unpunctuated stretches also occur.  
-During syntactic annotation, punctuation is interpreted according to its syntactic role, not its original mark, e.g.\ a slash (/) introducing a new clause is annotated as \texttt{punct}.
+During syntactic annotation, punctuation is interpreted according to its syntactic role, not its original mark, e.g.,\ a slash (/) introducing a new clause is annotated as \texttt{punct}.
 
 \begin{quote}
 \textit{Powstawszy raz z bárzo ćięszkiey choroby/ ták rzekł Nie nagorzey śię zemną stáło: Bo mię chorobá vpomniáłá/ ábym się w pychę nie podnośił/ ponieważem iest śmiertelny.}\\
-('Having once recovered from a very severe illness/ he said thus: It did not go too badly with me: For the illness reminded me/ that I should not lift myself up in pride/ since I am mortal.')\\
+(`Having once recovered from a very severe illness/ he said thus: It did not go too badly with me: For the illness reminded me/ that I should not lift myself up in pride/ since I am mortal.')\\
 \textit{Source: MPDT corpus / metadata.}
 \end{quote}
 
@@ -45,32 +45,32 @@ They correspond to UD \texttt{ADJ} with \texttt{Variant=Short}.
 
 \begin{quote} 
 \textit{Iak długo ia \textbf{żyw} iestem, żyie Pán moy poty, Czuię bol y wesołość, czuię y kłopoty.}\\
-('As long as I live, my Lord lives likewise, I feel pain and joy, I also feel troubles.')\\
+(`As long as I live, my Lord lives likewise, I feel pain and joy, I also feel troubles.')\\
 \textit{Source: MPDT corpus / metadata.}\\
 In modern Polish, the short form \textit{żyw} ('alive') would be considered archaic or poetic; the modern equivalent is \textit{żywy}.\\
 \end{quote}
 
 \begin{quote}
 \textit{Chcesz się zemną równać: nie \textbf{godzien}eś tego.}\\
-('You want to match yourself with me: you are not worthy of this.')\\
+(`You want to match yourself with me: you are not worthy of this.')\\
 \textit{Source: MPDT corpus / metadata.}\\
-In modern Polish, \textit{godzien} still exists, along with words like \textit{pewien} ('certain'), however their usage is now limited, and the standard forms are \textit{godny}, and \textit{pewny}.\\
+In modern Polish, \textit{godzien} still exists, along with words like \textit{pewien} (`certain'), however their usage is now limited, and the standard forms are \textit{godny}, and \textit{pewny}.\\
 \end{quote}
 
 \paragraph{(b) Short passive participles (\texttt{ppasb}).}
-Passive participles in the uninflected short form (e.g.\ \textit{zbawion}, \textit{pisan}) co-occur with finite forms of \textit{być}.  
+Passive participles in the uninflected short form (e.g.,\ \textit{zbawion}, \textit{pisan}) co-occur with finite forms of \textit{być}.  
 They are annotated as \texttt{ADJ} with \texttt{VerbForm=Part, Voice=Pass, Variant=Short}.
 
 \begin{quote}
 \textit{Kto vwierzy, á okrzći się, \textbf{zbáwion} będźie, ále kto nie vwierzy będźie \textbf{potępion}.}\\
-('Whoever believes and is baptized will be saved, but whoever does not believe will be condemned.')\\
+(`Whoever believes and is baptized will be saved, but whoever does not believe will be condemned.')\\
 \textit{Source: MPDT corpus / metadata.}\\
 In modern Polish, these short forms are archaic; the standard forms are fully inflected \textit{zbawiony}, \textit{potępiony}.\\
 \end{quote}
 
 \begin{quote}
 \textit{\textbf{Pisań} na zamku pileckim, dnia 23 miesiąca lipca, roku Pańskiego 1620.}\\
-('Written at the castle of Pilec, on the 23rd day of July, in the Year of Our Lord 1620.')\\
+(`Written at the castle of Pilec, on the 23rd day of July, in the Year of Our Lord 1620.')\\
 \textit{Source: MPDT corpus / metadata.}\\
 In modern Polish, the short form \textit{pisan} is archaic; the standard form is \textit{pisany}.
 \end{quote}
@@ -81,20 +81,20 @@ They are mapped to \texttt{ADJ} with \texttt{VerbForm=Part} and \texttt{Voice=Pa
 
 \begin{quote}
 \textit{Częstokroć ábowiem były widáne z twarzámi \textbf{opuchłymi}/ \textbf{záśiniáłymi}.}\\
-('For often they were seen with swollen/ bruised faces.')\\
+(`For often they were seen with swollen/ bruised faces.')\\
 \textit{Source: MPDT corpus / metadata.}\\
 In modern Polish, some of those forms are still in use, but some are archaic or poetic. For example, \textit{opuchłymi} would be rather replaced by \textit{opuchniętymi}, while \textit{zasiniałymi} is still acceptable.
 \end{quote}
 
 \paragraph{(d) Dual number (\texttt{Number=Dual}).}
 Middle Polish still preserved dual forms for certain nouns, numerals, adjectives, and verbs. The KorBa manual documents the explicit tag \texttt{du}.  
-These forms gradually merged with the plural after ca.~1740, though fossilized duals like \textit{ręce}, \textit{oczy} survive in modern Polish (sg. \textit{oko} ['eye'] $\rightarrow$ pl. \textit{oczy} when referring to the organ, but also pl. \textit{oka} when used in other sense, e.g. \textit{oka w rosole} ('eyes in the broth'); similarly sg. \textit{ucho} ['ear'] $\rightarrow$ pl. \textit{uszy}, when about body parts, or pl. \textit{ucha}, when referring to cup handles).
+These forms gradually merged with the plural after ca.~1740, though fossilized duals like \textit{ręce}, \textit{oczy} survive in modern Polish (sg. \textit{oko} [`eye'] $\rightarrow$ pl. \textit{oczy} when referring to the organ, but also pl. \textit{oka} when used in other sense, e.g., \textit{oka w rosole} (`eyes in the broth'); similarly sg. \textit{ucho} [`ear'] $\rightarrow$ pl. \textit{uszy}, when about body parts, or pl. \textit{ucha}, when referring to cup handles).
 
 \begin{quote}
 \textit{6. Po przepędzonych przez \textbf{dwie lecie} tych okrutnych boleściách, pokazał się iey Pan mowiąc: Iż bez lat pięc nie miałaby iadać ani mięsa. ani nabiáłu.}\\
-('6. After two years spent in these cruel pains, the Lord appeared to her saying: That for five years she should not eat either meat or dairy.')\\
+(`6. After two years spent in these cruel pains, the Lord appeared to her saying: That for five years she should not eat either meat or dairy.')\\
 \textit{Source: MPDT corpus / metadata.}\\
-Here, \textit{dwie lecie} is dual accusative of \textit{dwa} (two) and \textit{lato} ('summer; year'). In modern Polish, the dual form is archaic; the standard form (both the nominative and accusative) is \textit{dwa lata}.
+Here, \textit{dwie lecie} is dual accusative of \textit{dwa} (two) and \textit{lato} (`summer; year'). In modern Polish, the dual form is archaic; the standard form (both the nominative and accusative) is \textit{dwa lata}.
 \end{quote}
 
 \subsection{Gender System and Declension}
@@ -105,13 +105,13 @@ In early texts, these values overlap; many forms do not yet reflect consistent d
 
 \begin{quote}
 \emph{(m)} \textit{6. Vbogáćiłeś ich chybkośćią i lotem nád wszytkie loty prędszym i bystrzeyszym/ i bystrym ták/ iż i strzały/ i \textbf{ptaki}/ i pioruny poprzedzáć/ á wszytkie rzeczy/ mury/ skáły/ przenikać mogą.}\\
-('You have enriched them with speed and with flight swifter and sharper than all flights/ so that even arrows/ and birds/ and thunder they can outpace/ and penetrate all things/ walls/ rocks.')\\
+(`You have enriched them with speed and with flight swifter and sharper than all flights/ so that even arrows/ and birds/ and thunder they can outpace/ and penetrate all things/ walls/ rocks.')\\
 \textit{Source: MPDT corpus / metadata.}
 \end{quote}
 
 \begin{quote}
 \emph{(manim1)} \textit{122. Czemu \textbf{ptacy} ktorzy ogona nie máią dlugie nogi maią?}\\
-('Why do birds that do not have a tail, have long legs?')\\
+(`Why do birds that do not have a tail, have long legs?')\\
 \textit{Source: MPDT corpus / metadata.}
 \end{quote}
 
@@ -166,7 +166,7 @@ As noted by \textcite{Wieczorek2025TowardsMPDT}, it is rare in modern Polish for
 \paragraph{Example (missing verbal predicate):}
 \begin{quote}
 \textit{Tabakierka złotem wybijana .}\\
-('A snuffbox, embossed with gold.')
+(`A snuffbox, embossed with gold.')
 \end{quote}
 
 \begin{dependency}[baseline=7.2em,label style={font=\footnotesize}]
@@ -187,26 +187,26 @@ As noted by \textcite{Wieczorek2025TowardsMPDT}, it is rare in modern Polish for
 \subsection{Clause Linking and Subordination}
 
 Middle Polish frequently employs conjunctions that have since changed meaning, an example of which could be the token
-\textit{jako}. It is frequently employed in two functions: (i) as a comparative/similative marker in the sense of modern \textit{jak} ('like/as; when/how'), and (ii) in the modern-like role/identity sense 'as'.
+\textit{jako}. It is frequently employed in two functions: (i) as a comparative/similative marker in the sense of modern \textit{jak} (`like/as; when/how'), and (ii) in the modern-like role/identity sense `as'.
 
 \begin{quote}
 \textit{Ale iako nowi Obywatele tam przybywać poczeli z Kir, czy Syr Kraiu w Medii lezącego, Kirya, to Syria zwać się poczęła.}\\
-('But as/when new inhabitants began to arrive there from the land of Kir, or Syr, lying in Media, Kirya then began to be called Syria.')\\
-\textit{jako} in the sense of \textit{jak} 'when'\\
+(`But as/when new inhabitants began to arrive there from the land of Kir, or Syr, lying in Media, Kirya then began to be called Syria.')\\
+\textit{jako} in the sense of \textit{jak} `when'\\
 \textit{Source: MPDT corpus / metadata.}
 \end{quote}
 
 \begin{quote}
 \textit{Iako Roża rozpuszcza z przyrodzenia swego zapach przyiemny, tak Serce dobroczynne wydaie bez przyniewolenia uczynki dobre.}\\
-('As a rose by its nature gives off a pleasant fragrance, so a charitable heart produces good deeds without compulsion.')\\
-\textit{jako} in the sense of \textit{jak} 'how/as'\\
+(`As a rose by its nature gives off a pleasant fragrance, so a charitable heart produces good deeds without compulsion.')\\
+\textit{jako} in the sense of \textit{jak} `how/as'\\
 \textit{Source: MPDT corpus / metadata.}
 \end{quote}
 
 \begin{quote}
 \textit{Ja zaś w tych terminach stawam jako mediator, prowadząc do zgody obiedwie strony.}\\
-('And I, for my part, in these proceedings stand as a mediator, leading both sides to agreement.')\\
-\textit{jako} = 'as (in the role of)'\\
+(`And I, for my part, in these proceedings stand as a mediator, leading both sides to agreement.')\\
+\textit{jako} = `as (in the role of)'\\
 \textit{Source: MPDT corpus / metadata.}
 \end{quote}
 
