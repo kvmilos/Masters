@@ -1,19 +1,9 @@
-# Virtual environment / Python cache
-.venv/
-__pycache__/
-
 # VS Code settings
 .vscode/
 *.code-workspace
 
-# Logs, temporary/output files
-logs/
-*.log
-*.out
-
-# Not-repository data
-ud_converter/data/ud/
-tools-master/
+# macOS system files
+.DS_Store
 
 # LaTeX files
 *.aux
@@ -25,21 +15,11 @@ tools-master/
 *.blg
 *.xml
 *.toc
+*.out
+*.log
 
-# macOS system files
-.DS_Store
-
-# Flake8
-.flake8
-
-# MyPy cache
-.mypy_cache/
-tools-master/
-
-# Personal files
+# Bash scripts
 *.sh
-*.txt
 
-# Converter 
-ud_converter/
-converter/
+# Text files
+*.txt
