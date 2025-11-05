@@ -16,13 +16,33 @@ Middle Polish orthography was far from standardized. The same word could appear 
 Orthographic conventions also influenced tokenization. Many expressions that are today written separately were then written together, and vice versa. For example:
 
 \begin{itemize}[leftmargin=2em]
-  \item Historical joint writing: \textit{zchęći} (modern \textit{z chęci}; `from willingness') $\rightarrow$ split into two syntactic words in UD.
-  \item Historical separate writing: \textit{dla tego} (modern \textit{dlatego}; `because', lit. `for this') is treated as a single prepositional unit.
+  \item Historical joint writing \textit{zchęći}, modern \textit{z chęci} (`from willingness')
+  \item Historical separate writing \textit{dla tego}, modern \textit{dlatego} (`because', lit. `for this')
 \end{itemize}
+
+Following \textcite{Wieczorek2020Instr}, the MPDT treats historical spacing as evidence but bases syntactic analysis on function. Two frequent scenarios occur. (i) Historically fused sequences that correspond to ordinary prepositional phrases are split into their syntactic parts; the preposition and its nominal complement are annotated as in regular usage (see \exref{ex:orth-pp}). (ii) Historically separate sequences that function as a single connective or adverbial are kept as two tokens but marked as a fixed multiword unit in MPDT; the unit then receives a single clausal function (see \exref{ex:orth-fixed}).
+
+\begin{example}\label{ex:orth-pp}
+\textit{Poniewoli musiała zbita na łożu leżeć u rodziców/ ale \textbf{zchęci} obiecała sobie inną okazją/ iż jej od przedsięwzięcia nie oderwą.}\\
+(`Against her will she had to lie beaten on the bed at her parents’/ but of her own will she promised herself another occasion/ that they would not tear her away from her undertaking.')\\
+\textit{Source: MPDT corpus / metadata.}
+\end{example}
+
+In \exref{ex:orth-pp}, \emph{zchęci} is analyzed in MPDT as the preposition \emph{z} with the genitive noun \emph{chęci}: the preposition functions as a modifier of the non-finite predicate, and the noun is its complement.
+
+\begin{example}\label{ex:orth-fixed}
+\textit{Tak jest: i \textbf{dla tego} tak się poniżył.}\\
+(`Indeed: and therefore he humbled himself thus.')\\
+\textit{Source: MPDT corpus / metadata.}
+\end{example}
+
+In \exref{ex:orth-fixed}, \emph{dla tego} forms a lexicalized connective in MPDT: \emph{dla} serves as the syntactic head of the unit that modifies the clause, and \emph{tego} is linked to it as a multiword element within that unit.
+
+
 
 \subsection{Punctuation}
 
-As described by \textcite{Wieczorek2025TowardsMPDT}, punctuation in Middle Polish reflected the rhythm and pauses of speech rather than syntactic boundaries. Marks were used inconsistently and sometimes idiosyncratically: slashes (/) often functioned as commas, semicolons as commas, and colons as semicolons or dashes. Conversely, long unpunctuated stretches also occur.  
+As described by \textcite{Wieczorek2025TowardsMPDT}, punctuation in Middle Polish reflected the rhythm and pauses of speech rather than syntactic boundaries. Marks were used inconsistently and sometimes idiosyncratically: slashes (/) often functioned as commas, semicolons as commas, and colons as semicolons or dashes. Conversely, long unpunctuated stretches also occur.
 
 During syntactic annotation, punctuation is interpreted according to its syntactic function, not its original graphic mark. For instance, a slash (/) that introduces a new clause is annotated as \texttt{punct}.
 
@@ -134,11 +154,11 @@ Middle Polish syntax exhibits high flexibility of word order, frequent inversion
         \textit{every} \& \textit{country} \& \textit{has} \& \textit{attributes} \\
          \& \& \& \\
         ADJ \& SUBST \& FIN \& SUBST \\
-    \end{deptext}
+      \end{deptext}
       \deproot[edge style=dotted]{3}{root}
-    \depedge{2}{1}{adjunct}
-    \depedge{3}{2}{subj}
-    \depedge{3}{4}{obj\_theme}
+      \depedge{2}{1}{adjunct}
+      \depedge{3}{2}{subj}
+      \depedge{3}{4}{obj\_theme}
     \end{dependency}%
     }
   }
@@ -157,11 +177,11 @@ Middle Polish syntax exhibits high flexibility of word order, frequent inversion
         \textit{abbots} \& \textit{good} \& \textit{supplied} \& \textit{fund(s)} \\
          \& \& \& \\
         SUBST \& ADJ \& PPAS \& SUBST \\
-    \end{deptext}
+      \end{deptext}
       \deproot[edge style=dotted]{3}{root}
-    \depedge[edge unit distance=4.5ex]{3}{1}{adjunct}
-    \depedge{3}{4}{obj\_instr}
-    \depedge{4}{2}{adjunct}
+      \depedge[edge unit distance=4.5ex]{3}{1}{adjunct}
+      \depedge{3}{4}{obj\_instr}
+      \depedge{4}{2}{adjunct}
     \end{dependency}%
     }
   }
@@ -182,15 +202,15 @@ As noted by \textcite{Wieczorek2025TowardsMPDT}, it is rare in modern Polish for
     {\scriptsize
     \begin{dependency}[theme=simple, baseline=7.2em, label style={font=\footnotesize}]
       \begin{deptext}[column sep=2.2em, nodes={text width=7.0em, align=center}]
-    Tabakierka \& złotem \& wybijana \& . \\
-    \textit{snuffbox} \& \textit{with gold} \& \textit{embossed} \& \textit{.} \\
-     \& \& \& \\
+        Tabakierka \& złotem \& wybijana \& . \\
+        \textit{snuffbox} \& \textit{with gold} \& \textit{embossed} \& \textit{.} \\
+         \& \& \& \\
         SUBST \& SUBST \& PPAS \& INTERP \\
-  \end{deptext}
+      \end{deptext}
       \deproot[edge style=dotted]{1}{root}
-  \depedge{1}{3}{adjunct}
-  \depedge{3}{2}{obj\_attrib}
-  \depedge{1}{4}{punct}
+      \depedge{1}{3}{adjunct}
+      \depedge{3}{2}{obj\_attrib}
+      \depedge{1}{4}{punct}
     \end{dependency}%
     }
   }
