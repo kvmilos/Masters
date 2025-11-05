@@ -198,7 +198,7 @@ For practical implementation and data sharing, UD annotations must be encoded in
 \end{list}
 \medskip
 
-Here is a CoNLL-U snippet for the sentence "Chłopiec siedzi na łóżku i czyta.", with the enhanced dependencies.
+Here is a CoNLL-U snippet for the sentence ``Chłopiec siedzi na łóżku i czyta.'', with the enhanced dependencies.
 
 {\scriptsize
 \begin{list}{}{
@@ -224,7 +224,7 @@ Here is a CoNLL-U snippet for the sentence "Chłopiec siedzi na łóżku i czyta
 \label{sec:resources}
 \subsection{KorBa}
 
-KorBa \parencite{Gruszczynski2022KorBa} -- from Polish \textit{Korpus Barokowy}, "Baroque Corpus" -- is a~13.5-million-token corpus of~Polish texts from~1601–1772, compiled from~over seven hundred sources
+KorBa \parencite{Gruszczynski2022KorBa} -- from Polish \textit{Korpus Barokowy} (`Baroque Corpus') -- is a~13.5-million-token corpus of~Polish texts from~1601–1772, compiled from~over seven hundred sources
 and annotated morphosyntactically (lemmas, POS, features). It is searchable via~MTAS (Multi Tier Annotation Search; \cite{Brouwer-etal-2017}),
 and provides parallel transliteration/transcription layers, structural and language markup, and rich metadata
 (period, region, text type, genre) that enable stratified analyses.
@@ -248,8 +248,8 @@ The corpus includes diverse text types ranging from literary works (epic poetry,
 
 \subsection{MPDT}
 
-The Middle Polish Dependency Treebank (MPDT) is a manually curated, syntactically annotated subset of the KorBa corpus, capturing key syntactic phenomena of 17th–18th-century Polish texts.
-Sentences chosen for MPDT exclude poetry and Latin insertions. [This](To za duży skrót myślowy. Nie wiadomo, dlaczego wyłączenie poezji i wtrąceń ma zapewnić wysokiej jakości tokenizację, lemmaty, etc.) ensures high-quality tokenization, lemmas, POS tags, and morphological features, while maintaining representativeness across period, region, and text type.
+The Middle Polish Dependency Treebank (MPDT) is a manually curated, syntactically annotated subset of the KorBa corpus, capturing key syntactic phenomena of 17th–18th-century Polish texts. The sentences are from the manually annotated part of KorBa, whose careful pre-processing provides reliable morphosyntactic annotation and balanced coverage across genres and periods. In its current form, MPDT represents the first systematic attempt at syntactic annotation of Middle Polish and therefore in the current version excludes poetry and sentences with Latin insertions, while limiting sentence length to 10–50 tokens, with the average sentence length being 23 tokens \parencite{Wieczorek2025TowardsMPDT}.
+
 
 The annotation workflow consists of the following steps:
 \begin{enumerate}[leftmargin=2em]
@@ -265,10 +265,10 @@ The annotation workflow consists of the following steps:
 \begin{itemize}[leftmargin=2em]
   \item Total sentences: 2 018  
   \item Total tokens: 47 273  
-  \item Distinct POS tags: 45  
-  \item Distinct dependency relations: 27  
+  \item Distinct POS tags: 45 
+  \item Distinct dependency relations: 27 
   \item Non-projective edges: 3 748 across 879 sentences  
-  \item Average sentence length: 23.43 tokens  
+  \item Average sentence length: 23.43 tokens 
 \end{itemize}
 
 Figure~\ref{fig:mpdt-pos-frequency} presents the 20 most frequent MPDT POS tags, highlighting the prominence of nouns (\texttt{subst}: 11,374 occurrences), punctuation (\texttt{interp}: 7,971), adjectives (\texttt{adj}: 5,315), and prepositions (\texttt{prep}: 4,391).
