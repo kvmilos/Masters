@@ -31,6 +31,23 @@
 }
 \usepackage{csquotes}
 
+% ---- Example environment (Ex. n) ----
+\newcounter{example}
+\renewcommand{\theexample}{\arabic{example}}
+\newenvironment{example}
+  {%
+    \refstepcounter{example}%
+    \par\medskip
+    \noindent\textbf{Example~\theexample:}\par\smallskip
+    \begin{quote}%
+  }
+  {%
+    \end{quote}
+    \medskip
+  }
+
+\newcommand{\exref}[1]{Example~\ref{#1}}
+
 
 \hypersetup{
   colorlinks=true,
