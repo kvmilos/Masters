@@ -118,48 +118,59 @@ The masculine gender system in Middle Polish was less differentiated than in the
 \exref{ex:gender-ptaki} illustrates the use of \emph{ptaki} in the general masculine category (\texttt{m}), while \exref{ex:gender-ptacy} uses the masculine personal value \emph{ptacy} (\texttt{manim1}).
 
 \section{Syntax}
+\label{sec:syntax}
 
 \subsection{Word Order and Non-projectivity}
 
-Middle Polish syntax exhibits high flexibility of word order, frequent inversion, and long-distance dependencies. As noted by \textcite{Wieczorek2025TowardsMPDT}, discontinuous structures—especially in noun phrases with adjectival modifiers—often yield non-projective trees.
+Middle Polish syntax exhibits high flexibility of word order, frequent inversion, and long-distance dependencies. As noted by \textcite{Wieczorek2025TowardsMPDT}, discontinuous structures—especially in noun phrases with adjectival modifiers—often yield non-projective trees. The contrast between a linear and a discontinuous configuration is illustrated in Figures \ref{fig:wordorder-linear} and \ref{fig:wordorder-discont}.
 
-\paragraph{Example 1 (linear order):}
-\textit{Káżdy kray ma przymioty} → no crossing edges.
-\medskip
-\\
-\begin{dependency}
-    \begin{deptext}[column sep=2em]
+\begin{figure}[H]
+  \centering
+  \resizebox{\textwidth}{!}{%
+    {\scriptsize
+    \begin{dependency}[theme=simple, baseline=6.8em, label style={font=\footnotesize}]
+      \begin{deptext}[column sep=2.0em, nodes={text width=7.0em, align=center}]
         Káżdy \& kray \& ma \& przymioty \\
         \textit{every} \& \textit{country} \& \textit{has} \& \textit{attributes} \\
          \& \& \& \\
         ADJ \& SUBST \& FIN \& SUBST \\
     \end{deptext}
+      \deproot[edge style=dotted]{3}{root}
     \depedge{2}{1}{adjunct}
     \depedge{3}{2}{subj}
     \depedge{3}{4}{obj\_theme}
-\end{dependency}
+    \end{dependency}%
+    }
+  }
+  \caption{Linear order (no crossing edges)\\
+  \textit{Source: adapted from \textcite{Wieczorek2025TowardsMPDT}, Fig.~6, p.~12.}}
+  \label{fig:wordorder-linear}
+\end{figure}
 
-\noindent\textit{Source:} adapted from \textcite{Wieczorek2025TowardsMPDT}, Fig.~6, p.~12.
-
-\paragraph{Example 2 (discontinuous order):}
-\textit{Opaci dobrą uprowidowani fundacyą} ('Abbots supplied with good funds') → crossing edges between \textit{dobrą} and \textit{fundacyą}.  
-\medskip
-\\
-\begin{dependency}
-    \begin{deptext}[column sep=2em]
+\begin{figure}[H]
+  \centering
+  \resizebox{\textwidth}{!}{%
+    {\scriptsize
+    \begin{dependency}[theme=simple, baseline=6.8em, label style={font=\footnotesize}]
+      \begin{deptext}[column sep=2.0em, nodes={text width=7.0em, align=center}]
         Opaci \& dobrą \& uprowidowani \& fundacyą \\
         \textit{abbots} \& \textit{good} \& \textit{supplied} \& \textit{fund(s)} \\
          \& \& \& \\
         SUBST \& ADJ \& PPAS \& SUBST \\
     \end{deptext}
+      \deproot[edge style=dotted]{3}{root}
     \depedge[edge unit distance=4.5ex]{3}{1}{adjunct}
     \depedge{3}{4}{obj\_instr}
     \depedge{4}{2}{adjunct}
-\end{dependency}
+    \end{dependency}%
+    }
+  }
+  \caption{Discontinuous order with crossing edges between \textit{dobrą} and \textit{fundacyą}\\
+  \textit{Source: adapted from \textcite{Wieczorek2025TowardsMPDT}, Fig.~7, p.~12.}}
+  \label{fig:wordorder-discont}
+\end{figure}
 
-\noindent\textit{Source:} adapted from \textcite{Wieczorek2025TowardsMPDT}, Fig.~7, p.~12.
-
-These inversions complicate automatic parsing and were one motivation for explicit rule-based conversion to UD.
+These inversions complicate automatic parsing and were one challenge for explicit rule-based conversion to UD.
 
 \subsection{Predicate Ellipsis}
 
