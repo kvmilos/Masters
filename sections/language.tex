@@ -2,19 +2,19 @@
 \documentclass[../main.tex]{subfiles}
 \begin{document}
 
-This chapter characterizes the linguistic system of Middle Polish as represented in the KorBa corpus and the Middle Polish Dependency Treebank (MPDT). It outlines key differences from modern Polish orthography, morphology, and syntax, emphasizing those that directly affect dependency annotation and conversion to Universal Dependencies (UD).
+This chapter characterizes the linguistic system of Middle Polish as represented in the KorBa corpus and the Middle Polish Dependency Treebank (MPDT). It outlines key differences from modern Polish orthography and punctuation (Section \ref{sec:orthography}), morphology (Section \ref{sec:morphology}), and syntax (Section \ref{sec:syntax}), emphasizing those that directly affect dependency annotation and conversion to Universal Dependencies (UD).
 
 \section{Orthography and Punctuation}
+\label{sec:orthography}
 
 \subsection{Orthography and Transliteration}
 
-The KorBa corpus preserves two parallel orthographic layers: \emph{transliteration} (a faithful rendering of the historical text) and \emph{transcription} (a normalized spelling approximating contemporary Polish orthography). As noted in the KorBa manual, transliteration reflects the original graphic form of seventeenth- and eighteenth-century sources, while the transcription adapts them to modern conventions, keeping key phonetic and morphological features of Middle Polish.
+The KorBa corpus preserves two parallel orthographic layers: \emph{transliteration} (a faithful rendering of the historical text) and \emph{transcription} (a normalized spelling approximating contemporary Polish orthography). As noted in the KorBa manual, transliteration reflects the original graphic form of 17th–18th-century sources, while the transcription adapts them to modern conventions, keeping key phonetic and morphological features of Middle Polish.
 
 Middle Polish orthography was far from standardized. The same word could appear in several spelling variants, sometimes even within a single text. Graphemes were often used interchangeably (e.g.,\ \textit{i}/\textit{y}, \textit{u}/\textit{v}, \textit{ć}/\textit{ci}, \textit{rz}/\textit{ż}). Long vowels (\textit{á}, \textit{é}) and palatalization (\textit{ć}, \textit{ź}, \textit{ś}, \textit{ń}) were marked inconsistently. The KorBa transliteration layer preserves this variation, while the transcription layer normalizes it (e.g.,\ \textit{rodźicow} $\rightarrow$ \textit{rodziców}).\footnote{See \textcite{Gruszczynski2022KorBa}, p.~317.}
 
-Orthographic conventions also influenced tokenization. Many expressions that are today written separately were then written together, and vice versa. Following the \textcite{Wieczorek2020Instr}, elements that would now be written jointly are linked with the \texttt{mwe} relation during annotation.
+Orthographic conventions also influenced tokenization. Many expressions that are today written separately were then written together, and vice versa. For example:
 
-\paragraph{Examples:}
 \begin{itemize}[leftmargin=2em]
   \item Historical joint writing: \textit{zchęći} (modern \textit{z chęci}; `from willingness') $\rightarrow$ split into two syntactic words in UD.
   \item Historical separate writing: \textit{dla tego} (modern \textit{dlatego}; `because', lit. `for this') is treated as a single prepositional unit.
@@ -23,13 +23,18 @@ Orthographic conventions also influenced tokenization. Many expressions that are
 \subsection{Punctuation}
 
 As described by \textcite{Wieczorek2025TowardsMPDT}, punctuation in Middle Polish reflected the rhythm and pauses of speech rather than syntactic boundaries. Marks were used inconsistently and sometimes idiosyncratically: slashes (/) often functioned as commas, semicolons as commas, and colons as semicolons or dashes. Conversely, long unpunctuated stretches also occur.  
-During syntactic annotation, punctuation is interpreted according to its syntactic role, not its original mark, e.g.,\ a slash (/) introducing a new clause is annotated as \texttt{punct}.
 
-\begin{quote}
-\textit{Powstawszy raz z bárzo ćięszkiey choroby/ ták rzekł Nie nagorzey śię zemną stáło: Bo mię chorobá vpomniáłá/ ábym się w pychę nie podnośił/ ponieważem iest śmiertelny.}\\
+During syntactic annotation, punctuation is interpreted according to its syntactic function, not its original graphic mark. For instance, a slash (/) that introduces a new clause is annotated as \texttt{punct}.
+
+\begin{example}
+  \label{ex:punct-1}
+\textit{Powstawszy raz z bárzo ćięszkiey choroby\textbf{/} ták rzekł Nie nagorzey śię zemną stáło: Bo mię chorobá vpomniáłá\textbf{/} ábym się w pychę nie podnośił\textbf{/} ponieważem iest śmiertelny.}\\
 (`Having once recovered from a very severe illness/ he said thus: It did not go too badly with me: For the illness reminded me/ that I should not lift myself up in pride/ since I am mortal.')\\
 \textit{Source: MPDT corpus / metadata.}
-\end{quote}
+\end{example}
+
+As noted above, the slash in \exref{ex:punct-1} functions as a clause delimiter and is therefore annotated as \texttt{punct}.
+
 
 \section{Morphology}
 
