@@ -2,31 +2,91 @@
 \documentclass[../main.tex]{subfiles}
 \begin{document}
 
-This chapter details the design and implementation of the MPDT$\rightarrow$MPDT-UD conversion pipeline. The conversion is a complex, multi-stage process, divided into two primary phases: (1) morphosyntactic mapping and (2) dependency tree transformation.
+This chapter details the design and implementation of the MPDT$\rightarrow$MPDT-UD conversion pipeline. The conversion is a complex, multi-stage process, divided into two primary phases: 1. morphosyntactic mapping (Section~\ref{sec:morpho_conversion}) and 2. dependency tree transformation (Section~\ref{sec:dep_conversion}). Before detailing them, the chapter first describes the overall architecture of the converter, including its custom data structures and the code repository layout (Section~\ref{sec:converter_architecture}), the high-level processing workflow (Section~\ref{sec:pipeline}), and at the end--the auditable logging system that fulfills research goal \textbf{(R2)} (Section~\ref{sec:logging}).
 
-The entire process is implemented in~Python, leveraging a~custom-built environment designed for traceability and modularity. This environment is built around core data structures, \texttt{Sentence} and \texttt{Token} classes, defined in~\texttt{utils/classes.py}. A~key design choice is that each \texttt{Token} object stores both the original MPDT annotation (e.g., \texttt{pos}, \texttt{feats}, \texttt{gov\_id}, \texttt{dep\_label}) and the new, converted UD annotation (e.g., \texttt{upos}, \texttt{ufeats}, \texttt{ugov\_id}, \texttt{udep\_label}) in~parallel. This allows conversion rules to~access the original, unmodified MPDT context at~any stage, which is crucial for resolving ambiguity during the complex dependency transformation phase.
+\section{Converter Architecture and Environment}
+\label{sec:converter_architecture}
 
-\section{Design Overview and Pipeline}
+The entire conversion process is implemented in~Python, leveraging a~custom-built environment designed for traceability and modularity. The code is publicly available in a~GitHub repository: \url{https://github.com/kvmilos/MPDT-to-UD-converter}.
 
-The conversion pipeline is orchestrated by~the main \texttt{converter.py} script. The script first reads the input MPDT \texttt{.conll} file and the metadata \texttt{.json} file using the high-level functions in~\texttt{utils/io.py}. The metadata is essential as it contains the original, non-tokenized sentence text (\texttt{"text"}), which is required for reconstructing multiword tokens and clitic forms.
+\subsection{Core Data Structures}
 
-Once the data is loaded into the \texttt{Sentence} and \texttt{Token} objects, the pipeline proceeds sequentially:
-\begin{enumerate}
-    \item \textbf{Phase 1: Morphosyntactic Conversion.} The \texttt{morphosyntax.convert\_to\_upos} function is called for~each sentence. This phase is rule-based and operates on~each token relatively independently.
-    \item \textbf{Phase 2: Dependency Conversion.} If the \texttt{--tags-only} flag is not set, the \texttt{dependency.conversion.main} function is called for~each sentence. This phase is highly contextual and transforms the syntactic tree structure.
-    \item \textbf{Output Generation.} The converted \texttt{Sentence} objects are written to~a~\texttt{.conllu} file.
+The environment is built around core data structures, \texttt{Sentence} and \texttt{Token} classes, defined in~\texttt{utils/classes.py}. A~key design choice is that each \texttt{Token} object stores both the original MPDT annotation and the new, converted UD annotation in~parallel. This allows conversion rules to~access the original, unmodified MPDT context at~any stage, which is crucial for resolving ambiguity during the complex dependency transformation phase.
+
+The \texttt{Token} class is also equipped with~numerous helper properties and methods to~simplify the writing of~conversion rules, such as methods accessing the governor in~the new UD tree if it is present, and accessing the old one otherwise, or traversing the tree to find specific dependents or governors via~certain relations.
+
+\subsection{Project Repository Structure}
+\label{sec:repo_structure}
+
+The converter's code is organized into modules based on functionality. The main modules handle the top-level pipeline, morphosyntactic conversion, dependency conversion, and utilities. The structure of the repository is as follows (directories are shown in~blue):
+\\
+
+\dirtree{%
+.1 \color{blue}{ud\_converter/}.
+.2 converter.py.
+.2 \color{blue}{morphosyntax/}.
+.3 \color{blue}{pos\_categories/}.
+.3 preconversion.py.
+.3 conversion.py.
+.3 postconversion.py.
+.3 morphosyntax.py.
+.2 \color{blue}{dependency/}.
+.3 \color{blue}{structures/}.
+.3 labels.py.
+.3 edges.py.
+.3 preconversion.py.
+.3 conversion.py.
+.3 postconversion.py.
+.2 \color{blue}{utils/}.
+.3 classes.py.
+.3 constants.py.
+.3 io.py.
+.3 logger.py.
+.2 \color{blue}{data/}.
+.2 \color{blue}{logs/}.
+}
+
+\color{white}{.}\\
+\color{black}
+The main components are:
+
+\begin{itemize}[leftmargin=2em]
+    \item \texttt{converter.py}: The main executable script that orchestrates the entire conversion pipeline.
+    \item \texttt{morphosyntax}: The package for Phase 1 (morphosyntactic conversion).
+    \begin{itemize}[leftmargin=2em]
+        \item \texttt{pos\_categories}: Contains a separate module for most MPDT \texttt{XPOS} tags (e.g., \texttt{subst.py}, \texttt{adj.py}) to handle its specific conversion rules.
+    \end{itemize}
+    \item \texttt{dependency}: The package for Phase 2 (dependency conversion).
+    \begin{itemize}[leftmargin=2em]
+        \item \texttt{structures}: Contains modules for restructuring specific syntactic constructions (e.g., \texttt{coordination.py}, \texttt{prepositional.py}).
+    \end{itemize}
+    \item \texttt{utils}: Utility package with helper modules for the entire application.
+    \begin{itemize}[leftmargin=2em]
+        \item \texttt{classes.py}: Defines the core \texttt{Sentence} and \texttt{Token} objects.
+        \item \texttt{constants.py}: A central store for all static mappings (e.g., features, lemmas).
+        \item \texttt{io.py}: Handles reading input \texttt{.conll} and \texttt{.json} files and writing the output \texttt{.conllu} file.
+        \item \texttt{logger.py}: Implements the auditable logging system, including the \texttt{ChangeCollector} and \texttt{LoggingDict} classes.
+    \end{itemize}
+    \item \texttt{data/}: Default directory for input and output data files.
+    \item \texttt{logs/}: Default directory where the detailed conversion logs are saved.
+\end{itemize}
+
+\section{Conversion Pipeline}
+\label{sec:pipeline}
+
+The converter is designed as a sequential pipeline, executed from the main \texttt{converter.py} script. From the user's perspective, the process consists of four main stages:
+
+\begin{enumerate}[label=(\arabic*), leftmargin=2em]
+    \item \textbf{Data Loading:} The pipeline begins by reading two input files: the MPDT treebank in its \texttt{.conll} format and a corresponding \texttt{.json} metadata file. The data is loaded into the custom \texttt{Sentence} and \texttt{Token} objects.
+
+    \item \textbf{Phase 1: Morphosyntactic Conversion:} The first processing stage performs a rule-based conversion of the MPDT morphosyntactic annotations into their UD counterparts.
+
+    \item \textbf{Phase 2: Dependency Conversion:} The second processing stage transforms the syntactic structure of the trees. This highly contextual phase converts the MPDT dependency relations to UD relations and restructures the tree topology to conform to UD guidelines.
+
+    \item \textbf{Output Generation:} Finally, the converted \texttt{Sentence} and \texttt{Token} objects, now populated with UD annotations, are written to a single output \texttt{.conllu} file.
 \end{enumerate}
 
-The \texttt{Token} class is equipped with~numerous helper properties and methods to~simplify the writing of~conversion rules, such as \texttt{.gov2} (to~access the governor in~the new UD tree), \texttt{.children\_with\_label()}, and \texttt{.super\_gov\_via\_label()} (to~traverse the tree).
-
-\section{Logging, Testing, and Traceability}
-\label{sec:logging}
-
-A~core design principle of~the converter is audibility, fulfilling research goal \textbf{(R2)}. This is implemented via~a~custom logging system in~\texttt{utils/logger.py}.
-
-A~central \texttt{ChangeCollector} class gathers change events from~all modules. To~automate this, core data structures like \texttt{Token.data} are implemented as~a~\texttt{LoggingDict}, a~dictionary subclass that automatically calls \texttt{ChangeCollector.record()} whenever a~value is set or changed.
-
-Each log entry records the sentence ID, token ID, the specific module and function that triggered the change, and a~message detailing the transformation (e.g., \texttt{upos changed from VERB to AUX}). This fine-grained logging (Contribution \textbf{C1}) proved invaluable for debugging, as it allows for~a~step-by-step reconstruction of~how a~token was processed and which rules fired. It was particularly critical for identifying and resolving rule conflicts during the complex dependency conversion phase.
+The converter can be run in two modes. By default, it executes the complete pipeline. However, if the user provides the \texttt{--tags-only} command-line flag, the pipeline omits Phase 2. This allows a user to generate a file with only the morphosyntactic conversion applied, leaving the original MPDT dependency structure intact.
 
 \section{Phase 1: Morphosyntactic Conversion}
 
