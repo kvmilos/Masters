@@ -2,7 +2,7 @@
 \documentclass[../main.tex]{subfiles}
 \begin{document}
 
-This chapter details the design and implementation of the MPDT$\rightarrow$MPDT-UD conversion pipeline. The conversion is a complex, multi-stage process, divided into two primary phases: 1. morphosyntactic mapping (Section~\ref{sec:morpho_conversion}) and 2. dependency tree transformation (Section~\ref{sec:dep_conversion}). Before detailing them, the chapter first describes the overall architecture of the converter, including its custom data structures and the code repository layout (Section~\ref{sec:converter_architecture}), the high-level processing workflow (Section~\ref{sec:pipeline}), and at the end--the auditable logging system that fulfills research goal \textbf{(R2)} (Section~\ref{sec:logging}).
+This chapter details the design and implementation of the MPDT$\rightarrow$MPDT-UD conversion pipeline. The conversion is a complex, multi-stage process, divided into two primary phases: 1. morphosyntactic mapping (Section~\ref{sec:morpho_conversion}) and 2. dependency tree transformation (Section~\ref{sec:dep_conversion}). Before detailing them, the chapter first describes the overall architecture of the converter, including its custom data structures and the code repository layout (Section~\ref{sec:converter_architecture}), the high-level processing workflow (Section~\ref{sec:pipeline}), and at the end--the auditable logging system that fulfills research goal \textbf{(R2)} (Section~\ref{sec:logging_workflow}).
 
 \section{Converter Architecture and Environment}
 \label{sec:converter_architecture}
@@ -89,6 +89,7 @@ The converter is designed as a sequential pipeline, executed from the main \text
 The converter can be run in two modes. By default, it executes the complete pipeline. However, if the user provides the \texttt{--tags-only} command-line flag, the pipeline omits Phase 2. This allows a user to generate a file with only the morphosyntactic conversion applied, leaving the original MPDT dependency structure intact.
 
 \section{Phase 1: Morphosyntactic Conversion}
+\label{sec:morpho_conversion}
 
 The first processing phase, handled by the \texttt{morphosyntax} module, converts the MPDT \texttt{XPOS} tags and morphological features into their \texttt{UPOS} and \texttt{FEATS} counterparts. This phase is executed as a three-step sub-pipeline for each sentence.
 
@@ -123,38 +124,257 @@ Finally, a sentence-level cleanup function performs two crucial tasks that requi
 \end{enumerate}
 
 \section{Phase 2: Dependency Conversion}
+\label{sec:dep_conversion}
 
-The second phase, managed by~the \texttt{dependency/} module, is significantly more complex. Unlike morphosyntax, dependency conversion is not token-local; rules must consider a~token's governor, its dependents, and its siblings, often operating on~the original PDB structure, the partially converted UD structure, or both.
+The second phase, managed by the \texttt{dependency} module, is significantly more complex. Unlike morphosyntax, dependency conversion is not token-local; rules must consider a~token's governor, its dependents, and its siblings, often operating on the original MPDT structure, the partially converted UD structure, or both.
 
-Many of~the structural transformations were adapted from~the principles established for~the conversion of~the contemporary Polish Dependency Bank (PDB$\rightarrow$PDB-UD) \parencite{wroblewska-2018-extended, wroblewska-2020-towards}, but were re-implemented to~fit the custom pipeline and~handle Middle Polish phenomena. The conversion follows a~strict pipeline, defined in~\texttt{dependency/conversion.py}.
+Many of the structural transformations were adapted from the principles established for the conversion of the contemporary Polish Dependency Bank \parencite{wroblewska-2018-extended, wroblewska-2020-towards}, but were re-implemented to fit the custom pipeline and~handle Middle Polish phenomena. The conversion follows a~strict pipeline of restructuring, label mapping, and post-processing.
 
 \subsection{Structural Restructuring}
-The first and most critical step is to~change the topology of~the dependency tree. The \texttt{dependency/structures/} directory contains modules for~specific syntactic constructions. The two most fundamental transformations, which were illustrated in~\autoref{fig:pdb-example} and \autoref{fig:ud-example}, are:
+\label{sec:restructuring}
+
+The first and most critical step is to~change the topology of~the dependency tree to conform to UD principles. The converter applies a series of modules to handle specific syntactic constructions. The most fundamental transformations are:
 
 \begin{itemize}[leftmargin=2em]
-    \item \textbf{Prepositional Phrases:} In~PDB, a~preposition (\texttt{prep}) governs its nominal complement (\texttt{comp}). The \texttt{dependency/structures/prepositional.py} module inverts this: the nominal complement becomes the head, it inherits the dependency relation from~the preposition (e.g., \texttt{adjunct} $\rightarrow$ \texttt{obl}), and the preposition is re-attached to~the noun with the \texttt{case} relation.
+    \item \textbf{Prepositional Phrases:} In~MPDT, a~preposition (\texttt{prep}) governs its nominal complement (\texttt{comp}). This structure gets inverted: the nominal complement becomes the head of the phrase. This new head inherits the original syntactic function from the preposition (e.g., the \texttt{adjunct\_locat} relation from \textit{na} in \autoref{fig:struct-prep} becomes the dependency for \textit{koniu}). This relation is then mapped to a UD relation (e.g., \texttt{obl}). Finally, the preposition is re-attached to the noun with the \texttt{case} relation. This transformation is illustrated in Figures \ref{fig:struct-prep}--\ref{fig:struct-prep-ud}.
+
+\begin{figure}[H]
+    \centering
+    {\scriptsize
+    \begin{dependency}[theme=simple, baseline=2.8em, label style={font=\footnotesize}]
+      \begin{deptext}[column sep=1.8em, nodes={text width=7.5em, align=center}]
+        siedzący \& na \& koniu \& rozpędzonym \\
+        \textit{sitting} \& \textit{on} \& \textit{horse} \& \textit{galloping} \\
+        PACT \& PREP \& SUBST \& PPAS \\
+      \end{deptext}
+      \depedge{1}{2}{adjunct\_locat}
+      \depedge{2}{3}{comp}
+      \depedge{3}{4}{adjunct}
+    \end{dependency}%
+    }
+    \caption{MPDT analysis for the fragment \textit{siedzący na koniu rozpędzonym} (`sitting on a galloping horse')\\\textit{Source: MPDT.}}
+    \label{fig:struct-prep}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    {\scriptsize
+    \begin{dependency}[theme=simple, baseline=2.8em, label style={font=\footnotesize}]
+        \begin{deptext}[column sep=1.8em, nodes={text width=7.5em, align=center}]
+        siedzący \& na \& koniu \& rozpędzonym \\
+        \textit{sitting} \& \textit{on} \& \textit{horse} \& \textit{galloping} \\
+        ADJ \& ADP \& NOUN \& ADJ \\
+    \end{deptext}
+        \depedge{1}{3}{obl}
+        \depedge{3}{2}{case}
+        \depedge{3}{4}{acl}
+    \end{dependency}%
+    }
+    \caption{Converted UD analysis after restructuring the prepositional phrase}
+    \label{fig:struct-prep-ud}
+\end{figure}
     
-    \item \textbf{Coordination:} In~PDB, the coordinating conjunction (\texttt{conj}) is the head of~the coordinated elements (\texttt{conjunct}). The \texttt{dependency/structures/coordination.py} module restructures this by~promoting the \emph{first} conjunct to~be the head. Subsequent conjuncts are attached to~the first with the \texttt{conj} relation, and the conjunction itself is attached to~its \emph{following} conjunct with the \texttt{cc} relation.
+    \item \textbf{Coordination:} In~MPDT, the coordinating conjunction (\texttt{conj}) is the head of the coordinated elements (\texttt{conjunct}). This structure is rebuilt by~promoting the \emph{first} conjunct to~be the head of the entire coordination. Subsequent conjuncts are attached to this first conjunct with the \texttt{conj} relation. The conjunction itself is re-attached to its \textit{following} conjunct with the \texttt{cc} relation. This is illustrated in Figures \ref{fig:struct-coord-mpdt}--\ref{fig:struct-coord-ud}.
+
+\begin{figure}[H]
+    \centering
+    {\scriptsize
+    \begin{dependency}[theme=simple, baseline=2.8em, label style={font=\footnotesize}]
+      \begin{deptext}[column sep=1.0em, nodes={text width=7.0em, align=center}]
+        odwagi \& swoiey \& y \& sercá \& rycerskiego \\
+        \textit{of courage} \& \textit{one's} \& \textit{and} \& \textit{of heart} \& \textit{knightly} \\
+        SUBST \& ADJ \& CONJ \& SUBST \& ADJ \\
+      \end{deptext}
+      \depedge{3}{1}{conjunct}
+      \depedge{1}{2}{adjunct}
+      \depedge{3}{4}{conjunct}
+      \depedge{4}{5}{adjunct}
+    \end{dependency}%
+    }
+    \caption{MPDT analysis for the fragment \textit{odwagi swoiey y sercá rycerskiego} (`of one's courage and knightly heart')\\\textit{Source: MPDT.}}
+    \label{fig:struct-coord-mpdt}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    {\scriptsize
+    \begin{dependency}[theme=simple, baseline=2.8em, label style={font=\footnotesize}]
+      \begin{deptext}[column sep=1.0em, nodes={text width=7.0em, align=center}]
+        odwagi \& swoiey \& y \& sercá \& rycerskiego \\
+        \textit{of courage} \& \textit{one's} \& \textit{and} \& \textit{of heart} \& \textit{knightly} \\
+        NOUN \& DET \& CCONJ \& NOUN \& ADJ \\
+      \end{deptext}
+      \depedge{1}{2}{det:poss}
+      \depedge{1}{4}{conj}
+      \depedge{4}{3}{cc}
+      \depedge{4}{5}{amod}
+    \end{dependency}%
+    }
+    \caption{Converted UD analysis after restructuring the coordination}
+    \label{fig:struct-coord-ud}
+\end{figure}
+
+    \item \textbf{Copula Constructions:} In MPDT, the copular verb (e.g., \textit{być} `to be' or the \texttt{pred} token \textit{to}) is the head of the clause, governing the subject (with \texttt{subj}) and the non-verbal predicate (with \texttt{pd}). To comply with UD, the non-verbal predicate is promoted to be the head. The subject and the copular verb are then re-attached as dependents of this new nominal or adjectival head, receiving the UD relations \texttt{nsubj} and \texttt{cop}, respectively. This is illustrated in Figures \ref{fig:struct-cop-mpdt}--\ref{fig:struct-cop-ud}.
+
+\begin{figure}[H]
+    \centering
+    {\scriptsize
+    \begin{dependency}[theme=simple, baseline=2.8em, label style={font=\footnotesize}]
+      \begin{deptext}[column sep=1.0em, nodes={text width=7.0em, align=center}]
+        Głową \& tego \& krolestwá \& jest \& Insułá \\
+        \textit{Head} \& \textit{this} \& \textit{of kingdom} \& \textit{is} \& \textit{Insułá} \\
+        SUBST \& ADJ \& SUBST \& FIN \& SUBST \\
+      \end{deptext}
+      \depedge{4}{1}{pd}
+      \depedge{1}{3}{adjunct}
+      \depedge{3}{2}{adjunct}
+      \depedge{4}{5}{subj}
+    \end{dependency}%
+    }
+    \caption{MPDT analysis for the fragment \textit{Głową tego krolestwá iest Insułá} (`The head of this kingdom is Insułá')\\\textit{Source: MPDT.}}
+    \label{fig:struct-cop-mpdt}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    {\scriptsize
+    \begin{dependency}[theme=simple, baseline=2.8em, label style={font=\footnotesize}]
+      \begin{deptext}[column sep=1.0em, nodes={text width=7.0em, align=center}]
+        Głową \& tego \& krolestwá \& jest \& Insułá \\
+        \textit{Head} \& \textit{this} \& \textit{of kingdom} \& \textit{is} \& \textit{Insułá} \\
+        NOUN \& DET \& NOUN \& AUX \& NOUN \\
+      \end{deptext}
+      \depedge{1}{3}{nmod}
+      \depedge{3}{2}{det}
+      \depedge{1}{4}{cop}
+      \depedge{1}{5}{nsubj}
+    \end{dependency}%
+    }
+    \caption{Converted UD analysis after restructuring the copular construction}
+    \label{fig:struct-cop-ud}
+\end{figure}
+
+    \item \textbf{Numeral Phrases:} Numeral expressions that govern their nouns in MPDT (e.g., as a \texttt{comp}) are restructured. In UD, the noun is promoted to be the head, and the numeral is re-attached as its dependent with the \texttt{nummod} relation. The noun phrase then attaches to the verb (e.g., as \texttt{obl}), as shown in Figures \ref{fig:struct-num-mpdt}--\ref{fig:struct-num-ud}.
+
+\begin{figure}[H]
+    \centering
+    {\scriptsize
+    \begin{dependency}[theme=simple, baseline=2.8em, label style={font=\footnotesize}]
+      \begin{deptext}[column sep=1.0em, nodes={text width=4.8em, align=center}]
+        Dwa \& dni \& wisiał \\
+        \textit{Two} \& \textit{days} \& \textit{hung} \\
+        NUM \& SUBST \& PRAET \\
+      \end{deptext}
+      \depedge{3}{1}{adjunct\_dur}
+      \depedge{1}{2}{comp}
+    \end{dependency}%
+    }
+    \caption{MPDT analysis for \textit{Dwa dni wisiał} (`He hung for two days')\\\textit{Source: MPDT.}}
+    \label{fig:struct-num-mpdt}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    {\scriptsize
+    \begin{dependency}[theme=simple, baseline=2.8em, label style={font=\footnotesize}]
+      \begin{deptext}[column sep=1.0em, nodes={text width=4.8em, align=center}]
+        Dwa \& dni \& wisiał \\
+        \textit{Two} \& \textit{days} \& \textit{hung} \\
+        NUM \& NOUN \& VERB \\
+      \end{deptext}
+      \depedge{2}{1}{nummod}
+      \depedge{3}{2}{obl}
+    \end{dependency}%
+    }
+    \caption{Converted UD analysis after restructuring the numeral phrase}
+    \label{fig:struct-num-ud}
+\end{figure}
+    
+    \item \textbf{Subordinate Clauses:} In MPDT, a subordinating conjunction (\texttt{comp}) often governs the predicate of its clause (e.g., as \texttt{comp\_fin}). The converter inverts this, promoting the clause's predicate to be the head (which then attaches to the main clause predicate, or becomes the root). The subordinating conjunction is then demoted to be a dependent of its clause's predicate with the \texttt{mark} relation. This is shown in Figures \ref{fig:struct-subord-mpdt}--\ref{fig:struct-subord-ud}.
+
+\begin{figure}[H]
+  \centering
+  {\footnotesize
+  \makebox[\textwidth][c]{%
+  \begin{dependency}[theme=simple, baseline=2.8em, label style={font=\footnotesize}]
+    \begin{deptext}[column sep=0.6em, nodes={text width=4.5em, align=center}]
+      Są \& bowiem \& szczerzy \& , \& rzetelni \& , \& stateczni \& w \& przyjaźni \\
+      \textit{Are} \& \textit{for} \& \textit{sincere} \& \textit{,} \& \textit{reliable} \& \textit{,} \& \textit{steadfast} \& \textit{in} \& \textit{friendship} \\
+      FIN \& COMP \& ADJ \& INTERP \& ADJ \& INTERP \& ADJ \& PREP \& SUBST \\
+    \end{deptext}
+    \depedge{2}{1}{comp\_fin}
+    \depedge{1}{6}{pd}
+    \depedge{6}{3}{conjunct}
+    \depedge{6}{4}{punct}
+    \depedge{6}{5}{conjunct}
+    \depedge{6}{7}{conjunct}
+    \depedge{7}{8}{comp}
+    \depedge{8}{9}{comp}
+  \end{dependency}%
+  }% end makebox
+  }
+  \caption{MPDT analysis for the fragment \textit{Są bowiem szczerzy, rzetelni, stateczni w przyjaźni} (`For they are sincere, reliable, steadfast in friendship')\\\textit{Source: MPDT.}}
+  \label{fig:struct-subord-mpdt}
+\end{figure}
+
+
+\begin{figure}[H]
+  \centering
+  {\footnotesize
+\makebox[\textwidth][c]{%
+  \begin{dependency}[theme=simple, baseline=2.8em, label style={font=\footnotesize}]
+    \begin{deptext}[column sep=0.6em, nodes={text width=4.5em, align=center}]
+      Są \& bowiem \& szczerzy \& , \& rzetelni \& , \& stateczni \& w \& przyjaźni \\
+      	\textit{Are} \& \textit{for} \& \textit{sincere} \& \textit{,} \& \textit{reliable} \& \textit{,} \& \textit{steadfast} \& \textit{in} \& \textit{friendship} \\
+      AUX \& SCONJ \& ADJ \& PUNCT \& ADJ \& PUNCT \& ADJ \& ADP \& NOUN \\
+    \end{deptext}
+    \depedge{3}{1}{cop}
+    \depedge{3}{2}{mark}
+    \depedge{3}{5}{conj}
+    \depedge{5}{4}{punct}
+    \depedge{3}{7}{conj}
+    \depedge{7}{6}{punct}
+    \depedge{7}{9}{obl:arg}
+    \depedge{9}{8}{case}
+  \end{dependency}%
+}
+  }
+  \caption{Converted UD analysis after restructuring the subordinate clause}
+  \label{fig:struct-subord-ud}
+\end{figure}
 \end{itemize}
 
-Similar restructuring logic is applied to~copula constructions (\texttt{copula.py}), numeral phrases (\texttt{numeral.py}), and subordinate clauses (\texttt{subordination.py}).
-
 \subsection{Label Mapping}
-After the tree structure is finalized, the \texttt{dependency/labels.py} module traverses the tree and assigns a~final \texttt{udep\_label} to~each token. This mapping is highly context-sensitive. For~example, the generic PDB \texttt{adjunct} relation is mapped to~a~variety of~UD relations based on~the UPOS of~the head and the dependent:
+After the tree structure is finalized, a dedicated module traverses the tree and assigns a~final \texttt{UDEPREL} to~each token. This mapping is highly context-sensitive, using the \texttt{UPOS} of both the token and its new governor, as well as its original MPDT \texttt{DEPREL}. For~example, the generic MPDT \texttt{adjunct} relation is mapped to~a~variety of~UD relations:
 \begin{itemize}[leftmargin=2em]
-    \item \texttt{adjunct} on~a~\texttt{NOUN} dependent $\rightarrow$ \texttt{nmod}
-    \item \texttt{adjunct} on~an \texttt{ADJ} dependent $\rightarrow$ \texttt{amod}
-    \item \texttt{adjunct} on~an \texttt{ADV} dependent $\rightarrow$ \texttt{advmod}
-    \item \texttt{adjunct} (prepositional phrase) on~a~\texttt{VERB} $\rightarrow$ \texttt{obl}
-    \item \texttt{adjunct} (clausal) on~a~\texttt{VERB} $\rightarrow$ \texttt{advcl}
+    \item A nominal modifier of a noun (\texttt{adjunct} on a \texttt{NOUN} dependent) $\rightarrow$ \texttt{nmod}
+    \item An adjectival modifier of a noun (\texttt{adjunct} on an \texttt{ADJ} dependent) $\rightarrow$ \texttt{amod}
+    \item An adverbial modifier of a verb (\texttt{adjunct} on an \texttt{ADV} dependent) $\rightarrow$ \texttt{advmod}
+    \item A prepositional phrase modifying a verb (\texttt{adjunct} inherited by a \texttt{NOUN} from a \texttt{prep}) $\rightarrow$ \texttt{obl}
+    \item A clausal modifier of a verb (\texttt{adjunct} on a \texttt{VERB} dependent) $\rightarrow$ \texttt{advcl}
 \end{itemize}
 
 \subsection{Correction and Post-processing}
-Finally, a~series of~cleanup scripts are run. \texttt{dependency/edges.py} ensures UD validation compliance by~removing disallowed dependents (e.g., a~\texttt{case} token cannot have its own dependents).
+Finally, a~series of~cleanup scripts are run. One module ensures UD validation compliance by~removing disallowed dependents (e.g., a~\texttt{case} token cannot have its own dependents, so any punctuation attached to it is moved to its head).
 
-The \texttt{dependency/postconversion.py} module handles final tasks, such as disambiguating pronouns (\texttt{PronType=Int,Rel} $\rightarrow$ \texttt{PronType=Int} or \texttt{PronType=Rel} based on~tree context) and, most importantly, generating the enhanced dependency graph (\texttt{DEPS} column) by~propagating shared dependents in~coordination, fulfilling goal \textbf{(R3)}.
+Another module handles final tasks, such as disambiguating pronouns that are ambiguous between interrogative and relative (e.g., \texttt{PronType=Int,Rel} $\rightarrow$ \texttt{PronType=Int} or \texttt{PronType=Rel}) based on their new syntactic context. Most importantly, this module generates the enhanced dependency graph (\texttt{DEPS} column) by~propagating shared dependents in~coordination, fulfilling goal \textbf{(R3)}.
 
-\section{Processing Workflow}
+\section{Audibility and Processing Workflow}
+\label{sec:logging_workflow}
+
+Beyond the core conversion logic, two key features of the converter are its auditable design and its straightforward user workflow.
+
+\subsection{Logging and Traceability}
+\label{sec:logging}
+
+A~core design principle of~the converter is audibility, fulfilling research goal \textbf{(R2)}. This is implemented via~a~custom logging system built into the \texttt{utils/logger.py} module.
+
+A~central \texttt{ChangeCollector} class gathers change events from~all modules. To~automate this, the core \texttt{Token.data} dictionary is implemented as~a~\texttt{LoggingDict}, a~dictionary subclass that automatically calls \texttt{ChangeCollector.record()} whenever a~value is set or changed.
+
+Each log entry records the sentence ID, token ID, the specific module and function that triggered the change, and a~message detailing the transformation (e.g., \texttt{upos changed from VERB to AUX}). This fine-grained logging (Contribution \textbf{C1}) proved invaluable for debugging, as it allows for~a~step-by-step reconstruction of~how a~token was processed and which rules fired. It was particularly critical for identifying and resolving rule conflicts during the complex dependency conversion phase.
+
+\subsection{Processing Workflow}
+\label{sec:workflow}
 
 From a~user's perspective, the pipeline is executed via~a~single command. The converter takes the MPDT \texttt{.conll} file and the corresponding metadata \texttt{.json} file as~input.
 
@@ -162,6 +382,6 @@ From a~user's perspective, the pipeline is executed via~a~single command. The co
 python converter.py input_file.conll output_file.conllu meta_file.json
 \end{verbatim}
 
-The script processes each sentence and saves the result in~the specified \texttt{output\_file.conllu} in~the valid CoNLL-U format, ready for~validation and downstream use.
+The script processes each sentence and saves the result in~the specified \texttt{output\_file.conllu} in~the valid CoNLL-U format, ready for~validation and downstream use. As mentioned in Section~\ref{sec:pipeline}, the \texttt{--tags-only} flag can be used to omit running Phase 2 of the conversion.
 
 \end{document}
