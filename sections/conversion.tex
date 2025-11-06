@@ -90,33 +90,36 @@ The converter can be run in two modes. By default, it executes the complete pipe
 
 \section{Phase 1: Morphosyntactic Conversion}
 
-The first phase, handled by~the \texttt{morphosyntax/} module, converts MPDT \texttt{XPOS} tags and features to their \texttt{UPOS} and \texttt{FEATS} counterparts. As shown in~\texttt{morphosyntax/morphosyntax.py}, this phase itself is a~three-step pipeline.
+The first processing phase, handled by the \texttt{morphosyntax} module, converts the MPDT \texttt{XPOS} tags and morphological features into their \texttt{UPOS} and \texttt{FEATS} counterparts. This phase is executed as a three-step sub-pipeline for each sentence.
 
 \subsection{Pre-conversion}
-First, \texttt{morphosyntax/preconversion.py} applies a~set of~lemma-based rules. These rules override the POS-specific logic for~specific lexical items. For example:
+First, a set of lemma-based rules are applied to handle specific lexical items whose categorization overrides the more general \texttt{XPOS}-based rules. For example:
 \begin{itemize}[leftmargin=2em]
-    \item Conjunctions like \textit{niż}, \textit{jakby}, and \textit{niczym} are unambiguously mapped to \texttt{SCONJ} with \texttt{ConjType=Comp}.
-    \item The lemma \textit{temu} is mapped to \texttt{ADP} with \texttt{AdpType=Post}.
-    \item Words with~initial capitalization (and not otherwise classified) are provisionally tagged \texttt{PROPN}, correcting for~cases where a~proper noun was tagged as~a~common noun (\texttt{subst}).
+    \item Conjunctions like \textit{niż}, \textit{jakby}, and \textit{niczym}, which introduce comparisons, are unambiguously mapped to \texttt{SCONJ} (subordinating conjunction) and assigned the feature \texttt{ConjType=Comp} to mark this comparative function.
+    \item The lemma \textit{temu}, when used as a postposition (e.g., \textit{dwa lata temu} `two years ago'), is mapped to \texttt{ADP} (adposition) and assigned the feature \texttt{AdpType=Post} to explicitly mark it as a postposition, distinguishing it from the standard prepositional form.
+    \item Words with an initial capital letter that are not otherwise classified (e.g., as verbs) are provisionally tagged \texttt{PROPN} (proper noun). This rule helps correct cases where a proper noun was ambiguously tagged as a common noun (\texttt{subst}).
 \end{itemize}
 
 \subsection{Core POS Conversion}
-Next, the main \texttt{morphosyntax/conversion.py} script acts as~a~dispatcher, routing each token to~a~dedicated function based on~its MPDT \texttt{pos} tag. These functions, located in~the \texttt{morphosyntax/pos\_categories/} directory, implement the one-to-one and one-to-many mappings.
+Next, the main conversion logic maps the MPDT \texttt{XPOS} tag of each token to its corresponding \texttt{UPOS} tag and \texttt{FEATS}. The converter dispatches each token to a dedicated function based on its \texttt{XPOS} tag.
 
-For example, the function \texttt{morphosyntax/pos\_categories/noun.py:subst} handles \texttt{subst} (noun) tokens. While most are mapped to \texttt{NOUN}, it checks for~pronominal lemmas (e.g., \textit{kto}, \textit{co}, \textit{nikt}) and maps them to \texttt{PRON} with the corresponding \texttt{PronType}.
+This design handles both simple and complex conversions. For instance, while \texttt{conj} (coordinating conjunction) almost always becomes \texttt{CCONJ}, the \texttt{subst} (noun) tag requires more logic: most \texttt{subst} tokens are mapped to \texttt{NOUN}, but the converter first checks for pronominal lemmas (e.g., \textit{kto}, \textit{co}, \textit{nikt}) and maps these to \texttt{PRON} (pronoun) with the appropriate \texttt{PronType} feature.
 
-This module also handles the specific Middle Polish phenomena described in~\autoref{chap:language}.
+This module also handles the specific Middle Polish phenomena described in Chapter~\ref{chap:language}:
 \begin{itemize}[leftmargin=2em]
-    \item \texttt{adjb} (short adjective) is mapped to \texttt{UPOS=ADJ} + \texttt{Variant=Short}.
-    \item \texttt{ppasb} (short passive participle) is mapped to \texttt{UPOS=ADJ} + \texttt{VerbForm=Part}, \texttt{Voice=Pass}, \texttt{Variant=Short}.
-    \item The \texttt{helpers.py} module correctly maps the PDB gender system (e.g., \texttt{manim1}) to~the UD features \texttt{Gender=Masc} and \texttt{Animacy=Hum}, and preserves the \texttt{Number=Dual} feature.
+    \item \texttt{adjb} (short adjective) is mapped to \texttt{UPOS=ADJ} and given the feature \texttt{Variant=Short}.
+    \item \texttt{ppasb} (short passive participle) is mapped to \texttt{UPOS=ADJ} with the features \texttt{VerbForm=Part}, \texttt{Voice=Pass}, and \texttt{Variant=Short}.
+    \item The MPDT gender system is correctly mapped to the UD features (e.g., \texttt{manim1} to \texttt{Gender=Masc} and \texttt{Animacy=Hum}).
+    \item The Middle Polish \texttt{Number=Dual} feature is preserved, as it is a valid feature in Universal Dependencies, even if absent in modern Polish.
 \end{itemize}
 
 \subsection{Post-conversion}
-Finally, \texttt{morphosyntax/postconversion.py} performs sentence-level cleanup. Its two main tasks are:
+Finally, a sentence-level cleanup function performs two crucial tasks that require the original, non-tokenized text from the metadata:
+
 \begin{enumerate}[leftmargin=2em]
-    \item \textbf{Reconstructing Multiword Tokens:} Using the original sentence \texttt{"text"} from~the metadata, the \texttt{add\_mwe} function identifies tokens that are not separated by~a~space. This is essential for handling Middle Polish clitics, correctly grouping forms like \textit{kiedym} into an MWE that spans the syntactic words \textit{kiedy}  and \textit{m}.
-    \item \textbf{Annotating Spaces:} The \texttt{add\_no\_space\_misc} function analyzes the same text to add \texttt{SpaceAfter=No} to~the \texttt{MISC} column for~tokens that are immediately followed by~another token or punctuation, a~requirement for~the CoNLL-U format.
+    \item \textbf{Reconstructing Multiword Tokens:} This step correctly formats clitic constructions that were already split into syntactic words in the input data. For example, for the Middle Polish word \textit{kiedym} (`when I'), the input \texttt{.conll} file contains two separate token lines (\textit{kiedy} and \textit{m}). This function reads the original text, sees they are not space-separated, and inserts the required multiword token (MWE) entry (e.g., \texttt{14-15 kiedym ...}) before the syntactic words it spans, as shown in the example in Chapter~\ref{sec:universal-dependencies}.
+
+    \item \textbf{Annotating Spaces:} The same function analyzes the original text to add \texttt{SpaceAfter=No} to the \texttt{MISC} column for any token that is immediately followed by another token or punctuation mark without an intervening space. This is a requirement for the CoNLL-U format since Universal Dependencies v. 2.0.
 \end{enumerate}
 
 \section{Phase 2: Dependency Conversion}
