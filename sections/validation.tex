@@ -2,19 +2,19 @@
 \documentclass[../main.tex]{subfiles}
 \begin{document}
 
-This chapter presents the final, tangible outcome of this thesis: the initial public release of the \textbf{Middle Polish Dependency Treebank in Universal Dependencies format (MPDT-UD)}, constituting Contribution~\textbf{(C2)}. The resource is distributed under the \textbf{Creative Commons Attribution–ShareAlike 4.0 (CC~BY–SA~4.0)} license.
+This chapter presents the final, tangible outcome of the thesis: the initial public release of the \textbf{Middle Polish Dependency Treebank in Universal Dependencies format (MPDT-UD)}. Beyond reporting that the treebank passes the official validator, the chapter explains \emph{how} validation shaped the converter’s design: validator feedback drove targeted, logged corrections rather than ad-hoc edits, yielding a reproducible and auditable pipeline.
 
 The chapter is structured as follows. Section~\ref{sec:val_corpus} defines the validation corpus. Section~\ref{sec:val_methodology} describes the formal validation procedure and the validator script used. Section~\ref{sec:val_results} reports the conformance results and outlines the iterative refinement process. Section~\ref{sec:val_outcomes} presents the final outcomes, including release information and statistics. Section~\ref{sec:val_limitations} summarizes the remaining limitations and directions for future work.
 
 \section{Validation Corpus}
 \label{sec:val_corpus}
 
-The validation was performed on the entire output of the conversion pipeline, i.e.\ the newly created MPDT-UD treebank. This dataset corresponds to the complete \textbf{Middle Polish Dependency Treebank (MPDT)} available at the time of writing. As described in Section~\ref{sec:resources}, the corpus contains \textbf{2,018~sentences} and \textbf{47,273~tokens}, covering all text types included in the manually annotated portion of KorBa.
+The validation was performed on the entire output of the conversion pipeline, i.e.\ the full MPDT available at the time of writing converted to UD (``MPDT-UD''). As described in Section~\ref{sec:resources}, the source corpus contains \textbf{2{,}018 sentences} and \textbf{47{,}273 tokens}, spanning the manually annotated portion of KorBa. All mentions in this chapter refer to this complete set.
 
 \section{Validation Methodology: Formal Conformance}
 \label{sec:val_methodology}
 
-To fulfill research goal~\textbf{(R3)}—ensuring that the converted treebank is formally correct and compatible with standard UD tools—a strict validation workflow was adopted. The entire MPDT-UD corpus was checked using the \textbf{official Universal Dependencies validator script} \texttt{validate.py}.\footnote{Available at \url{https://github.com/UniversalDependencies/tools/blob/master/validate.py}}
+To fulfill research goal~\textbf{(R3)}—ensuring that the converted treebank is formally correct and compatible with standard UD tools—a strict validation workflow was adopted. The entire MPDT-UD corpus was checked using the \textbf{official Universal Dependencies validator script} \texttt{validate.py}.\footnote{The validator is part of the UD tools repository; available at \url{https://github.com/UniversalDependencies/tools/blob/master/validate.py}}
 
 \subsection{Validator Overview}
 
@@ -22,15 +22,15 @@ The \texttt{validate.py} script performs a comprehensive, multi-layer verificati
 
 \begin{itemize}[leftmargin=1.5em]
   \item \textbf{Format compliance:} ensures that each sentence adheres to the CoNLL-U specification—exactly ten columns per token, valid multiword token ranges, correct comments, and consistent \texttt{SpaceAfter=No} annotation.
-  \item \textbf{Morphological validity:} verifies that every \texttt{UPOS} tag, \texttt{XPOS} tag, and \texttt{FEATS} combination is legal according to UD~v2.17 inventories (e.g., that \texttt{Aspect} features only occur on verbs, and that \texttt{PronType} values correspond to pronouns or determiners).
+  \item \textbf{Morphological validity:} verifies that every \texttt{UPOS} tag, \texttt{XPOS} tag, and \texttt{FEATS} combination is legal according to UD~v2.17 inventories (e.g., that \texttt{Aspect} features only occur on verbal categories, and that \texttt{PronType} values correspond to pronouns or determiners).
   \item \textbf{Syntactic structure:} checks that the dependency tree is single-rooted, acyclic, and projective when required; that function words (e.g., tokens with relations \texttt{case}, \texttt{cc}, \texttt{mark}) do not have their own dependents; and that all \texttt{HEAD} indices refer to valid token IDs.
 \end{itemize}
 
 The validator also provides detailed diagnostic messages for every detected issue, grouped by error type and line number. This makes it suitable not only for final compliance testing but also for iterative debugging during development.
 
-The script must be run with a language code (e.g., \texttt{--lang pl}) to check against treebank-specific feature and relation lists. It requires Python~3 and the \texttt{regex} and \texttt{udapi} modules. A typical invocation looks like:
+The script must be run with a language code (e.g., \texttt{--lang pl}) to check against treebank-specific feature and relation lists. It requires Python~3 and the \texttt{regex} and \texttt{udapi} modules. A typical invocation looked like:
 \begin{verbatim}
-cat treebank.conllu | python validate.py --lang pl --max-err=0
+python validate.py --lang pl --max-err=0 MPDT-UD.conllu
 \end{verbatim}
 
 \subsection{Validation Procedure}
