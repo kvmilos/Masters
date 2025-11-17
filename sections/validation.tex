@@ -4,19 +4,39 @@
 
 This chapter presents the final, tangible outcome of the thesis: the initial public release of the \textbf{Middle Polish Dependency Treebank in Universal Dependencies format (MPDT-UD)}. Beyond reporting that the treebank passes the official validator, the chapter explains \emph{how} validation shaped the converter’s design: validator feedback drove targeted, logged corrections rather than ad-hoc edits, yielding a reproducible and auditable pipeline.
 
-The chapter is structured as follows. Section~\ref{sec:val_corpus} defines the validation corpus. Section~\ref{sec:val_methodology} describes the formal validation procedure and the validator script used. Section~\ref{sec:val_results} reports the conformance results and outlines the iterative refinement process. Section~\ref{sec:val_outcomes} presents the final outcomes, including release information and statistics. Section~\ref{sec:val_limitations} summarizes the remaining limitations and directions for future work.
+The chapter is structured as follows. Section~\ref{sec:val_methodology} introduces the validation workflow, including the iterative procedure, the validation dataset, and the official UD validator. Section~\ref{sec:val_results} reports the conformance results and outlines how remaining edge cases were handled. Section~\ref{sec:val_outcomes} presents the final MPDT-UD~1.0 treebank, summarizing its size, data split, licensing, and integration into the UD ecosystem.
 
-\section{Validation Corpus}
-\label{sec:val_corpus}
-
-The validation was performed on the entire output of the conversion pipeline, i.e.\ the full MPDT available at the time of writing, converted to UD (``MPDT-UD''). As described in Section~\ref{sec:resources}, the source corpus contains \textbf{2{,}018 sentences} and \textbf{47{,}273 tokens}, spanning the manually annotated portion of KorBa. All mentions in this chapter refer to this complete set.
-
-\section{Validation Methodology: Formal Conformance}
+\section{Validation Workflow and Formal Conformance}
 \label{sec:val_methodology}
 
-To fulfill research goal~\textbf{(R3)}—ensuring that the converted treebank is formally correct and compatible with standard UD tools—a strict validation workflow was adopted. The entire MPDT-UD corpus was checked using the \textbf{official Universal Dependencies validator script} \texttt{validate.py}.\footnote{The validator is part of the UD tools repository; available at \url{https://github.com/UniversalDependencies/tools/blob/master/validate.py}}
 
-\subsection{Validator Overview}
+To fulfill research goal~\textbf{(R3)}—ensuring that the converted treebank is formally correct and compatible with standard UD tools—a strict validation workflow was adopted. The entire MPDT-UD corpus was checked using the \textbf{official Universal Dependencies validator script} \texttt{validate.py}.\footnote{The validator is part of the UD tools repository; available at \url{https://github.com/UniversalDependencies/tools/blob/master/validate.py}} The procedure was implemented as an iterative refinement cycle, applied to a fixed validation dataset and grounded in the behaviour of the official validator.
+
+\subsection{Iterative Validation Procedure}
+\label{sec:val_iterative}
+
+The validation workflow was integrated into the development process as an iterative, data-driven refinement cycle that directly influenced the converter’s architecture. Achieving the final zero-error conformance required repeatedly executing the following steps:
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item Running the full MPDT~$\rightarrow$~MPDT-UD conversion pipeline.
+  \item Executing the \texttt{validate.py} script on the resulting \texttt{.conllu} file.
+  \item Collecting and classifying validator messages to identify systematic error types.
+  \item Implementing targeted adjustments in the relevant module (typically postconversion or label mapping) and repeating the cycle.
+\end{enumerate}
+
+Throughout development, validator feedback served as an objective convergence criterion: changes to the pipeline were accepted only if they reduced violations without introducing new ones, and every change was captured by the converter’s logging facilities for later audit.
+
+\subsection{Validation Dataset}
+\label{sec:val_corpus}
+
+The validation was performed on the entire output of the conversion pipeline, i.e.\ the full MPDT available at the time of writing, converted to UD as MPDT-UD. All mentions in this chapter refer to this complete set.
+
+Concretely, the validation dataset corresponds to the initial UD release of UD\_Polish-MPDT (version~2.17). It contains \textbf{2{,}018 sentences}. The material is drawn from the manually annotated portion of the KorBa corpus (as described in Section~\ref{sec:resources}) and thus inherits its genre balance and time-span.
+
+Since Middle Polish is not a separate language branch within the UD project, the treebank was validated under the tagset and feature inventory of modern Polish (\texttt{pl}). This approach guarantees maximal compatibility with existing UD resources and ensures that the resulting data can be immediately processed by any standard UD-compliant parser or visualization tool.
+
+\subsection{Official UD Validator}
+\label{sec:val_validator}
 
 The \texttt{validate.py} script performs a comprehensive, multi-layer verification of every sentence in a~CoNLL-U file. It is implemented in Python and relies on the official UD feature inventories and relation lists, performing checks in three main categories:
 
@@ -33,71 +53,59 @@ The script must be run with a language code (e.g., \texttt{--lang pl}) to check 
 python validate.py --lang pl MPDT-UD.conllu
 \end{verbatim}
 
-\subsection{Validation Procedure}
 
-The validation was performed against the specifications for \textbf{Universal Dependencies~v2.17}. Since ``Middle Polish'' is not a separate language branch within the UD project, the treebank was validated under the tagset and feature inventory of modern Polish (\texttt{pl}). This approach guarantees maximal compatibility with existing UD resources and ensures that the resulting data can be immediately processed by any standard UD-compliant parser or visualization tool. Throughout development, validator feedback served as an objective convergence criterion: changes to the pipeline were accepted only if they reduced violations without introducing new ones, and every change was captured by the converter’s logging facilities for later audit.
-
-\section{Conformance Results and Iterative Refinement}
+\section{Conformance Results}
 \label{sec:val_results}
 
-The final converted MPDT-UD treebank passes the official UD validator (\texttt{validate.py}) with \textbf{zero errors}.
-This 100\% conformance fulfills the principal technical objective of the thesis~(\textbf{R3}).
+The final converted MPDT-UD treebank passes the official UD validator (\texttt{validate.py}) with \textbf{zero errors}. This 100\% conformance fulfills the principal technical objective of the thesis~(\textbf{R3}) and confirms that the resource is formally compatible with the Universal Dependencies standard.
 
-Achieving this result required an iterative, data-driven refinement cycle that directly influenced the converter’s architecture:
+This outcome is the result of the iterative, data-driven refinement cycle described in Section~\ref{sec:val_iterative}. Validator feedback was treated as an objective convergence criterion: pipeline changes were accepted only when they reduced the number of violations without introducing new ones, and all modifications were recorded by the converter’s logging facilities for later audit.
 
-\begin{enumerate}[leftmargin=1.5em]
-  \item Running the full MPDT~$\rightarrow$~MPDT-UD conversion pipeline.
-  \item Executing the \texttt{validate.py} script on the resulting \texttt{.conllu} file.
-  \item Collecting and classifying validator messages to identify systematic error types.
-  \item Implementing targeted adjustments in the relevant module (typically postconversion or label mapping) and repeating the cycle.
-\end{enumerate}
-
-The emphasis was on \emph{principle-driven} cleanups aligned with UD guidance rather than ad hoc edits—for example, enforcing that function words do not bear dependents, attaching punctuation to appropriate content heads, and canonicalizing order-sensitive multiword relations. Because this chapter focuses on formal conformance, it deliberately avoids enumerating specific unit fixes or heuristics.
+The emphasis throughout was on \emph{principle-driven} cleanups aligned with UD guidance rather than ad hoc edits—for example, enforcing that function words do not bear dependents, attaching punctuation to appropriate content heads, and canonicalizing order-sensitive multiword relations. In this way, the final state of the converter encodes the corrections required to reach full conformance, rather than relying on one-off manual adjustments to the released data.
 
 \subsection{Handling Idiosyncratic Edge Cases}
 \label{sec:val_results_idiosyncratic}
 
-Most validation issues were solvable with generalized, context-sensitive rules. A small residual set of idiosyncratic cases—rare constructions not easily captured by broad heuristics—were addressed pragmatically to achieve full conformance on the released dataset. These interventions are minimal, logged, and isolated, preserving reproducibility without overfitting the pipeline to particular sentences. Detailed conversion rationales were \emph{not} exhaustively documented for structure-level rules; the only systematically documented mapping decisions concern \textbf{POS} and \textbf{FEATS} and are available in the accompanying specification.\footnote{See \url{https://github.com/kvmilos/MPDT-to-UD-converter/blob/main/MPDT.md}}
+Most validation issues were solvable with generalized, context-sensitive rules that can be applied uniformly across the corpus. A small residual set of idiosyncratic cases—rare constructions not easily captured by broad heuristics—were addressed pragmatically to achieve full conformance on the released dataset. These interventions are minimal, logged, and isolated, preserving reproducibility without overfitting the pipeline to particular sentences.
 
-\section{Outcomes: The MPDT-UD 1.0 Treebank}
+Conversion decisions for \textbf{POS} and \textbf{FEATS} are documented systematically in the accompanying specification.\footnote{See \url{https://github.com/kvmilos/MPDT-to-UD-converter/blob/main/MPDT.md}} This document provides a stable reference for future extensions of the pipeline and for users who wish to understand or reuse the morphosyntactic mapping outside the present project.
+
+
+\section{Outcomes: the MPDT-UD 1.0 Treebank}
 \label{sec:val_outcomes}
 
-The conversion pipeline produces the first public release of the Middle Polish Dependency Treebank in Universal Dependencies format (\textbf{MPDT-UD~1.0}). The resource provides a validated, reproducible, and linguistically interpretable representation of 17th–18th-century Polish syntax compatible with modern NLP frameworks. It is intended for historical linguistics, diachronic NLP, parser training, and cross-linguistic comparison.
+The validated conversion pipeline yields the first public release of the Middle Polish Dependency Treebank in Universal Dependencies format (\textbf{MPDT-UD~1.0}). This section summarizes the size and internal structure of the treebank and briefly documents its integration into the Universal Dependencies ecosystem, including licensing and availability.
 
-\subsection{Converted Treebank Statistics}
+\subsection{Corpus Size and Data Split}
 \label{sec:val_outcomes_stats}
 
-STATISTICS TO BE ADDED AFTER RELEASE
+The MPDT-UD~1.0 treebank contains \textbf{2{,}018 sentences}, \textbf{46{,}670 surface tokens}, and \textbf{47{,}273 syntactic words}. The difference between tokens and syntactic words reflects the use of multiword tokens in the CoNLL-U representation. The corpus includes \textbf{564 multiword tokens} (across \textbf{359} distinct types), with an average of 2.07 syntactic words per multiword token. In addition, \textbf{8{,}217 tokens} (18\%) are not followed by a space, which is a direct consequence of historical orthographic conventions such as clitic fusion and non-standard punctuation spacing.\footnote{Summary statistics and tokenization details are publicly available via the UD\_Polish-MPDT treebank page: \url{https://universaldependencies.org/treebanks/pl_mpdt/index.html}.}
 
-\subsection{Official Release and UD Integration}
+In line with the UD guidelines for treebanks in the 20K–110K word range, approximately 10K words were allocated to the test set, about 10\% of the remaining data to the development set, and the rest to the training set. Sentences were randomly shuffled (using seed~42) and then assigned to the three subsets based on token-count quotas. The resulting split is:
+
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Training set:} 1{,}433 sentences, 33{,}520 tokens.
+  \item \textbf{Development set:} 162 sentences, 3{,}748 tokens.
+  \item \textbf{Test set:} 423 sentences, 10{,}005 tokens.
+\end{itemize}
+
+The treebank does not preserve document boundaries or genre labels at the sentence level; sentences have been shuffled and redistributed purely for the purpose of forming these three subsets. At the corpus level, the metadata assign four broad genres to the resource as a whole: nonfiction, bible, legal, and fiction.
+
+\subsection{Release, Licensing, and UD Integration}
 \label{sec:val_outcomes_release}
 
-The validated MPDT-UD~1.0 treebank has been accepted into the \textbf{Universal Dependencies~v2.17} release. It is distributed via the official UD GitHub repository\footnote{Available at \texttt{https://github.com/UniversalDependencies/UD\_Polish-MPDT}} alongside other Polish treebanks. The UD release page provides metadata, licensing information, and global statistics, confirming its integration into the UD ecosystem and availability for cross-linguistic and diachronic research.
+MPDT-UD~1.0 is distributed within the Universal Dependencies project under the repository name \texttt{UD\_Polish-MPDT}. It was first released as part of the \textbf{UD~v2.17} release. The data are available both through the UD GitHub organization and via the standard UD release packages, alongside other Polish resources.
 
-\medskip
-\noindent The dataset is released under \textbf{Creative Commons Attribution–ShareAlike 4.0 (CC~BY–SA~4.0) license}. In practical terms:
-\begin{itemize}[leftmargin=1.5em]
+The treebank is released under the \textbf{Creative Commons Attribution–ShareAlike 4.0 (CC~BY–SA~4.0)} license.\footnote{License text and a plain-language summary are available at \url{https://creativecommons.org/licenses/by-sa/4.0/}.} In practical terms:
+
+\begin{itemize}[leftmargin=2em]
   \item \textbf{You may} share and adapt the data, including for commercial purposes.
   \item \textbf{You must} give appropriate credit, provide a link to the license, and indicate if changes were made.
-  \item \textbf{ShareAlike:} if you remix, transform, or build upon the material, you must distribute your contributions under the \emph{same} license as the original.
+  \item \textbf{ShareAlike:} if you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.
   \item \textbf{No additional restrictions:} you may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.
 \end{itemize}
-A plain-language summary and full legal code are available from Creative Commons.\footnote{See \url{https://creativecommons.org/licenses/by-sa/4.0/}}
 
-\section{Known Limitations and Future Work}
-\label{sec:val_limitations}
+These conditions align with the open-data practices of the UD project and make MPDT-UD~1.0 immediately reusable for historical syntax research, diachronic NLP experiments, and cross-linguistic studies that rely on UD-conformant training and evaluation data.
 
-An integral part of the methodology was documenting conversion decisions (\textbf{R4}). In the present version, detailed documentation focuses on the \textbf{POS} and \textbf{FEATS} mapping; higher-level structural transformations were chiefly guided by validator feedback and UD principles but were not exhaustively recorded.
-
-\subsection{Future Work}
-
-Future work will focus on extending and generalizing the current solution:
-
-\begin{itemize}[leftmargin=1.5em]
-  \item \textbf{Generalization of exception rules:} abstract remaining sentence-level interventions into broader, context-sensitive heuristics.
-  \item \textbf{Re-validation on expanded data:} as MPDT grows, re-run validation and refine modules to maintain zero-error conformance.
-  \item \textbf{Extending coverage:} incorporate currently excluded genres (e.g., poetry) and mixed-language passages (e.g., Latin insertions), which may require specialized tokenization and attachment strategies.
-  \item \textbf{Documentation:} complement the existing \texttt{POS}/\texttt{FEATS} specification with a concise description of recurring structural patterns handled by the pipeline.
-\end{itemize}
 
 \end{document}
