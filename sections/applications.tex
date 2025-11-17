@@ -2,21 +2,112 @@
 \documentclass[../main.tex]{subfiles}
 \begin{document}
 
+This chapter situates the MPDT$\rightarrow$MPDT-UD converter and the resulting MPDT-UD treebank in a broader research context. It first discusses who can benefit from the tool and how it is packaged and licensed, then shows how it integrates with the Universal Dependencies ecosystem as part of a reproducible workflow (Section~\ref{sec:usefulness}). It then sketches use cases in historical linguistics and diachronic NLP (Section~\ref{sec:use_cases}), and finally connects the project to questions about processing constraints and category change in cognitive science (Section~\ref{sec:cognitive_science}), concluding with directions for future work (Section~\ref{sec:future_work}).
+
 \section{Usefulness and Audience}
-\subsection{Who benefits and how}
-\subsection{Packaging and License}
-\subsection{Repository and UD ecosystem integration}
+\label{usefulness}
+
+The MPDT$\rightarrow$MPDT-UD converter is the main software artifact produced in this project. While Chapter~\ref{chap:validation} focused on the resulting treebank (MPDT-UD~1.0) as a data resource, this chapter considers the converter itself as a reusable tool. The converter makes it possible to regenerate the UD version of the treebank from its MPDT source, to extend the coverage as MPDT grows, and to adapt the conversion strategy in a transparent, documented way. Because the pipeline is rule-based, modular, and fully logged, it is intended to be understandable and modifiable by other researchers working with historical Polish or related resources.
+
+The following sections outline who can benefit from the converter, how it is packaged and licensed, and how it fits into a reproducible workflow for generating UD-conformant treebanks.
+
+\subsection{Who Benefits and How}
+
+The primary intended users of the converter are researchers and developers who work with Middle Polish data or similar historical resources:
+
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{MPDT and KorBa maintainers.} For the team curating MPDT and the underlying KorBa corpus, the converter provides a repeatable way of producing an up-to-date UD version whenever the source annotation is expanded or revised. Rather than editing the UD data directly, changes can be made in the MPDT layer and propagated through the pipeline, keeping the two representations in sync.
+  \item \textbf{Historical treebank builders.} Other projects that annotate historical varieties of Polish or related Slavic languages can use the converter as a concrete template. Even if their annotation schemes differ, the basic separation between morphosyntactic mapping and dependency restructuring, combined with explicit logging, illustrates one way of organizing a conversion pipeline from a language-specific scheme into UD.
+  \item \textbf{NLP practitioners and tool developers.} For parser developers and NLP practitioners interested in diachronic data, the converter makes it possible to regenerate training and evaluation sets under slightly different mapping choices (for example, alternative treatments of coordination or specific clause-linking strategies). This enables controlled experiments on how particular conversion decisions affect model performance, without hand-editing the treebank.
+\end{itemize}
+
+These roles are not mutually exclusive and are meant as indicative rather than exhaustive. The broader aim is to provide a transparent, modifiable pipeline that others can adapt to their own data and research questions, instead of a one-off script tied rigidly to a single release.
+
+\subsection{Packaging and License of the Converter}
+
+The converter is implemented in Python and distributed as a standalone codebase, separate from the treebank data itself. Its internal organization was described in Chapter~\ref{chap:conversion}; here the focus is on how it can be obtained and reused. From a user's perspective, running the converter consists of invoking a single command with input and output file paths and, optionally, flags that control whether to perform only morphosyntactic conversion or the full pipeline.
+
+To maximize reusability, the converter is released under the \textbf{MIT License}. This permissive license allows others to use, modify, and redistribute the code, including in proprietary or commercial projects, provided that the copyright notice and license text are preserved. The choice of a permissive software license is intentional: the converter is meant to function as shared infrastructure that other projects can build on, fork, or integrate into their own tooling without licensing barriers.
+
+It is important to stress that this software license applies only to the \emph{converter code}. The MPDT-UD treebank released through the Universal Dependencies project (Chapter~\ref{chap:validation}) remains distributed under the Creative Commons Attribution--ShareAlike 4.0 (CC~BY--SA~4.0) license. Code and data are therefore governed by different, but compatible, licensing regimes: a permissive license for the software and a share-alike license for the annotated text.
+
+\subsection{Repository and Reproducible UD Integration}
+
+The converter is hosted in a public GitHub repository.\footnote{Repository URL: \url{https://github.com/kvmilos/MPDT-to-UD-converter}.} The repository mirrors the modular structure described in Chapter~\ref{chap:conversion} and provides the necessary entry points and documentation to run the pipeline on the MPDT source files. Keeping the code under version control has two practical consequences.
+
+First, it supports \textbf{reproducibility}. The UD-conformant MPDT-UD~1.0 release corresponds to a specific state of the converter. By checking out the same version of the repository and re-running the pipeline on the same MPDT input, a researcher can reproduce the CoNLL-U file that underlies the treebank described in Chapter~\ref{chap:validation}. Subsequent changes to the rules, or to the underlying MPDT annotation, can be tracked explicitly as commits, making it clear when and how the UD representation has evolved.
+
+Second, it facilitates \textbf{integration with the UD ecosystem}. The converter is designed to fit into the standard workflow used for UD treebanks: it writes data in valid CoNLL-U format, is run together with the official \texttt{validate.py} script, and produces logs that make it easier to investigate validator messages and correct systematic issues. This alignment means that the same pipeline can be used both to generate the files that are submitted to Universal Dependencies and to produce local experimental variants for research.
+
+In summary, the packaging and hosting of the converter aim to make it a maintainable, inspectable tool that can be reused beyond the scope of this thesis, while preserving a clear separation between the open-source software and the licensed treebank data it operates on.
 
 \section{Use Cases}
+\label{use_cases}
+
+The combination of a UD-conformant Middle Polish treebank and a reusable MPDT$\rightarrow$MPDT-UD converter creates a small ecosystem rather than a single static dataset. The same pipeline that produced MPDT-UD~1.0 can be re-applied to future MPDT releases, and its rule-based design makes it possible to generate controlled variants of the data. This section sketches two broad families of use cases: studies in historical syntax and diachrony, and parser training and evaluation on diachronic data.
+
 \subsection{Historical Syntax and Diachrony}
+
+For historical linguists, MPDT-UD~1.0 offers a syntactically annotated sample of Middle Polish in a format that is comparable to modern Polish UD treebanks and to other languages. This makes a range of diachronic and typological questions more approachable in practice, because analyses can be carried out using standard UD tools and methods.
+
+At a qualitative level, the treebank can be used to investigate phenomena described in Chapter~\ref{chap:language} in a more systematic way: coordination patterns, the behaviour of certain conjunctions and other clause-linking expressions, the distribution of short-form adjectives and participles, and the persistence of dual number. The UD layer provides a normalized representation of these structures, which facilitates querying and comparison across texts, genres, and time periods.
+
+At a quantitative level, the resource enables corpus-based studies that compare Middle Polish to modern Polish or to other Slavic languages within UD. Examples include: relative frequencies of non-projective dependencies; changes in the balance between analytic and synthetic expressions; shifts in the treatment of arguments and adjuncts; and diachronic changes in clause-linking strategies. Because the converter is rule-based and transparent, researchers can inspect or adjust specific mapping choices when such comparisons hinge on annotation details.
+
+Finally, the availability of a UD-aligned treebank lowers the barrier to integrating Middle Polish into cross-linguistic projects that already rely on UD, such as typological surveys of coordination, argument structure, or word order. In such settings, MPDT-UD can function as a historical counterpart to modern Polish treebanks, allowing diachronically informed variants of existing studies without the need for bespoke tooling.
+
 \subsection{Parser Training and Evaluation}
 
+From an NLP perspective, MPDT-UD~1.0 and the converter together provide a testbed for working with historical Polish as an out-of-domain setting for dependency parsing. Because the treebank is encoded in standard CoNLL-U and passes the official UD validator, it can be used directly with existing UD parsers, taggers, and evaluation scripts.
+
+One straightforward use case is to train a parser on modern Polish UD treebanks and evaluate it on MPDT-UD~1.0, treating Middle Polish as a diachronic domain shift. Such experiments can illuminate which constructions cause systematic failures (e.g.\ non-projective configurations, complex predicate structures, or multiword connectives) and whether particular architectural or training choices mitigate these difficulties. Conversely, parsers can be trained on MPDT-UD itself to explore how far purely data-driven models can adapt to historical morphology and syntax given limited training material.
+
+The converter also makes it possible to study the impact of annotation decisions on parsing performance. Because individual rule sets can be toggled or modified, researchers can generate alternative UD versions that differ in targeted ways—for example, different treatments of coordination heads, or alternative analyses of clause-linking constructions. Training and evaluating parsers on these variants would allow controlled investigations of how annotation schemes influence model accuracy and error profiles.
+
+Finally, the pipeline can serve as a template for bringing other historical or specialized corpora into the UD ecosystem. Adapting the converter to a new source scheme (for instance, a related historical Polish resource or another Slavic treebank with PDB-inspired annotation) would enable comparable parser experiments across multiple time periods or varieties, using the same tooling and evaluation protocol.
+
 \section{Cognitive Science Perspective}
+\label{sec:cognitive_science}
+
+Although this thesis is framed primarily as a contribution to corpus linguistics and language technology, its motivation and implications are closely connected to questions in cognitive science. Dependency treebanks are one of the main empirical interfaces between theories of mental representations of syntax, models of sentence processing, and observable patterns in text. By providing a UD-conformant treebank for Middle Polish, as well as a transparent conversion pipeline, this project creates a resource that can be used to investigate how processing constraints and category systems behave across time.
+
 \subsection{Processing Constraints}
+
+Psycholinguistic theories of sentence processing routinely appeal to structural constraints such as locality, memory limitations, and incremental interpretability. Many of these constraints can be operationalized directly on dependency structures: examples include measures of dependency length, the frequency and type of non-projective configurations, or the complexity of coordination and clause-linking patterns.
+
+Because MPDT-UD~1.0 represents Middle Polish sentences in the same formalism as modern Polish UD treebanks, it becomes possible to compare such measures diachronically. For instance, one can ask whether Middle Polish shows similar tendencies toward minimizing dependency length as modern Polish, or whether certain constructions--such as heavy preposed modifiers, deeply nested subordinate clauses, or elaborate coordination--were more frequent and thus may have imposed different processing demands on readers. The converter plays a central role here: it fixes a concrete mapping between MPDT and UD, allowing processing-oriented metrics to be computed in a consistent way across different stages of the language.
+
+The treebank also facilitates the use of computational models as proxies for human processing. Modern parsers and language models, when trained or evaluated on MPDT-UD, can be treated as idealized processors exposed to Middle Polish input. Their error patterns and surprisals on particular constructions can then be related to hypotheses about human difficulty, ambiguity resolution, and expectation-based processing. In this way, a historically oriented treebank contributes to the broader cognitive-scientific programme of linking structural properties of language to processing behaviour.
+
 \subsection{Category Change Over Time}
 
+A second point of contact with cognitive science concerns how linguistic categories evolve over time. From a cognitive perspective, changes in part-of-speech inventories, morphological paradigms, or syntactic constructions are not purely formal: they reflect shifts in how speakers mentally organize their lexicon and grammar, and in how they generalize across usage patterns.
+
+The conversion of MPDT to UD requires making explicit decisions about how Middle Polish forms relate to the category system used for contemporary languages in UD. Examples include mapping short-form adjectives and participles to appropriate UD categories, deciding how to analyse certain conjunctions and clause-linking expressions, or preserving dual number in the feature system even though it is lost in modern Polish. Each of these choices embodies a hypothesis about the continuity or reanalysis of categories across time: whether a given construction is best understood as an instance of a stable category (e.g.\ adjectives with changing surface forms) or as evidence of an ongoing shift.
+
+Because the converter is rule-based and modifiable, it can support explicit experimentation with alternative categorization hypotheses. Researchers interested in diachronic category change can adjust the mapping rules—for instance, by treating certain borderline items as adpositions rather than adverbs, or by collapsing dual forms with plural—and then regenerate a full UD annotation under each hypothesis. Comparing the resulting distributions, as well as the behaviour of parsers or language models trained on them, offers one way of probing how different categorizations interact with usage patterns and processing models.
+
+More broadly, situating Middle Polish within the UD inventory highlights the tension between language-specific categories and cross-linguistic, cognitively plausible abstractions. If historically attested forms in Middle Polish fit naturally into the same UD categories as their modern counterparts, this supports the view that at least some parts of the category system are cognitively robust over centuries. If they resist such alignment, this points to domains where grammaticalization, lexicalization, or shifts in constructional meaning have substantially reorganized the underlying mental representations. In this way, the technical work of designing and implementing the converter feeds back into core questions about how linguistic categories are represented and how they change over time in the minds of speakers.
+
 \section{Future Work}
+\label{sec:future_work}
+
+The converter and the initial MPDT-UD~1.0 release are intended as a starting point rather than a finished product. As MPDT grows and other historical resources become available, both the pipeline and the resulting treebank can be extended in several directions. This section highlights two main axes: expanding coverage and phenomena, and generalizing or automating parts of the conversion workflow.
+
 \subsection{Coverage and Phenomena}
+
+At present, MPDT-UD~1.0 mirrors the scope of MPDT as described in Chapter~\ref{chap:language}: prose, sentence length restricted to 10–50 tokens, and exclusion of poetry and sentences with extensive Latin insertions. As MPDT annotation progresses, a natural first direction for future work is simply \emph{more data}: adding further texts, relaxing sentence-length constraints, and gradually incorporating more syntactically challenging material (possibly including poetry and mixed-language passages).
+
+Each such extension would test the robustness of the converter and likely surface new constructions. In the current release, some validation issues were resolved as genuinely idiosyncratic cases—single sentences or very small clusters that did not justify complex general rules. With a substantially larger treebank, these \textit{isolated edge cases} may turn out not to be isolated at all, but instances of broader patterns. In that scenario, the relevant ad-hoc fixes can be promoted to explicit, documented rules, or refactored into more general modules that handle an entire class of constructions. The existing logging infrastructure is well suited to this: it can be used to search for recurring change patterns and to identify where similar structures are still treated inconsistently.
+
+A second line of work concerns broadening the range of phenomena encoded in the UD layer. For example, enhanced dependencies are currently focused on coordination and basic propagation of shared dependents; future versions could systematically capture additional phenomena.
+
 \subsection{Generalization and Automation}
+
+Beyond extending MPDT itself, the converter can be used as a template for bringing other corpora into UD. One mid-term goal is to factor out clearly which parts of the pipeline are specific to Middle Polish and which are reusable for other PDB-inspired schemes or related Slavic languages. This would make it easier to adapt the codebase to, for example, another historical Polish treebank or a contemporary resource that shares the same dependency labels but differs in detail.
+
+A related direction involves adding more automation around rule design and maintenance. At the moment, conversion rules are handwritten and motivated by linguistic analysis and validator feedback. Future work could introduce lightweight tooling that helps discover candidate rules--for instance, by mining frequent configurations in the logs, comparing parser outputs on MPDT-UD with the original MPDT annotation, or highlighting clusters of residual validator warnings. Such tools would not replace expert judgment, but could shorten the loop between observing a systematic pattern and encoding it as an explicit rule.
+
+Finally, the converter could be integrated more tightly into reproducible workflows used in NLP and cognitive science. Examples include packaging the pipeline as a Python library or command-line tool with versioned releases; providing ready-made configuration files for common scenarios (e.g.\ ``tags-only conversion'', ``full conversion with enhanced dependencies''); or building simple interfaces for inspecting sentence-level logs alongside converted trees. These steps would lower the barrier for other researchers to experiment with alternative mappings, extend the treebank, or port the approach to new data, while keeping the underlying principle of transparent, documented conversion intact.
 
 \end{document}
