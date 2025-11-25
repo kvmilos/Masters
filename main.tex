@@ -14,13 +14,11 @@
 \counterwithout{figure}{chapter}
 \counterwithout{table}{chapter}
 
-% Added spacing adjustments per supervisor comments
 \frenchspacing
 \sloppy
 
-% ---- Bibliography (biblatex + biber) ----
-% giveninits=true works with uniquename=init to avoid conflicts
-\usepackage[backend=biber,style=authoryear,sorting=nyt,
+% ---- Bibliography settings ----
+\usepackage[backend=bibtex,style=authoryear,sorting=nyt,
   giveninits=true,uniquename=init,dashed=false,useprefix=true,
   maxcitenames=2,mincitenames=1,maxbibnames=999]{biblatex}
 \addbibresource{mybib.bib}
