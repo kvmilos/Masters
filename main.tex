@@ -22,7 +22,7 @@
 % giveninits=true works with uniquename=init to avoid conflicts
 \usepackage[backend=biber,style=authoryear,sorting=nyt,
   giveninits=true,uniquename=init,dashed=false,useprefix=true,
-  maxcitenames=2,mincitenames=1,maxbibnames=99]{biblatex}
+  maxcitenames=2,mincitenames=1,maxbibnames=999]{biblatex}
 \addbibresource{mybib.bib}
 \AtBeginBibliography{%
   \DeclareNameAlias{default}{family-given}%
@@ -116,9 +116,16 @@ Praca przedstawia podejście regułowe do konwersji Średniopolskiego Banku Drze
 \subfile{sections/validation}
 
 % --- CHAPTER 6 ---
-\chapter{Applications and Cognitive Science Perspective}
+\chapter{Cognitive Science Perspective on MPDT Conversion: Concluding Remarks}
 \subfile{sections/applications}
 
+% ---- Aknowledgements ----
+\cleardoublepage
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+
+% ---- Bibliography ----
 \printbibliography
+\addcontentsline{toc}{chapter}{Bibliography}
 
 \end{document}

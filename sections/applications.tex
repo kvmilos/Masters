@@ -4,7 +4,7 @@
 
 This chapter situates the MPDT$\rightarrow$MPDT-UD converter and the resulting MPDT-UD treebank in a broader research context. It first discusses who can benefit from the tool and how it is packaged and licensed, then shows how it integrates with the Universal Dependencies ecosystem as part of a reproducible workflow (Section~\ref{sec:usefulness}). It then sketches use cases in historical linguistics and diachronic NLP (Section~\ref{sec:use_cases}), and finally connects the project to questions about processing constraints and category change in cognitive science (Section~\ref{sec:cognitive_science}), concluding with directions for future work (Section~\ref{sec:future_work}).
 
-\section{Usefulness and Audience}
+\section{Usefulness and Audience of the Converter}
 \label{sec:usefulness}
 
 The MPDT$\rightarrow$MPDT-UD converter is the main software artifact produced in this project. While Chapter~\ref{chap:validation} focused on the resulting treebank (MPDT-UD~1.0) as a data resource, this chapter considers the converter itself as a reusable tool. The converter makes it possible to regenerate the UD version of the treebank from its MPDT source, to extend the coverage as MPDT grows, and to adapt the conversion strategy in a transparent, documented way. Because the pipeline is rule-based, modular, and fully logged, it is intended to be understandable and modifiable by other researchers working with historical Polish or related resources.
@@ -41,7 +41,7 @@ Second, it facilitates \textbf{integration with the UD ecosystem}. The converter
 
 In summary, the packaging and hosting of the converter aim to make it a maintainable, inspectable tool that can be reused beyond the scope of this thesis, while preserving a clear separation between the open-source software and the licensed treebank data it operates on.
 
-\section{Use Cases}
+\section{Use Cases for the Conversion Ecosystem}
 \label{sec:use_cases}
 
 The combination of a UD-conformant Middle Polish treebank and a reusable MPDT$\rightarrow$MPDT-UD converter creates a small ecosystem rather than a single static dataset. The same pipeline that produced MPDT-UD~1.0 can be re-applied to future MPDT releases, and its rule-based design makes it possible to generate controlled variants of the data. This section sketches two broad families of use cases: studies in historical syntax and diachrony, and parser training and evaluation on diachronic data.
@@ -60,7 +60,7 @@ Finally, the availability of a UD-aligned treebank lowers the barrier to integra
 
 From an NLP perspective, MPDT-UD~1.0 and the converter together provide a testbed for working with historical Polish as an out-of-domain setting for dependency parsing. Because the treebank is encoded in standard CoNLL-U and passes the official UD validator, it can be used directly with existing UD parsers, taggers, and evaluation scripts.
 
-One straightforward use case is to train a parser on modern Polish UD treebanks and evaluate it on MPDT-UD~1.0, treating Middle Polish as a diachronic domain shift. Such experiments can illuminate which constructions cause systematic failures (e.g.\ non-projective configurations, complex predicate structures, or multiword connectives) and whether particular architectural or training choices mitigate these difficulties. Conversely, parsers can be trained on MPDT-UD itself to explore how far purely data-driven models can adapt to historical morphology and syntax given limited training material.
+One straightforward use case is to train a parser on modern Polish UD treebanks and evaluate it on MPDT-UD~1.0, treating Middle Polish as a diachronic domain shift. Such experiments can illuminate which constructions cause systematic failures (e.g.\ non-projective configurations, complex predicate structures, or multiword connectives) and whether particular architectural or training choices mitigate these difficulties. Conversely, parsers can be trained on MPDT-UD itself to explore how far purely data-driven models can adapt to historical morphology and syntax in a low-resource setting.
 
 The converter also makes it possible to study the impact of annotation decisions on parsing performance. Because individual rule sets can be toggled or modified, researchers can generate alternative UD versions that differ in targeted ways—for example, different treatments of coordination heads, or alternative analyses of clause-linking constructions. Training and evaluating parsers on these variants would allow controlled investigations of how annotation schemes influence model accuracy and error profiles.
 
